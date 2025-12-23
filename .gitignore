@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+CStandardContainers/.vs/CStandardContainers/v16/.suo
+CStandardContainers/.vs/CStandardContainers/v16/Browse.VC.db
+CStandardContainers/.vs/CStandardContainers/v16/ipch/AutoPCH/4e43b7280b551983/IBASEINTERFACE.ipch
+CStandardContainers/.vs/CStandardContainers/v16/ipch/AutoPCH/4e43c0280b5528ce/IBASEINTERFACE.ipch
+CStandardContainers/CStandardContainers/CStandardContainers.vcxproj.user
+CStandardContainers/CStandardContainers/Debug/CStandar.91c8d499.tlog/CStandardContainers.lastbuildstate
+CStandardContainers/CStandardContainers/Debug/CStandardContainers.lib.recipe
+CStandardContainers/CStandardContainers/Debug/CStandardContainers.log
