@@ -24,12 +24,18 @@
     <ClInclude Include="Source\Interfaces\IAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Interfaces\IContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Interfaces\IBaseInterface.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Interfaces\IAllocator.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Interfaces\IContainer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

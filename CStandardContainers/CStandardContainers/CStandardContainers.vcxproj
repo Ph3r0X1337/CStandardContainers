@@ -158,10 +158,12 @@
     <ClInclude Include="Source\Configuration\Configuration.h" />
     <ClInclude Include="Source\Interfaces\IAllocator.h" />
     <ClInclude Include="Source\Interfaces\IBaseInterface.h" />
+    <ClInclude Include="Source\Interfaces\IContainer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Interfaces\IAllocator.c" />
     <ClCompile Include="Source\Interfaces\IBaseInterface.c" />
+    <ClCompile Include="Source\Interfaces\IContainer.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
