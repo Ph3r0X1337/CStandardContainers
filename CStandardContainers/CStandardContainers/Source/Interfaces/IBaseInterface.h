@@ -1,5 +1,5 @@
-#ifndef CSC_BASE_INTERFACE
-#define CSC_BASE_INTERFACE
+#ifndef CSC_I_BASE_INTERFACE
+#define CSC_I_BASE_INTERFACE
 
 /*
 Description:
@@ -21,7 +21,7 @@ typedef enum _EBaseInterfaceType
 	csc_bit_IIterable
 } EBaseInterfaceType;
 
-// Predecleration of the CSC_IBaseInterface type to be able to create the function pointer type for the method, that the interface implements.
+// Predecleration of the CSC_IBaseInterface type to be able to create the function pointer type for the method that the interface implements.
 struct _CSC_IBaseInterface;
 
 // Type definition of the function pointer type of the IBaseInterface's GetInterface method, which needs to be implemented by types that utilize polymorphism.
@@ -44,4 +44,4 @@ typedef struct _CSC_IBaseInterface
 // On success the function will return a pointer to an interface in form of a CSC_PCVOID.
 CSC_PCVOID CSCMETHOD CSC_IBaseInterfaceGetInterface(_In_ CONST CSC_IBaseInterface* CONST pThis, _In_ CONST EBaseInterfaceType interfaceType);
 
-#endif CSC_BASE_INTERFACE
+#endif CSC_I_BASE_INTERFACE
