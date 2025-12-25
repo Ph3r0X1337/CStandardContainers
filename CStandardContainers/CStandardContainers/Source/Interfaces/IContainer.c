@@ -153,7 +153,7 @@ CSC_SIZE_T CSCMETHOD CSC_IContainerGetSize(_In_ CONST struct _CSC_IContainer* CO
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pGetSize)
 	{
-		return (CSC_SIZE_T)0;
+		return CSC_CONTAINER_INVALID_LENGTH;
 	}
 	else
 	{
@@ -177,7 +177,7 @@ CSC_SIZE_T CSCMETHOD CSC_IContainerGetMaxElements(_In_ CONST struct _CSC_IContai
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pGetMaxElements)
 	{
-		return (CSC_SIZE_T)0;
+		return CSC_CONTAINER_INVALID_LENGTH;
 	}
 	else
 	{
@@ -189,7 +189,7 @@ CSC_IAllocator* CSCMETHOD CSC_IContainerGetIAllocator(_In_ CONST struct _CSC_ICo
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pGetIAllocator)
 	{
-		return NULL;
+		return (CSC_IAllocator*)NULL;
 	}
 	else
 	{

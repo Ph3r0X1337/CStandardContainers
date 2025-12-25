@@ -25,7 +25,7 @@ CSC_STATUS CSCMETHOD CSC_IIteratorUpdateIteration(_Inout_ struct _CSC_IIterator*
 }
 
 
-CSC_STATUS CSCMETHOD CSC_IIteratorOnInsertion(_Inout_ struct _CSC_IIterator* CONST pThis, CONST CSC_SIZE_T insertIndex, CONST CSC_SIZE_T numOfElements, CONST CSC_SIZE_T newSize)
+CSC_STATUS CSCMETHOD CSC_IIteratorOnInsertion(_Inout_ struct _CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize)
 {
 	if (!numOfElements || insertIndex + numOfElements > newSize || !pThis || !pThis->pIIteratorVirtualTable || !pThis->pIIteratorVirtualTable->pOnInsertion)
 	{
@@ -37,7 +37,7 @@ CSC_STATUS CSCMETHOD CSC_IIteratorOnInsertion(_Inout_ struct _CSC_IIterator* CON
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IIteratorOnRemoval(_Inout_ struct _CSC_IIterator* CONST pThis, CONST CSC_SIZE_T removeIndex, CONST CSC_SIZE_T numOfElements, CONST CSC_SIZE_T newSize)
+CSC_STATUS CSCMETHOD CSC_IIteratorOnRemoval(_Inout_ struct _CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize)
 {
 	if (!numOfElements || removeIndex > newSize || !pThis || !pThis->pIIteratorVirtualTable || !pThis->pIIteratorVirtualTable->pOnRemoval)
 	{

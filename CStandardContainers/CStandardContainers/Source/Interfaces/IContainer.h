@@ -20,6 +20,11 @@ The initialization method is called through the virtual table pointer, which is 
 #include "../Configuration/Configuration.h"
 // Include the IAllocator interface as every container requires an allocator.
 #include "IAllocator.h"
+// Include the string utilities which define the invalid string length, which is used to define the invalid length and index of containers and their elements.
+#include "../Utils/StringUtils.h"
+
+#define CSC_CONTAINER_INVALID_LENGTH CSC_STRING_INVALID_LENGTH
+#define CSC_CONTAINER_INVALID_INDEX CSC_CONTAINER_INVALID_LENGTH
 
 // Predecleration of the CSC_IContainer type to be able to create the function pointer types for the methods that the interface implements.
 struct _CSC_IContainer;

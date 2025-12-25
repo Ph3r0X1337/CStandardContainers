@@ -24,7 +24,7 @@ typedef CSC_PVOID(CSCMETHOD* CSC_P_I_ALLOCATOR_ALLOC_ZERO)(_In_ CONST struct _CS
 
 typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ALLOCATOR_FREE)(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock);
 
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ALLOCATOR_USABLE)(_In_ CONST struct _CSC_IAllocator* CONST pThis);
+typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ALLOCATOR_IS_USABLE)(_In_ CONST struct _CSC_IAllocator* CONST pThis);
 
 // Definition of the virtual table layout of the IAllocator type.
 typedef struct _CSC_IAllocatorVirtualTable
@@ -34,7 +34,7 @@ typedef struct _CSC_IAllocatorVirtualTable
 	CSC_P_I_ALLOCATOR_ALLOC pAlloc;
 	CSC_P_I_ALLOCATOR_ALLOC_ZERO pAllocZero;
 	CSC_P_I_ALLOCATOR_FREE pFree;
-	CSC_P_I_ALLOCATOR_USABLE pIsUsable;
+	CSC_P_I_ALLOCATOR_IS_USABLE pIsUsable;
 } CSC_IAllocatorVirtualTable;
 
 // Definition of the IAllocator type, contains a pointer to the virtual table of the object that implements the interfaces methods.
