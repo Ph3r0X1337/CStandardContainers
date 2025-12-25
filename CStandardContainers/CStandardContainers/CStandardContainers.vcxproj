@@ -159,11 +159,13 @@
     <ClInclude Include="Source\Interfaces\IAllocator.h" />
     <ClInclude Include="Source\Interfaces\IBaseInterface.h" />
     <ClInclude Include="Source\Interfaces\IContainer.h" />
+    <ClInclude Include="Source\Interfaces\IIterator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Interfaces\IAllocator.c" />
     <ClCompile Include="Source\Interfaces\IBaseInterface.c" />
     <ClCompile Include="Source\Interfaces\IContainer.c" />
+    <ClCompile Include="Source\Interfaces\IIterator.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
