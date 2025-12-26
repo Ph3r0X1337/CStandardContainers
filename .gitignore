@@ -53,3 +53,5 @@ CStandardContainers/.vs/CStandardContainers/v16/ipch/AutoPCH/7d3ce41b127bd6f1/IC
 CStandardContainers/.vs/CStandardContainers/v16/ipch/AutoPCH/839f8072e83b047f/IITERATOR.ipch
 CStandardContainers/.vs/CStandardContainers/v16/ipch/AutoPCH/839f8972e83b13ca/IITERATOR.ipch
 CStandardContainers/.vs/CStandardContainers/v16/ipch/AutoPCH/b6036e073dae47df/IITERABLE.ipch
+*.ipch
+/CStandardContainers/CStandardContainers/Debug

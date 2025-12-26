@@ -1,6 +1,6 @@
 #include "IIterator.h"
 
-CSC_STATUS CSCMETHOD CSC_IIteratorInvalidateIteration(_Inout_ struct _CSC_IIterator* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IIteratorInvalidateIteration(_Inout_ CSC_IIterator* CONST pThis)
 {
 	if (!pThis || !pThis->pIIteratorVirtualTable || !pThis->pIIteratorVirtualTable->pInvalidateIteration)
 	{
@@ -12,7 +12,7 @@ CSC_STATUS CSCMETHOD CSC_IIteratorInvalidateIteration(_Inout_ struct _CSC_IItera
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IIteratorUpdateIteration(_Inout_ struct _CSC_IIterator* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IIteratorUpdateIteration(_Inout_ CSC_IIterator* CONST pThis)
 {
 	if (!pThis || !pThis->pIIteratorVirtualTable || !pThis->pIIteratorVirtualTable->pUpdateIteration)
 	{
@@ -25,7 +25,7 @@ CSC_STATUS CSCMETHOD CSC_IIteratorUpdateIteration(_Inout_ struct _CSC_IIterator*
 }
 
 
-CSC_STATUS CSCMETHOD CSC_IIteratorOnInsertion(_Inout_ struct _CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize)
+CSC_STATUS CSCMETHOD CSC_IIteratorOnInsertion(_Inout_ CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize)
 {
 	if (!numOfElements || insertIndex + numOfElements > newSize || !pThis || !pThis->pIIteratorVirtualTable || !pThis->pIIteratorVirtualTable->pOnInsertion)
 	{
@@ -37,7 +37,7 @@ CSC_STATUS CSCMETHOD CSC_IIteratorOnInsertion(_Inout_ struct _CSC_IIterator* CON
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IIteratorOnRemoval(_Inout_ struct _CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize)
+CSC_STATUS CSCMETHOD CSC_IIteratorOnRemoval(_Inout_ CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize)
 {
 	if (!numOfElements || removeIndex > newSize || !pThis || !pThis->pIIteratorVirtualTable || !pThis->pIIteratorVirtualTable->pOnRemoval)
 	{
@@ -49,7 +49,7 @@ CSC_STATUS CSCMETHOD CSC_IIteratorOnRemoval(_Inout_ struct _CSC_IIterator* CONST
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IIteratorOnDestruction(_Inout_ struct _CSC_IIterator* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IIteratorOnDestruction(_Inout_ CSC_IIterator* CONST pThis)
 {
 	if (!pThis || !pThis->pIIteratorVirtualTable || !pThis->pIIteratorVirtualTable->pOnDestruction)
 	{

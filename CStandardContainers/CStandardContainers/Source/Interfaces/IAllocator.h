@@ -45,24 +45,24 @@ typedef struct _CSC_IAllocator
 
 // Calls the underlying initialization method implemented by the allocator object.
 // Should return CSC_STATUS_SUCCESS on success, otherwise an error code is returned.
-CSC_STATUS CSCMETHOD CSC_IAllocatorInit(_Inout_ struct _CSC_IAllocator* CONST pThis);
+CSC_STATUS CSCMETHOD CSC_IAllocatorInit(_Inout_ CSC_IAllocator* CONST pThis);
 // Calls the underlying cleanup method implemented by the allocator object.
 // Should return CSC_STATUS_SUCCESS on success, otherwise an error code is returned.
-CSC_STATUS CSCMETHOD CSC_IAllocatorCleanup(_Inout_ struct _CSC_IAllocator* CONST pThis);
+CSC_STATUS CSCMETHOD CSC_IAllocatorCleanup(_Inout_ CSC_IAllocator* CONST pThis);
 
 // Calls the underlying allocation method implemented by the allocator object.
 // Should return a pointer to the allocated memory on success, otherwise a nullptr should be returned.
-CSC_PVOID CSCMETHOD CSC_IAllocatorAlloc(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_SIZE_T size);
+CSC_PVOID CSCMETHOD CSC_IAllocatorAlloc(_In_ CONST CSC_IAllocator* CONST pThis, _In_ CONST CSC_SIZE_T size);
 // Calls the underlying allocation and zero memory method implemented by the allocator object.
 // Should return a pointer to the allocated memory on success, otherwise a nullptr should be returned.
-CSC_PVOID CSCMETHOD CSC_IAllocatorAllocZero(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_SIZE_T size);
+CSC_PVOID CSCMETHOD CSC_IAllocatorAllocZero(_In_ CONST CSC_IAllocator* CONST pThis, _In_ CONST CSC_SIZE_T size);
 
 // Calls the underlying free method implemented by the allocator object to free a priorly allocated memory block.
 // Should return CSC_STATUS_SUCCESS on success, otherwise an error code is returned.
-CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock);
+CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock);
 
 // Calls the underlying method implemented by the allocator object to check if the allocator is in a usable state.
 // Should return true or false depending on the situation.
-CSC_BOOLEAN CSCMETHOD CSC_IAllocatorIsUsable(_In_ CONST struct _CSC_IAllocator* CONST pThis);
+CSC_BOOLEAN CSCMETHOD CSC_IAllocatorIsUsable(_In_ CONST CSC_IAllocator* CONST pThis);
 
-#endif CSC_I_ALLOCATOR
+#endif

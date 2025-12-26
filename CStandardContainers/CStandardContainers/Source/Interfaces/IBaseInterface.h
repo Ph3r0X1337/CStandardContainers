@@ -44,4 +44,4 @@ typedef struct _CSC_IBaseInterface
 // On success the function will return a pointer to an interface in form of a CSC_PCVOID.
 CSC_PCVOID CSCMETHOD CSC_IBaseInterfaceGetInterface(_In_ CONST CSC_IBaseInterface* CONST pThis, _In_ CONST EBaseInterfaceType interfaceType);
 
-#endif CSC_I_BASE_INTERFACE
+#endif

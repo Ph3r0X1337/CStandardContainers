@@ -1,6 +1,6 @@
 #include "IAllocator.h"
 
-CSC_STATUS CSCMETHOD CSC_IAllocatorInit(_Inout_ struct _CSC_IAllocator* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IAllocatorInit(_Inout_ CSC_IAllocator* CONST pThis)
 {
 	if (!pThis || !pThis->pIAllocatorVirtualTable || !pThis->pIAllocatorVirtualTable->pInitialize)
 	{
@@ -12,7 +12,7 @@ CSC_STATUS CSCMETHOD CSC_IAllocatorInit(_Inout_ struct _CSC_IAllocator* CONST pT
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IAllocatorCleanup(_Inout_ struct _CSC_IAllocator* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IAllocatorCleanup(_Inout_ CSC_IAllocator* CONST pThis)
 {
 	if (!pThis || !pThis->pIAllocatorVirtualTable || !pThis->pIAllocatorVirtualTable->pCleanup)
 	{
@@ -25,7 +25,7 @@ CSC_STATUS CSCMETHOD CSC_IAllocatorCleanup(_Inout_ struct _CSC_IAllocator* CONST
 }
 
 
-CSC_PVOID CSCMETHOD CSC_IAllocatorAlloc(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_SIZE_T size)
+CSC_PVOID CSCMETHOD CSC_IAllocatorAlloc(_In_ CONST CSC_IAllocator* CONST pThis, _In_ CONST CSC_SIZE_T size)
 {
 	if (!size || !pThis || !pThis->pIAllocatorVirtualTable || !pThis->pIAllocatorVirtualTable->pAlloc)
 	{
@@ -37,7 +37,7 @@ CSC_PVOID CSCMETHOD CSC_IAllocatorAlloc(_In_ CONST struct _CSC_IAllocator* CONST
 	}
 }
 
-CSC_PVOID CSCMETHOD CSC_IAllocatorAllocZero(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_SIZE_T size)
+CSC_PVOID CSCMETHOD CSC_IAllocatorAllocZero(_In_ CONST CSC_IAllocator* CONST pThis, _In_ CONST CSC_SIZE_T size)
 {
 	if (!size || !pThis || !pThis->pIAllocatorVirtualTable || !pThis->pIAllocatorVirtualTable->pAllocZero)
 	{
@@ -50,7 +50,7 @@ CSC_PVOID CSCMETHOD CSC_IAllocatorAllocZero(_In_ CONST struct _CSC_IAllocator* C
 }
 
 
-CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock)
+CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock)
 {
 	if (!pMemoryBlock || !pThis || !pThis->pIAllocatorVirtualTable || !pThis->pIAllocatorVirtualTable->pFree)
 	{
@@ -63,7 +63,7 @@ CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST struct _CSC_IAllocator* CONST
 }
 
 
-CSC_BOOLEAN CSCMETHOD CSC_IAllocatorIsUsable(_In_ CONST struct _CSC_IAllocator* CONST pThis)
+CSC_BOOLEAN CSCMETHOD CSC_IAllocatorIsUsable(_In_ CONST CSC_IAllocator* CONST pThis)
 {
 	if (!pThis || !pThis->pIAllocatorVirtualTable || !pThis->pIAllocatorVirtualTable->pIsUsable)
 	{

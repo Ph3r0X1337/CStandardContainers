@@ -77,53 +77,53 @@ typedef struct _CSC_IContainerVirtualTable
 typedef struct _CSC_IContainer
 {
 	CSC_IContainerVirtualTable* pIContainerVirtualTable;
-} CSC_IAllocator;
+} CSC_IContainer;
 
 // Calls the underlying initialization routine to create the container containing a pure data type with the specified size.
 // The method is invoked directly through the virtual table by the invoking (outer) container.
 // It is used on element insertion prior to copying the inserted value, which is mandatory for insertion on nested containers.
 // Nested containers are initialized with the allocator of the invoking (outer) container.
-CSC_STATUS CSCMETHOD CSC_IContainerInitialize(_Out_ struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator);
+CSC_STATUS CSCMETHOD CSC_IContainerInitialize(_Out_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator);
 // Calls the underlying method to completely empty a container.
 // This does not mean that the object will free allocated resources, therefore the Destroy method should be invoked to destruct a container.
-CSC_STATUS CSCMETHOD CSC_IContainerErase(_Inout_ struct _CSC_IContainer* CONST pThis);
+CSC_STATUS CSCMETHOD CSC_IContainerErase(_Inout_ CSC_IContainer* CONST pThis);
 // Calls the underlying destructor for a container object, typically zeroing it out after resources were freed.
 // Destructed containers must be initialized after this operation prior to using them again.
-CSC_STATUS CSCMETHOD CSC_IContainerDestroy(_Inout_ struct _CSC_IContainer* CONST pThis);
+CSC_STATUS CSCMETHOD CSC_IContainerDestroy(_Inout_ CSC_IContainer* CONST pThis);
 
 // Calls the underlying copy method to perform a deep copy of the container, for this the container must match which is checked by comparing the virtual tables of both container, those must match.
-CSC_STATUS CSCMETHOD CSC_IContainerCopy(_Inout_ struct _CSC_IContainer* CONST pThis, _In_ CONST struct _CSC_IContainer* CONST pOther);
+CSC_STATUS CSCMETHOD CSC_IContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST struct _CSC_IContainer* CONST pOther);
 // Calls the underlying move method to move the contents from another container to the current container.
 // This does not destruct the source container, hence the source container might still contain unfreed resources.
-CSC_STATUS CSCMETHOD CSC_IContainerMove(_Inout_ struct _CSC_IContainer* CONST pThis, _Inout_ struct _CSC_IContainer* CONST pOther);
+CSC_STATUS CSCMETHOD CSC_IContainerMove(_Inout_ CSC_IContainer* CONST pThis, _Inout_ struct _CSC_IContainer* CONST pOther);
 
 // Calls the underlying method to perform an insertion of one or more elements.
 // In the case of multiple elements, the elements need to be stored in an array / contiguous memory.
 // Providing a nullptr for the pElements parameter is only allowed if the elements to be inserted are not containers themselves.
-CSC_STATUS CSCMETHOD CSC_IContainerInsertRange(_Inout_ struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements);
+CSC_STATUS CSCMETHOD CSC_IContainerInsertRange(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements);
 // Calls the underlying method to remove one or more contiguous elements from the container.
-CSC_STATUS CSCMETHOD CSC_IContainerRemoveRange(_Inout_ struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements);
+CSC_STATUS CSCMETHOD CSC_IContainerRemoveRange(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements);
 // Calls the underlying method to swap the contents of two elements of the container based on their indices.
-CSC_STATUS CSCMETHOD CSC_IContainerSwapValues(_Inout_ struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T firstIndex, _In_ CONST CSC_SIZE_T secondIndex);
+CSC_STATUS CSCMETHOD CSC_IContainerSwapValues(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T firstIndex, _In_ CONST CSC_SIZE_T secondIndex);
 
 // Calls the underlying method to access an element of the container in form of a CSC_PVOID pointing to the base address of the element.
-CSC_PVOID CSCMETHOD CSC_IContainerAccessElement(_In_ CONST struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T index);
+CSC_PVOID CSCMETHOD CSC_IContainerAccessElement(_In_ CONST CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T index);
 
 // Calls the underlying method to check whether the container is in a valid state of operation.
 // An invalid state can indicate a broken or uninitialized container, which needs to be repaired (if possible) or initialized.
-CSC_STATUS CSCMETHOD CSC_IContainerIsValid(_In_ CONST struct _CSC_IContainer* CONST pThis);
+CSC_STATUS CSCMETHOD CSC_IContainerIsValid(_In_ CONST CSC_IContainer* CONST pThis);
 // Calls the underlying method to check whether a container contains no elements.
-CSC_STATUS CSCMETHOD CSC_IContainerIsEmpty(_In_ CONST struct _CSC_IContainer* CONST pThis);
+CSC_STATUS CSCMETHOD CSC_IContainerIsEmpty(_In_ CONST CSC_IContainer* CONST pThis);
 // Calls the underlying method to check whether the elements contained by the container are containers themselves.
-CSC_STATUS CSCMETHOD CSC_IContainerIsElementContainer(_In_ CONST struct _CSC_IContainer* CONST pThis);
+CSC_STATUS CSCMETHOD CSC_IContainerIsElementContainer(_In_ CONST CSC_IContainer* CONST pThis);
 
 // Calls the underlying method to get the number of elements that the container currently stores.
-CSC_SIZE_T CSCMETHOD CSC_IContainerGetSize(_In_ CONST struct _CSC_IContainer* CONST pThis);
+CSC_SIZE_T CSCMETHOD CSC_IContainerGetSize(_In_ CONST CSC_IContainer* CONST pThis);
 // Calls the underlying method to get the size in bytes that a container element consumes.
-CSC_SIZE_T CSCMETHOD CSC_IContainerGetElementSize(_In_ CONST struct _CSC_IContainer* CONST pThis);
+CSC_SIZE_T CSCMETHOD CSC_IContainerGetElementSize(_In_ CONST CSC_IContainer* CONST pThis);
 // Calls the underlying method to determine the maximum amount of elements the container can store with the given element size.
-CSC_SIZE_T CSCMETHOD CSC_IContainerGetMaxElements(_In_ CONST struct _CSC_IContainer* CONST pThis);
+CSC_SIZE_T CSCMETHOD CSC_IContainerGetMaxElements(_In_ CONST CSC_IContainer* CONST pThis);
 // Calls the underlying method to retrieve the allocator that the container uses for memory management.
-CSC_IAllocator* CSCMETHOD CSC_IContainerGetIAllocator(_In_ CONST struct _CSC_IContainer* CONST pThis);
+CSC_IAllocator* CSCMETHOD CSC_IContainerGetIAllocator(_In_ CONST CSC_IContainer* CONST pThis);
 
-#endif CSC_I_CONTAINER
+#endif

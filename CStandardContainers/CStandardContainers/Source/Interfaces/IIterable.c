@@ -1,6 +1,6 @@
 #include "IIterable.h"
 
-CSC_STATUS CSCMETHOD CSC_IIterableRegisterIterator(_Inout_ struct _CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator)
+CSC_STATUS CSCMETHOD CSC_IIterableRegisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator)
 {
 	if (!pIIterator || !pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pRegisterIterator)
 	{
@@ -12,7 +12,7 @@ CSC_STATUS CSCMETHOD CSC_IIterableRegisterIterator(_Inout_ struct _CSC_IIterable
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IIterableUnregisterIterator(_Inout_ struct _CSC_IIterable* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IIterableUnregisterIterator(_Inout_ CSC_IIterable* CONST pThis)
 {
 	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pUnregisterIterator)
 	{
@@ -25,7 +25,7 @@ CSC_STATUS CSCMETHOD CSC_IIterableUnregisterIterator(_Inout_ struct _CSC_IIterab
 }
 
 
-CSC_PVOID CSCMETHOD CSC_IIterableFirstElement(_In_ CONST struct _CSC_IIterable* CONST pThis)
+CSC_PVOID CSCMETHOD CSC_IIterableFirstElement(_In_ CONST CSC_IIterable* CONST pThis)
 {
 	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pFirstElement)
 	{
@@ -37,7 +37,7 @@ CSC_PVOID CSCMETHOD CSC_IIterableFirstElement(_In_ CONST struct _CSC_IIterable* 
 	}
 }
 
-CSC_PVOID CSCMETHOD CSC_IIterableNextElement(_In_ CONST struct _CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement)
+CSC_PVOID CSCMETHOD CSC_IIterableNextElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement)
 {
 	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pNextElement)
 	{
@@ -49,7 +49,7 @@ CSC_PVOID CSCMETHOD CSC_IIterableNextElement(_In_ CONST struct _CSC_IIterable* C
 	}
 }
 
-CSC_PVOID CSCMETHOD CSC_IIterableLastElement(_In_ CONST struct _CSC_IIterable* CONST pThis)
+CSC_PVOID CSCMETHOD CSC_IIterableLastElement(_In_ CONST CSC_IIterable* CONST pThis)
 {
 	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pLastElement)
 	{
@@ -61,7 +61,7 @@ CSC_PVOID CSCMETHOD CSC_IIterableLastElement(_In_ CONST struct _CSC_IIterable* C
 	}
 }
 
-CSC_PVOID CSCMETHOD CSC_IIterablePreviousElement(_In_ CONST struct _CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement)
+CSC_PVOID CSCMETHOD CSC_IIterablePreviousElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement)
 {
 	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pPreviousElement)
 	{
@@ -74,7 +74,7 @@ CSC_PVOID CSCMETHOD CSC_IIterablePreviousElement(_In_ CONST struct _CSC_IIterabl
 }
 
 
-CSC_PVOID CSCMETHOD CSC_IIterableGetElementAt(_In_ CONST struct _CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_opt_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_PVOID pCurrentElement)
+CSC_PVOID CSCMETHOD CSC_IIterableGetElementAt(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_opt_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_PVOID pCurrentElement)
 {
 	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pGetElementAt)
 	{
@@ -86,7 +86,7 @@ CSC_PVOID CSCMETHOD CSC_IIterableGetElementAt(_In_ CONST struct _CSC_IIterable* 
 	}
 }
 
-CSC_SIZE_T CSCMETHOD CSC_IIterableGetElementCount(_In_ CONST struct _CSC_IIterable* CONST pThis)
+CSC_SIZE_T CSCMETHOD CSC_IIterableGetElementCount(_In_ CONST CSC_IIterable* CONST pThis)
 {
 	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pLastElement)
 	{

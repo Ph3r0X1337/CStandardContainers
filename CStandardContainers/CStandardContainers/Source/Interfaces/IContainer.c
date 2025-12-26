@@ -1,6 +1,6 @@
 #include "IContainer.h"
 
-CSC_STATUS CSCMETHOD CSC_IContainerInitialize(_Out_ struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator)
+CSC_STATUS CSCMETHOD CSC_IContainerInitialize(_Out_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator)
 {
 	if (!elementSize || !pIAllocator || !pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pInitialize)
 	{
@@ -12,7 +12,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerInitialize(_Out_ struct _CSC_IContainer* CONS
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IContainerErase(_Inout_ struct _CSC_IContainer* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IContainerErase(_Inout_ CSC_IContainer* CONST pThis)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pErase)
 	{
@@ -24,7 +24,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerErase(_Inout_ struct _CSC_IContainer* CONST p
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IContainerDestroy(_Inout_ struct _CSC_IContainer* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IContainerDestroy(_Inout_ CSC_IContainer* CONST pThis)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pDestroy)
 	{
@@ -37,7 +37,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerDestroy(_Inout_ struct _CSC_IContainer* CONST
 }
 
 
-CSC_STATUS CSCMETHOD CSC_IContainerCopy(_Inout_ struct _CSC_IContainer* CONST pThis, _In_ CONST struct _CSC_IContainer* CONST pOther)
+CSC_STATUS CSCMETHOD CSC_IContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST struct _CSC_IContainer* CONST pOther)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pCopy || !pOther || pOther->pIContainerVirtualTable != pThis->pIContainerVirtualTable)
 	{
@@ -49,7 +49,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerCopy(_Inout_ struct _CSC_IContainer* CONST pT
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IContainerMove(_Inout_ struct _CSC_IContainer* CONST pThis, _Inout_ struct _CSC_IContainer* CONST pOther)
+CSC_STATUS CSCMETHOD CSC_IContainerMove(_Inout_ CSC_IContainer* CONST pThis, _Inout_ struct _CSC_IContainer* CONST pOther)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pMove || !pOther || pOther->pIContainerVirtualTable != pThis->pIContainerVirtualTable)
 	{
@@ -62,7 +62,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerMove(_Inout_ struct _CSC_IContainer* CONST pT
 }
 
 
-CSC_STATUS CSCMETHOD CSC_IContainerInsertRange(_Inout_ struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements)
+CSC_STATUS CSCMETHOD CSC_IContainerInsertRange(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements)
 {
 	if (!numOfElements || !pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pInsertRange)
 	{
@@ -74,7 +74,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerInsertRange(_Inout_ struct _CSC_IContainer* C
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IContainerRemoveRange(_Inout_ struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements)
+CSC_STATUS CSCMETHOD CSC_IContainerRemoveRange(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements)
 {
 	if (!numOfElements || !pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pRemoveRange)
 	{
@@ -86,7 +86,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerRemoveRange(_Inout_ struct _CSC_IContainer* C
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IContainerSwapValues(_Inout_ struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T firstIndex, _In_ CONST CSC_SIZE_T secondIndex)
+CSC_STATUS CSCMETHOD CSC_IContainerSwapValues(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T firstIndex, _In_ CONST CSC_SIZE_T secondIndex)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pSwapValues)
 	{
@@ -99,7 +99,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerSwapValues(_Inout_ struct _CSC_IContainer* CO
 }
 
 
-CSC_PVOID CSCMETHOD CSC_IContainerAccessElement(_In_ CONST struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T index)
+CSC_PVOID CSCMETHOD CSC_IContainerAccessElement(_In_ CONST CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T index)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pAccessElement)
 	{
@@ -112,7 +112,7 @@ CSC_PVOID CSCMETHOD CSC_IContainerAccessElement(_In_ CONST struct _CSC_IContaine
 }
 
 
-CSC_STATUS CSCMETHOD CSC_IContainerIsValid(_In_ CONST struct _CSC_IContainer* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IContainerIsValid(_In_ CONST CSC_IContainer* CONST pThis)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pIsValid)
 	{
@@ -124,7 +124,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerIsValid(_In_ CONST struct _CSC_IContainer* CO
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IContainerIsEmpty(_In_ CONST struct _CSC_IContainer* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IContainerIsEmpty(_In_ CONST CSC_IContainer* CONST pThis)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pIsEmpty)
 	{
@@ -136,7 +136,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerIsEmpty(_In_ CONST struct _CSC_IContainer* CO
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IContainerIsElementContainer(_In_ CONST struct _CSC_IContainer* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IContainerIsElementContainer(_In_ CONST CSC_IContainer* CONST pThis)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pIsElementContainer)
 	{
@@ -149,7 +149,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerIsElementContainer(_In_ CONST struct _CSC_ICo
 }
 
 
-CSC_SIZE_T CSCMETHOD CSC_IContainerGetSize(_In_ CONST struct _CSC_IContainer* CONST pThis)
+CSC_SIZE_T CSCMETHOD CSC_IContainerGetSize(_In_ CONST CSC_IContainer* CONST pThis)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pGetSize)
 	{
@@ -161,7 +161,7 @@ CSC_SIZE_T CSCMETHOD CSC_IContainerGetSize(_In_ CONST struct _CSC_IContainer* CO
 	}
 }
 
-CSC_SIZE_T CSCMETHOD CSC_IContainerGetElementSize(_In_ CONST struct _CSC_IContainer* CONST pThis)
+CSC_SIZE_T CSCMETHOD CSC_IContainerGetElementSize(_In_ CONST CSC_IContainer* CONST pThis)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pGetElementSize)
 	{
@@ -173,7 +173,7 @@ CSC_SIZE_T CSCMETHOD CSC_IContainerGetElementSize(_In_ CONST struct _CSC_IContai
 	}
 }
 
-CSC_SIZE_T CSCMETHOD CSC_IContainerGetMaxElements(_In_ CONST struct _CSC_IContainer* CONST pThis)
+CSC_SIZE_T CSCMETHOD CSC_IContainerGetMaxElements(_In_ CONST CSC_IContainer* CONST pThis)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pGetMaxElements)
 	{
@@ -185,7 +185,7 @@ CSC_SIZE_T CSCMETHOD CSC_IContainerGetMaxElements(_In_ CONST struct _CSC_IContai
 	}
 }
 
-CSC_IAllocator* CSCMETHOD CSC_IContainerGetIAllocator(_In_ CONST struct _CSC_IContainer* CONST pThis)
+CSC_IAllocator* CSCMETHOD CSC_IContainerGetIAllocator(_In_ CONST CSC_IContainer* CONST pThis)
 {
 	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pGetIAllocator)
 	{

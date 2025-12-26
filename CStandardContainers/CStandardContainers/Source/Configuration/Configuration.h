@@ -28,8 +28,8 @@ Inactive configurations have their #define macro commented out.
 
 // Define macros for the configurations available.
 // Only one configuration can be active at a time.
-#define CSC_CONFIG_DEFAULT
-//#define CSC_CONFIG_WINDOWS_NATIVE
+//#define CSC_CONFIG_DEFAULT
+#define CSC_CONFIG_WINDOWS_NATIVE
 
 // Beginning of the default configuration.
 // Can be used as a template to implement custom configurations.
@@ -58,18 +58,24 @@ Inactive configurations have their #define macro commented out.
 #if CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_8BIT
 typedef unsigned char CSC_UINT;
 typedef signed char CSC_INT;
-#elif CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_16BIT
+#else
+#if CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_16BIT
 typedef unsigned short CSC_UINT;
 typedef signed short CSC_INT;
-#elif CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_32BIT
+#else
+#if CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_32BIT
 typedef unsigned long CSC_UINT;
 typedef signed long CSC_INT;
-#elif CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_64BIT
+#else
+#if CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_64BIT
 typedef unsigned long long CSC_UINT;
 typedef signed long long CSC_INT;
 #else
 typedef unsigned long long CSC_UINT;
 typedef signed long long CSC_INT;
+#endif
+#endif
+#endif
 #endif
 
 // Default configuration assumes a Von-Neumann architecture with a 64-Bit address bus.
@@ -78,12 +84,16 @@ typedef signed long long CSC_INT;
 // Decision logic for assigning the integer type that can be used to hold code pointers.
 #if CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_16BIT
 typedef unsigned short CSC_CODE_POINTER_TYPE;
-#elif CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_32BIT
+#else
+#if CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_32BIT
 typedef unsigned long CSC_CODE_POINTER_TYPE;
-#elif CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_64BIT
+#else
+#if CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_64BIT
 typedef unsigned long long CSC_CODE_POINTER_TYPE;
 #else
 typedef unsigned long long CSC_CODE_POINTER_TYPE;
+#endif
+#endif
 #endif
 
 // Default configuration assumes a Von-Neumann architecture with a 64-Bit address bus.
@@ -92,12 +102,16 @@ typedef unsigned long long CSC_CODE_POINTER_TYPE;
 // Decision logic for assigning the integer type that can be used to hold data pointers.
 #if CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_16BIT
 typedef unsigned short CSC_DATA_POINTER_TYPE;
-#elif CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_32BIT
+#else
+#if CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_32BIT
 typedef unsigned long CSC_DATA_POINTER_TYPE;
-#elif CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_64BIT
+#else
+#if CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_64BIT
 typedef unsigned long long CSC_DATA_POINTER_TYPE;
 #else
 typedef unsigned long long CSC_DATA_POINTER_TYPE;
+#endif
+#endif
 #endif
 
 // Definition of the unsigned integer type that has the same width as a data pointer.
@@ -123,24 +137,24 @@ typedef signed long CSC_STATUS;
 typedef unsigned char CSC_BOOLEAN;
 
 // Definition of various status codes for the CSC_STATUS type.
-#define CSC_STATUS_SUCCESS (CSC_STATUS)0
-#define CSC_STATUS_GENERAL_FAILURE (CSC_STATUS)-1
-#define CSC_STATUS_INVALID_PARAMETER (CSC_STATUS)-2
-#define CSC_STATUS_INVALID_HANDLE (CSC_STATUS)-3
-#define CSC_STATUS_MEMORY_NOT_ALLOCATED (CSC_STATUS)-4
+#define CSC_STATUS_SUCCESS 0l
+#define CSC_STATUS_GENERAL_FAILURE -1l
+#define CSC_STATUS_INVALID_PARAMETER -2l
+#define CSC_STATUS_INVALID_HANDLE -3l
+#define CSC_STATUS_MEMORY_NOT_ALLOCATED -4l
 
 // Definition of the null pointer.
 #define NULL (CSC_PVOID)0
 
 // Definition of the values true and false for the CSC_BOOLEAN type.
-#define FALSE (CSC_BOOLEAN)0
-#define TRUE (CSC_BOOLEAN)1
+#define FALSE 0
+#define TRUE 1
 
 // Definitions used to adjust the behaviour of the MemoryUtils.
 #define CSC_MEMORY_UTILS_USE_RECURSION FALSE
 #define CSC_MEMORY_UTILS_USE_SIZE_BASED_OPTIMIZATION FALSE
 
-#endif CSC_CONFIG_DEFAULT
+#endif
 
 
 // Beginning of the Windows native configuration.
@@ -199,7 +213,7 @@ typedef BOOLEAN CSC_BOOLEAN;
 #define CSC_MEMORY_UTILS_USE_RECURSION FALSE
 #define CSC_MEMORY_UTILS_USE_SIZE_BASED_OPTIMIZATION TRUE
 
-#endif CSC_CONFIG_WINDOWS_NATIVE
+#endif
 
-#endif CSC_CONFIGURATION
+#endif
 
