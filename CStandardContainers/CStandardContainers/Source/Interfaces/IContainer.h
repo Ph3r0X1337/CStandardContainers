@@ -26,8 +26,9 @@ The initialization method is called through the virtual table pointer, which is 
 #define CSC_CONTAINER_INVALID_LENGTH CSC_STRING_INVALID_LENGTH
 #define CSC_CONTAINER_INVALID_INDEX CSC_CONTAINER_INVALID_LENGTH
 
-// Predecleration of the CSC_IContainer type to be able to create the function pointer types for the methods that the interface implements.
+// Predecleration of the CSC_IContainer type and it's virtual table to be able to create the function pointer types for the methods that the interface implements.
 struct _CSC_IContainer;
+struct _CSC_IContainerVirtualTable;
 
 // Type definitions of the function pointer types of the IContainer interfaces methods, which need to be implemented by types that utilize the interface.
 typedef CSC_STATUS(CSCMETHOD* CSC_P_I_CONTAINER_INIT)(_Out_ struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator);
@@ -51,6 +52,7 @@ typedef CSC_SIZE_T(CSCMETHOD* CSC_P_I_CONTAINER_GET_SIZE)(_In_ CONST struct _CSC
 typedef CSC_SIZE_T(CSCMETHOD* CSC_P_I_CONTAINER_GET_ELEMENT_SIZE)(_In_ CONST struct _CSC_IContainer* CONST pThis);
 typedef CSC_SIZE_T(CSCMETHOD* CSC_P_I_CONTAINER_GET_MAX_ELEMENTS)(_In_ CONST struct _CSC_IContainer* CONST pThis);
 typedef CSC_IAllocator*(CSCMETHOD* CSC_P_I_CONTAINER_GET_I_ALLCATOR)(_In_ CONST struct _CSC_IContainer* CONST pThis);
+typedef struct _CSC_IContainerVirtualTable* (CSCMETHOD* CSC_P_I_CONTAINER_GET_NESTED_CONTAINER_VIRTUAL_TABLE)(_In_ CONST struct _CSC_IContainer* CONST pThis);
 
 // Definition of the virtual table layout of the IContainer type.
 typedef struct _CSC_IContainerVirtualTable
@@ -71,6 +73,7 @@ typedef struct _CSC_IContainerVirtualTable
 	CSC_P_I_CONTAINER_GET_ELEMENT_SIZE pGetElementSize;
 	CSC_P_I_CONTAINER_GET_MAX_ELEMENTS pGetMaxElements;
 	CSC_P_I_CONTAINER_GET_I_ALLCATOR pGetIAllocator;
+	CSC_P_I_CONTAINER_GET_NESTED_CONTAINER_VIRTUAL_TABLE pGetNestedContainerVTable;
 } CSC_IContainerVirtualTable;
 
 // Definition of the IContainer type, contains a pointer to the virtual table of the object that implements the interfaces methods.
@@ -125,5 +128,8 @@ CSC_SIZE_T CSCMETHOD CSC_IContainerGetElementSize(_In_ CONST CSC_IContainer* CON
 CSC_SIZE_T CSCMETHOD CSC_IContainerGetMaxElements(_In_ CONST CSC_IContainer* CONST pThis);
 // Calls the underlying method to retrieve the allocator that the container uses for memory management.
 CSC_IAllocator* CSCMETHOD CSC_IContainerGetIAllocator(_In_ CONST CSC_IContainer* CONST pThis);
+// Calls the underlying method to retrieve the nested container's virtual table, if one exists.
+// Will return a nullptr if the virtual table does not exist or if an error occurred while calling the method.
+CSC_IContainerVirtualTable* CSCMETHOD CSC_IContainerGetNestedContainerVTable(_In_ CONST struct _CSC_IContainer* CONST pThis);
 
 #endif

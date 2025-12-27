@@ -39,6 +39,9 @@
     <ClInclude Include="Source\Utils\StringUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Containers\DynamicArray\DynamicArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Interfaces\IBaseInterface.c">

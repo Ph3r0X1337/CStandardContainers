@@ -196,3 +196,15 @@ CSC_IAllocator* CSCMETHOD CSC_IContainerGetIAllocator(_In_ CONST CSC_IContainer*
 		return pThis->pIContainerVirtualTable->pGetIAllocator(pThis);
 	}
 }
+
+CSC_IContainerVirtualTable* CSCMETHOD CSC_IContainerGetNestedContainerVTable(_In_ CONST struct _CSC_IContainer* CONST pThis)
+{
+	if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pGetNestedContainerVTable)
+	{
+		return (CSC_IContainerVirtualTable*)NULL;
+	}
+	else
+	{
+		return pThis->pIContainerVirtualTable->pGetNestedContainerVTable(pThis);
+	}
+}
