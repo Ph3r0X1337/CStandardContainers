@@ -10,6 +10,10 @@ Furthermore, implemented allocators are expected to allocate memory on at least 
 The default configuration currently assumes a 64-Bit Von-Neumann architecture with a data- and address-width of both 64-Bit.
 Configurations are activated through a #define preprocessor macro. WARNING: Only one configuration should be active!
 Inactive configurations have their #define macro commented out.
+The CSC library is mostly written C89/ANSI-C, however it makes use of single line comments which are not backed by this standard.
+Despite that, these comments can simply be converted to multi-line comments, which are backed by the standard.
+The C89/ANSI-C standard does not define 64-Bit types like long long, hence using this library in 64-Bit environment automatically requires the C99 standard.
+Same principle applies to taking advantage of size based optimization in the MemoryUtils, however this feature can be disabled in the configuration.
 */
 
 // Definition of the various data bus widths supported by the library.
@@ -127,6 +131,7 @@ typedef unsigned short CSC_WCHAR;
 // Definition of fixed-size unsigned integer types corresponding to assembly instructions (x86-Style).
 typedef unsigned char CSC_BYTE;
 typedef unsigned short CSC_WORD;
+// Definition of the CSC_DWORD and CSC_QWORD types is optional, only define them if your architecture/compiler supports them.
 typedef unsigned long CSC_DWORD;
 typedef unsigned long long CSC_QWORD;
 
