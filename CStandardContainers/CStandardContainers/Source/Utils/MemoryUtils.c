@@ -126,6 +126,8 @@ typedef enum _CSC_SizeType
 #endif
 } CSC_SizeType;
 
+#if CSC_MEMORY_UTILS_USE_RECURSION == TRUE
+
 static CSC_STATUS CSCAPI CSC_MemoryUtilsMemMove(_When_(return == CSC_STATUS_SUCCESS, _Out_) CONST CSC_PVOID pDst, _In_ CONST CSC_PCVOID pSrc, _In_ CONST CSC_SIZE_T size, _In_ CONST CSC_SizeType sizeType)
 {
 	CSC_SIZE_T elementSize, iterator, prefixLength, suffixLength, chunkLength;
@@ -292,6 +294,8 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemMove(_When_(return == CSC_STATUS_SUCC
 	return CSC_STATUS_SUCCESS;
 }
 
+#else
+
 static CSC_STATUS CSCAPI CSC_MemoryUtilsMemMoveNonRecursive(_When_(return == CSC_STATUS_SUCCESS, _Out_) CONST CSC_PVOID pDst, _In_ CONST CSC_PCVOID pSrc, _In_ CONST CSC_SIZE_T size, _In_ CONST CSC_SizeType sizeType)
 {
 	CSC_SIZE_T elementSize, iterator, prefixLength, suffixLength, chunkLength;
@@ -452,6 +456,10 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemMoveNonRecursive(_When_(return == CSC
 	return CSC_STATUS_SUCCESS;
 }
 
+#endif
+
+#if CSC_MEMORY_UTILS_USE_RECURSION == TRUE
+
 static CSC_STATUS CSCAPI CSC_MemoryUtilsMemSet(_When_(return == CSC_STATUS_SUCCESS, _Out_) CONST CSC_PVOID pDst, _In_ CONST CSC_BYTE value, _In_ CONST CSC_SIZE_T size, _In_ CONST CSC_SizeType sizeType)
 {
 	CSC_SIZE_T elementSize, iterator, prefixLength, suffixLength, chunkLength;
@@ -571,6 +579,8 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemSet(_When_(return == CSC_STATUS_SUCCE
 	return CSC_STATUS_SUCCESS;
 }
 
+#else
+
 static CSC_STATUS CSCAPI CSC_MemoryUtilsMemSetNonRecursive(_When_(return == CSC_STATUS_SUCCESS, _Out_) CONST CSC_PVOID pDst, _In_ CONST CSC_BYTE value, _In_ CONST CSC_SIZE_T size, _In_ CONST CSC_SizeType sizeType)
 {
 	CSC_SIZE_T elementSize, iterator, prefixLength, suffixLength, chunkLength;
@@ -684,6 +694,10 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemSetNonRecursive(_When_(return == CSC_
 
 	return CSC_STATUS_SUCCESS;
 }
+
+#endif
+
+#if CSC_MEMORY_UTILS_USE_RECURSION == TRUE
 
 static CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemoryRecursive(_In_ CONST CSC_PCVOID pFirst, _In_ CONST CSC_PCVOID pSecond, _In_ CONST CSC_SIZE_T size, _In_ CONST CSC_SizeType sizeType)
 {
@@ -835,6 +849,8 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemoryRecursive(_In_ CONST CSC_PC
 	return CSC_STATUS_SUCCESS;
 }
 
+#else
+
 static CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemoryNonRecursive(_In_ CONST CSC_PCVOID pFirst, _In_ CONST CSC_PCVOID pSecond, _In_ CONST CSC_SIZE_T size, _In_ CONST CSC_SizeType sizeType)
 {
 	CSC_SIZE_T elementSize, iterator, prefixLength, suffixLength, chunkLength;
@@ -978,6 +994,8 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemoryNonRecursive(_In_ CONST CSC
 
 	return CSC_STATUS_SUCCESS;
 }
+
+#endif
 
 #endif
 
