@@ -84,4 +84,4 @@ CSC_IIterable* CSCMETHOD CSC_DynamicArrayGetIIterable(_In_ CONST CSC_DynamicArra
 CSC_IAllocator* CSCMETHOD CSC_DynamicArrayGetIAllocator(_In_ CONST CSC_DynamicArray* CONST pThis);
 CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayGetNestedContainerVTable(_In_ CONST CSC_DynamicArray* CONST pThis);
 
-#endif CSC_DYNAMIC_ARRAY
+#endif
