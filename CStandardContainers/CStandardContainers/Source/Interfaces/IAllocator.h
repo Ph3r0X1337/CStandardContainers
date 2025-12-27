@@ -7,6 +7,7 @@ The IAllocator interface must be implemented by allocators that are supposed to 
 Most objects in the CSC library require an allocator, which will call into the generic methods of the interface.
 Hence all of the methods must be implemented, especially the AllocZero method, which is almost exclusively used for internal allocations.
 If such a primitive does not exist for a given allocator, it can be easily implemented through combining a basic allocation primitive with the MemoryUtilsZeroMemory function.
+Implemented allocators are expected to allocate memory on at least 16-Bit alignment. 
 */
 
 // Include the current configuration of the library containing various type definitions and other things.

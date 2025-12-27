@@ -5,6 +5,8 @@
 Description:
 The Configuration.h file contains the main configuration used by the library to adjust to the underlying system/architecture.
 It contains a default configuration which can be copied and adjusted to implement a custom configuration.
+The CSC library requires an address width for code and data pointers of at least 16 bits, hence at least access two operations on 16-Bit operands is required.
+Furthermore, implemented allocators are expected to allocate memory on at least 16-Bit alignment.
 The default configuration currently assumes a 64-Bit Von-Neumann architecture with a data- and address-width of both 64-Bit.
 Configurations are activated through a #define preprocessor macro. WARNING: Only one configuration should be active!
 Inactive configurations have their #define macro commented out.
@@ -28,8 +30,8 @@ Inactive configurations have their #define macro commented out.
 
 // Define macros for the configurations available.
 // Only one configuration can be active at a time.
-//#define CSC_CONFIG_DEFAULT
-#define CSC_CONFIG_WINDOWS_NATIVE
+#define CSC_CONFIG_DEFAULT
+//#define CSC_CONFIG_WINDOWS_NATIVE
 
 // Beginning of the default configuration.
 // Can be used as a template to implement custom configurations.
@@ -151,6 +153,7 @@ typedef unsigned char CSC_BOOLEAN;
 #define TRUE 1
 
 // Definitions used to adjust the behaviour of the MemoryUtils.
+#define CSC_MEMORY_UTILS_USE_UNALIGNED_ACCESS FALSE
 #define CSC_MEMORY_UTILS_USE_RECURSION FALSE
 #define CSC_MEMORY_UTILS_USE_SIZE_BASED_OPTIMIZATION FALSE
 
@@ -210,6 +213,7 @@ typedef BOOLEAN CSC_BOOLEAN;
 #define CSC_STATUS_INVALID_HANDLE STATUS_INVALID_HANDLE
 #define CSC_STATUS_MEMORY_NOT_ALLOCATED STATUS_MEMORY_NOT_ALLOCATED
 
+#define CSC_MEMORY_UTILS_USE_UNALIGNED_ACCESS TRUE
 #define CSC_MEMORY_UTILS_USE_RECURSION FALSE
 #define CSC_MEMORY_UTILS_USE_SIZE_BASED_OPTIMIZATION TRUE
 

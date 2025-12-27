@@ -192,6 +192,15 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemMove(_When_(return == CSC_STATUS_SUCC
 		return CSC_MemoryUtilsMemMove(pDst, pSrc, size, smallerSizeType);
 	}
 
+#if CSC_MEMORY_UTILS_USE_UNALIGNED_ACCESS == FALSE
+
+	if ((CSC_DATA_POINTER_TYPE)pDst % elementSize != (CSC_DATA_POINTER_TYPE)pSrc % elementSize)
+	{
+		return CSC_MemoryUtilsMemMove(pDst, pSrc, size, smallerSizeType);
+	}
+
+#endif
+
 	prefixLength = (CSC_SIZE_T)((reverseDir) ? ((CSC_DATA_POINTER_TYPE)pDst + size) : (elementSize - ((CSC_DATA_POINTER_TYPE)pDst % elementSize))) % elementSize;
 	suffixLength = (size - prefixLength) % elementSize;
 	chunkLength = size - prefixLength - suffixLength;
@@ -342,6 +351,15 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemMoveNonRecursive(_When_(return == CSC
 	{
 		return CSC_MemoryUtilsMemMoveBasic(pDst, pSrc, size);
 	}
+
+#if CSC_MEMORY_UTILS_USE_UNALIGNED_ACCESS == FALSE
+
+	if ((CSC_DATA_POINTER_TYPE)pDst % elementSize != (CSC_DATA_POINTER_TYPE)pSrc % elementSize)
+	{
+		return CSC_MemoryUtilsMemMoveBasic(pDst, pSrc, size);
+	}
+
+#endif
 
 	prefixLength = (CSC_SIZE_T)((reverseDir) ? ((CSC_DATA_POINTER_TYPE)pDst + size) : (elementSize - ((CSC_DATA_POINTER_TYPE)pDst % elementSize))) % elementSize;
 	suffixLength = (size - prefixLength) % elementSize;
@@ -733,6 +751,15 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemoryRecursive(_In_ CONST CSC_PC
 		return CSC_MemoryUtilsCompareMemoryRecursive(pFirst, pSecond, size, smallerSizeType);
 	}
 
+#if CSC_MEMORY_UTILS_USE_UNALIGNED_ACCESS == FALSE
+
+	if ((CSC_DATA_POINTER_TYPE)pFirst % elementSize != (CSC_DATA_POINTER_TYPE)pSecond % elementSize)
+	{
+		return CSC_MemoryUtilsCompareMemoryRecursive(pFirst, pSecond, size, smallerSizeType);
+	}
+
+#endif
+
 	prefixLength = (elementSize - (CSC_SIZE_T)((CSC_DATA_POINTER_TYPE)pFirst % elementSize)) % elementSize;
 	suffixLength = (size - prefixLength) % elementSize;
 	chunkLength = size - prefixLength - suffixLength;
@@ -867,6 +894,15 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemoryNonRecursive(_In_ CONST CSC
 	{
 		return CSC_MemoryUtilsCompareMemoryBasic(pFirst, pSecond, size);
 	}
+
+#if CSC_MEMORY_UTILS_USE_UNALIGNED_ACCESS == FALSE
+
+	if ((CSC_DATA_POINTER_TYPE)pFirst % elementSize != (CSC_DATA_POINTER_TYPE)pSecond % elementSize)
+	{
+		return CSC_MemoryUtilsCompareMemoryBasic(pFirst, pSecond, size);
+	}
+
+#endif
 
 	prefixLength = (elementSize - (CSC_SIZE_T)((CSC_DATA_POINTER_TYPE)pFirst % elementSize)) % elementSize;
 	suffixLength = (size - prefixLength) % elementSize;
