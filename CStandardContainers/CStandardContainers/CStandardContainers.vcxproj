@@ -166,6 +166,7 @@
     <ClInclude Include="Source\Utils\StringUtils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Containers\DynamicArray\DynamicArray.c" />
     <ClCompile Include="Source\Interfaces\IAllocator.c" />
     <ClCompile Include="Source\Interfaces\IBaseInterface.c" />
     <ClCompile Include="Source\Interfaces\IContainer.c" />

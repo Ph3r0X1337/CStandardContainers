@@ -65,5 +65,8 @@
     <ClCompile Include="Source\Utils\StringUtils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Containers\DynamicArray\DynamicArray.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
