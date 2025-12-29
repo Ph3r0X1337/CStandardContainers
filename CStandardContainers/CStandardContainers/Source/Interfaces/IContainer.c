@@ -1,6 +1,6 @@
 #include "IContainer.h"
 
-CSC_STATUS CSCMETHOD CSC_IContainerInitialize(_Out_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator)
+CSC_STATUS CSCMETHOD CSC_IContainerInitialize(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator)
 {
 	if (!elementSize || !pIAllocator || !pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pInitialize)
 	{
