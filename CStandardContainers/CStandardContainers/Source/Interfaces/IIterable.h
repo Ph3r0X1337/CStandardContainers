@@ -27,6 +27,7 @@ typedef CSC_PVOID(CSCMETHOD* CSC_P_I_ITERABLE_PREVIOUS_ELEMENT)(_In_ CONST struc
 
 typedef CSC_PVOID(CSCMETHOD* CSC_P_I_ITERABLE_GET_ELEMENT_AT)(_In_ CONST struct _CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_opt_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_PVOID pCurrentElement);
 typedef CSC_SIZE_T(CSCMETHOD* CSC_P_I_ITERABLE_GET_ELEMENT_COUNT)(_In_ CONST struct _CSC_IIterable* CONST pThis);
+typedef CSC_SIZE_T(CSCMETHOD* CSC_P_I_ITERABLE_GET_ELEMENT_SIZE)(_In_ CONST struct _CSC_IIterable* CONST pThis);
 
 // Definition of the virtual table layout of the IIterable type.
 typedef struct _CSC_IIterableVirtualTable
@@ -39,6 +40,7 @@ typedef struct _CSC_IIterableVirtualTable
 	CSC_P_I_ITERABLE_PREVIOUS_ELEMENT pPreviousElement;
 	CSC_P_I_ITERABLE_GET_ELEMENT_AT pGetElementAt;
 	CSC_P_I_ITERABLE_GET_ELEMENT_COUNT pGetElementCount;
+	CSC_P_I_ITERABLE_GET_ELEMENT_SIZE pGetElementSize;
 } CSC_IIterableVirtualTable;
 
 // Definition of the IIterable type, contains a pointer to the virtual table of the object that implements the interfaces methods.
@@ -77,5 +79,8 @@ CSC_PVOID CSCMETHOD CSC_IIterableGetElementAt(_In_ CONST CSC_IIterable* CONST pT
 // Calls the underlying method on the IIterable to retrieve the element count of the IIterable object, typically is invoked by an IIterator object.
 // On success the element count of the IIterable is returned, otherwise CSC_ITERATOR_INVALID_LENGTH is returned.
 CSC_SIZE_T CSCMETHOD CSC_IIterableGetElementCount(_In_ CONST CSC_IIterable* CONST pThis);
+// Calls the underlying method on the IIterable to retrieve the element size of the elements held by the IIterable object, typically is invoked by an IIterator object.
+// On success the element size of the elements the IIterable is holding is returned, otherwise (CSC_SIZE_T)0 is returned.
+CSC_SIZE_T CSCMETHOD CSC_IIterableGetElementSize(_In_ CONST CSC_IIterable* CONST pThis);
 
 #endif

@@ -31,7 +31,8 @@ struct _CSC_IContainer;
 struct _CSC_IContainerVirtualTable;
 
 // Type definitions of the function pointer types of the IContainer interfaces methods, which need to be implemented by types that utilize the interface.
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_CONTAINER_INIT)(_Inout_ struct _CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator);
+typedef CSC_STATUS(CSCMETHOD* CSC_P_I_CONTAINER_INIT)(_Inout_ CONST CSC_PVOID pMemoryBaseAddress, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator);
+
 typedef CSC_STATUS(CSCMETHOD* CSC_P_I_CONTAINER_ERASE)(_Inout_ struct _CSC_IContainer* CONST pThis);
 typedef CSC_STATUS(CSCMETHOD* CSC_P_I_CONTAINER_DESTROY)(_Inout_ struct _CSC_IContainer* CONST pThis);
 
@@ -83,10 +84,11 @@ typedef struct _CSC_IContainer
 } CSC_IContainer;
 
 // Calls the underlying initialization routine to create the container containing a pure data type with the specified size.
-// The method is invoked directly through the virtual table by the invoking (outer) container.
+// The method is invoked directly through the virtual table by the invoking (outer) container, hence the base address of the memory is passed to be able to construct the object, as the IContainer member is not yet initialized.
 // It is used on element insertion prior to copying the inserted value, which is mandatory for insertion on nested containers.
 // Nested containers are initialized with the allocator of the invoking (outer) container.
-CSC_STATUS CSCMETHOD CSC_IContainerInitialize(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator);
+// CSC_STATUS CSCMETHOD CSC_IContainerInitialize(_Inout_ CONST CSC_PVOID pMemoryBaseAddress, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator);
+
 // Calls the underlying method to completely empty a container.
 // This does not mean that the object will free allocated resources, therefore the Destroy method should be invoked to destruct a container.
 CSC_STATUS CSCMETHOD CSC_IContainerErase(_Inout_ CSC_IContainer* CONST pThis);

@@ -88,12 +88,24 @@ CSC_PVOID CSCMETHOD CSC_IIterableGetElementAt(_In_ CONST CSC_IIterable* CONST pT
 
 CSC_SIZE_T CSCMETHOD CSC_IIterableGetElementCount(_In_ CONST CSC_IIterable* CONST pThis)
 {
-	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pLastElement)
+	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pGetElementCount)
 	{
 		return CSC_ITERATOR_INVALID_LENGTH;
 	}
 	else
 	{
-		return pThis->pIIterableVirtualTable->pLastElement(pThis);
+		return pThis->pIIterableVirtualTable->pGetElementCount(pThis);
+	}
+}
+
+CSC_SIZE_T CSCMETHOD CSC_IIterableGetElementSize(_In_ CONST CSC_IIterable* CONST pThis)
+{
+	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pGetElementSize)
+	{
+		return (CSC_SIZE_T)0;
+	}
+	else
+	{
+		return pThis->pIIterableVirtualTable->pGetElementSize(pThis);
 	}
 }
