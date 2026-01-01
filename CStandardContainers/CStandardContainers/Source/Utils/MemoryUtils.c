@@ -5,12 +5,12 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemMoveBasic(_When_(return == CSC_STATUS
 	CSC_SIZE_T iterator;
 	CSC_BOOLEAN reverseDir = ((CONST CSC_BYTE* CONST)pDst > (CONST CSC_BYTE* CONST)pSrc && (CONST CSC_BYTE* CONST)pDst < (CONST CSC_BYTE* CONST)pSrc + size) ? (CSC_BOOLEAN)TRUE : (CSC_BOOLEAN)FALSE;
 
-	if (!pDst || !pSrc || !size)
+	if (!pDst || !pSrc)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	if (pDst == pSrc)
+	if (pDst == pSrc || !size)
 	{
 		return CSC_STATUS_SUCCESS;
 	}
@@ -34,9 +34,14 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemSetBasic(_When_(return == CSC_STATUS_
 {
 	CSC_SIZE_T iterator;
 
-	if (!pDst || !size)
+	if (!pDst)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (!size)
+	{
+		return CSC_STATUS_SUCCESS;
 	}
 
 	for (iterator = (CSC_SIZE_T)0; iterator < size; ++iterator)
@@ -92,9 +97,14 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSetArrayValueBasic(_Out_ CONST CSC_PVOID pDst, 
 	CSC_STATUS status;
 	CSC_SIZE_T iterator;
 
-	if (!pDst || !pValue || !elementSize || !elementCount)
+	if (!pDst || !pValue || !elementSize)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (!elementCount)
+	{
+		return CSC_STATUS_SUCCESS;
 	}
 
 	for (iterator = (CSC_SIZE_T)0; iterator < elementCount; ++iterator)
@@ -138,12 +148,12 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemMove(_When_(return == CSC_STATUS_SUCC
 #endif
 	CSC_BOOLEAN reverseDir = ((CONST CSC_BYTE* CONST)pDst > (CONST CSC_BYTE* CONST)pSrc && (CONST CSC_BYTE* CONST)pDst < (CONST CSC_BYTE* CONST)pSrc + size) ? (CSC_BOOLEAN)TRUE : (CSC_BOOLEAN)FALSE;
 
-	if (!pDst || !pSrc || !size)
+	if (!pDst || !pSrc)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	if (pDst == pSrc)
+	if (pDst == pSrc || !size)
 	{
 		return CSC_STATUS_SUCCESS;
 	}
@@ -303,12 +313,12 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemMoveNonRecursive(_When_(return == CSC
 	CSC_PCVOID pChunkSrc;
 	CSC_BOOLEAN reverseDir = ((CONST CSC_BYTE* CONST)pDst > (CONST CSC_BYTE* CONST)pSrc && (CONST CSC_BYTE* CONST)pDst < (CONST CSC_BYTE* CONST)pSrc + size) ? (CSC_BOOLEAN)TRUE : (CSC_BOOLEAN)FALSE;
 
-	if (!pDst || !pSrc || !size)
+	if (!pDst || !pSrc)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	if (pDst == pSrc)
+	if (pDst == pSrc || !size)
 	{
 		return CSC_STATUS_SUCCESS;
 	}
@@ -475,9 +485,14 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemSet(_When_(return == CSC_STATUS_SUCCE
 #endif
 #endif
 
-	if (!pDst || !size)
+	if (!pDst)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (!size)
+	{
+		return CSC_STATUS_SUCCESS;
 	}
 
 	switch (sizeType)
@@ -595,9 +610,14 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsMemSetNonRecursive(_When_(return == CSC_
 #endif
 #endif
 
-	if (!pDst || !size)
+	if (!pDst)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (!size)
+	{
+		return CSC_STATUS_SUCCESS;
 	}
 
 	switch (sizeType)
@@ -1002,12 +1022,12 @@ static CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemoryNonRecursive(_In_ CONST CSC
 
 CSC_STATUS CSCAPI CSC_MemoryUtilsCopyMemory(_Out_ CONST CSC_PVOID pDst, _In_ CONST CSC_PCVOID pSrc, _In_ CONST CSC_SIZE_T size)
 {
-	if (!pDst || !pSrc || !size)
+	if (!pDst || !pSrc)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	if (pDst == pSrc)
+	if (pDst == pSrc || !size)
 	{
 		return CSC_STATUS_SUCCESS;
 	}
@@ -1049,9 +1069,14 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsCopyMemory(_Out_ CONST CSC_PVOID pDst, _In_ CON
 
 CSC_STATUS CSCAPI CSC_MemoryUtilsSetMemory(_Out_ CONST CSC_PVOID pDst, _In_ CONST CSC_BYTE value, _In_ CONST CSC_SIZE_T size)
 {
-	if (!pDst || !size)
+	if (!pDst)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (!size)
+	{
+		return CSC_STATUS_SUCCESS;
 	}
 
 #if CSC_MEMORY_UTILS_USE_SIZE_BASED_OPTIMIZATION == FALSE
@@ -1091,7 +1116,7 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSetMemory(_Out_ CONST CSC_PVOID pDst, _In_ CONS
 
 CSC_STATUS CSCAPI CSC_MemoryUtilsSetZeroMemory(_Out_ CONST CSC_PVOID pDst, _In_ CONST CSC_SIZE_T size)
 {
-	if (!pDst || !size)
+	if (!pDst)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
@@ -1106,9 +1131,14 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSetArrayValue(_Out_ CONST CSC_PVOID pDst, _In_ 
 	CSC_STATUS status;
 	CSC_SIZE_T iterator;
 
-	if (!pDst || !pValue || !elementSize || !elementCount)
+	if (!pDst || !pValue || !elementSize)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (!elementCount)
+	{
+		return CSC_STATUS_SUCCESS;
 	}
 
 	for (iterator = (CSC_SIZE_T)0; iterator < elementCount; ++iterator)
@@ -1175,12 +1205,12 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemory(_In_ CONST CSC_PCVOID pFirst, _In
 
 CSC_STATUS CSCAPI CSC_MemoryUtilsSwapValues(_Inout_ CONST CSC_PVOID pFirst, _Inout_ CONST CSC_PVOID pSecond, _In_ CONST CSC_SIZE_T size, _In_ CONST CSC_IAllocator* CONST pIAllocator)
 {
-	if (!pFirst || !pSecond || !size)
+	if (!pFirst || !pSecond)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	if (pFirst == pSecond)
+	if (pFirst == pSecond || !size)
 	{
 		return CSC_STATUS_SUCCESS;
 	}
@@ -1198,12 +1228,12 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSwapValuesHeap(_Inout_ CONST CSC_PVOID pFirst, 
 	CSC_STATUS status;
 	CSC_PVOID pBuffer = NULL;
 
-	if (!pFirst || !pSecond || !size || !pIAllocator)
+	if (!pFirst || !pSecond || !pIAllocator)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	if (pFirst == pSecond)
+	if (pFirst == pSecond || !size)
 	{
 		return CSC_STATUS_SUCCESS;
 	}
@@ -1247,12 +1277,12 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSwapValues256(_Inout_ CONST CSC_PVOID pFirst, _
 	CSC_BYTE buffer[(CSC_SIZE_T)0x100];
 	CSC_STATUS status;
 
-	if (!pFirst || !pSecond || !size || size > (CSC_SIZE_T)0x100)
+	if (!pFirst || !pSecond || size > (CSC_SIZE_T)0x100)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	if (pFirst == pSecond)
+	if (pFirst == pSecond || !size)
 	{
 		return CSC_STATUS_SUCCESS;
 	}
@@ -1280,12 +1310,12 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsMoveValue(_Out_ CONST CSC_PVOID pDst, _Inout_ C
 	CSC_PVOID pDeletionBase = pSrc;
 	CSC_SIZE_T deletionSize = size;
 
-	if (!pDst || !pSrc || !size)
+	if (!pDst || !pSrc)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	if (pDst == pSrc)
+	if (pDst == pSrc || !size)
 	{
 		return CSC_STATUS_SUCCESS;
 	}
