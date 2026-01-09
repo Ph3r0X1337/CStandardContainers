@@ -34,7 +34,6 @@ CSC_SIZE_T CSCAPI CSC_StringUtilsStrLenAnsiString(_In_ CONST CSC_CHAR* CONST pCS
 CSC_SIZE_T CSCAPI CSC_StringUtilsStrLenWideString(_In_ CONST CSC_WCHAR* CONST pCStr, _In_ CONST CSC_SIZE_T maxCodePoints, _In_ CONST CSC_BOOLEAN requireNullTerminator)
 {
 	CSC_SIZE_T iterator;
-	CSC_CodePointType currentCPT;
 	CONST CSC_WCHAR* pCurrCodePoint = pCStr;
 
 	if (!pCStr || maxCodePoints > CSC_MAXIMUM_STRING_LENGTH_WIDE_STRING)
@@ -73,7 +72,6 @@ CSC_SIZE_T CSCAPI CSC_StringUtilsStrLenWideString(_In_ CONST CSC_WCHAR* CONST pC
 CSC_SIZE_T CSCAPI CSC_StringUtilsStrWideCharLenWideString(_In_ CONST CSC_WCHAR* CONST pCStr, _In_ CONST CSC_SIZE_T maxChars, _In_ CONST CSC_BOOLEAN requireNullTerminator, _Out_opt_ CSC_SIZE_T* CONST pCodePointLength)
 {
 	CSC_SIZE_T iterator, codePointLength;
-	CSC_CodePointType currentCPT;
 
 	if (!pCStr || maxChars > CSC_MAXIMUM_STRING_CHARS_WIDE_STRING)
 	{
@@ -175,7 +173,7 @@ CSC_STATUS CSCAPI CSC_StringUtilsCompareWideString(_In_ CONST CSC_WCHAR* CONST p
 	charLengthFirst = CSC_StringUtilsStrWideCharLenWideString(pFirst, CSC_MAXIMUM_STRING_CHARS_WIDE_STRING, (CSC_BOOLEAN)TRUE, &codePointLengthFirst);
 	charLengthSecond = CSC_StringUtilsStrWideCharLenWideString(pSecond, CSC_MAXIMUM_STRING_CHARS_WIDE_STRING, (CSC_BOOLEAN)TRUE, &codePointLengthSecond);
 
-	if (charLengthFirst == CSC_STRING_INVALID_LENGTH || charLengthFirst == CSC_STRING_INVALID_LENGTH)
+	if (charLengthFirst == CSC_STRING_INVALID_LENGTH || charLengthSecond == CSC_STRING_INVALID_LENGTH)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}

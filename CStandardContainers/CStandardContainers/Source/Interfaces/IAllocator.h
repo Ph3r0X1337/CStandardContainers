@@ -25,7 +25,7 @@ typedef CSC_PVOID(CSCMETHOD* CSC_P_I_ALLOCATOR_ALLOC_ZERO)(_In_ CONST struct _CS
 
 typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ALLOCATOR_FREE)(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock);
 
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ALLOCATOR_IS_USABLE)(_In_ CONST struct _CSC_IAllocator* CONST pThis);
+typedef CSC_BOOLEAN(CSCMETHOD* CSC_P_I_ALLOCATOR_IS_USABLE)(_In_ CONST struct _CSC_IAllocator* CONST pThis);
 
 // Definition of the virtual table layout of the IAllocator type.
 typedef struct _CSC_IAllocatorVirtualTable

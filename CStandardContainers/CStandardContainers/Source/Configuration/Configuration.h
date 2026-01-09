@@ -34,8 +34,8 @@ Same principle applies to taking advantage of size based optimization in the Mem
 
 // Define macros for the configurations available.
 // Only one configuration can be active at a time.
-#define CSC_CONFIG_DEFAULT
-//#define CSC_CONFIG_WINDOWS_NATIVE
+//#define CSC_CONFIG_DEFAULT
+#define CSC_CONFIG_WINDOWS_NATIVE
 
 // Beginning of the default configuration.
 // Can be used as a template to implement custom configurations.

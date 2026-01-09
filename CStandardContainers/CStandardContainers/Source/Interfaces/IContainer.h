@@ -31,7 +31,7 @@ struct _CSC_IContainer;
 struct _CSC_IContainerVirtualTable;
 
 // Type definitions of the function pointer types of the IContainer interfaces methods, which need to be implemented by types that utilize the interface.
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_CONTAINER_INIT)(_Inout_ CONST CSC_PVOID pMemoryBaseAddress, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator);
+typedef CSC_STATUS(CSCMETHOD* CSC_P_I_CONTAINER_INIT)(_Out_ CONST CSC_PVOID pMemoryBaseAddress, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_IAllocator* CONST pIAllocator);
 
 typedef CSC_STATUS(CSCMETHOD* CSC_P_I_CONTAINER_ERASE)(_Inout_ struct _CSC_IContainer* CONST pThis);
 typedef CSC_STATUS(CSCMETHOD* CSC_P_I_CONTAINER_DESTROY)(_Inout_ struct _CSC_IContainer* CONST pThis);

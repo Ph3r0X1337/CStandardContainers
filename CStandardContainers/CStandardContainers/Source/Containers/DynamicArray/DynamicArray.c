@@ -26,7 +26,7 @@ typedef struct _CSC_DynamicArrayVirtualTable
 
 static CSC_PCVOID CSCMETHOD CSC_DynamicArrayIBaseInterfaceGetInterface(_In_ CONST CSC_IBaseInterface* CONST pThis, _In_ CONST EBaseInterfaceType interfaceType);
 
-static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerInitialize(_Inout_ CONST CSC_PVOID pMemoryBaseAddress, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator);
+static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerInitialize(_Out_ CONST CSC_PVOID pMemoryBaseAddress, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_IAllocator* CONST pIAllocator);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerErase(_Inout_ CSC_IContainer* CONST pThis);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerDestroy(_Inout_ CSC_IContainer* CONST pThis);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST struct _CSC_IContainer* CONST pOther);
@@ -92,9 +92,10 @@ static CONST CSC_DynamicArrayVirtualTable g_dynamicArrayVirtualTable =
 };
 
 
-static CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRangeImpl(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements);
-static CSC_STATUS CSCMETHOD CSC_DynamicArrayFillImpl(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pValue);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pDefaultValue, _In_ CONST CSC_BOOLEAN reserve, _In_ CONST CSC_BOOLEAN shrink);
+static CSC_STATUS CSCMETHOD CSC_DynamicArrayPopImpl(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue, _In_ CONST CSC_BOOLEAN shrink, _In_ CONST CSC_BOOLEAN front);
+static CSC_STATUS CSCMETHOD CSC_DynamicArrayFillImpl(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pValue);
+static CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRangeImpl(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayRemoveRangeImpl(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_BOOLEAN shrink);
 
 
@@ -270,9 +271,9 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayInitialize(_Out_ CSC_DynamicArray* CONST pT
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	pThis->baseInterface.pIBaseInterfaceVirtualTable = &g_dynamicArrayVirtualTable.baseInterfaceVTable;
-	pThis->containerInterface.pIContainerVirtualTable = &g_dynamicArrayVirtualTable.containerInterfaceVTable;
-	pThis->iterableInterface.pIIterableVirtualTable = &g_dynamicArrayVirtualTable.iterableInterfaceVTable;
+	pThis->baseInterface.pIBaseInterfaceVirtualTable = (CSC_IBaseInterfaceVirtualTable*)&g_dynamicArrayVirtualTable.baseInterfaceVTable;
+	pThis->containerInterface.pIContainerVirtualTable = (CSC_IContainerVirtualTable*)&g_dynamicArrayVirtualTable.containerInterfaceVTable;
+	pThis->iterableInterface.pIIterableVirtualTable = (CSC_IIterableVirtualTable*)&g_dynamicArrayVirtualTable.iterableInterfaceVTable;
 
 	pThis->elementSize = elementSize;
 	pThis->elementCount = (CSC_SIZE_T)0;
@@ -1210,151 +1211,31 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayPushValue(_Inout_ CSC_DynamicArray* CONST p
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayPopValue(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue)
 {
-	CSC_PVOID pElement;
-	CSC_STATUS status;
-
-	if (!pThis || !pThis->elementCount)
-	{
-		return CSC_STATUS_INVALID_PARAMETER;
-	}
-
-	if (pValue)
-	{
-		if (pThis->pNestedContainerVTable)
-		{
-			return CSC_STATUS_INVALID_PARAMETER;
-		}
-		else
-		{
-			pElement = CSC_DynamicArrayBack(pThis);
-
-			if (pElement)
-			{
-				return CSC_STATUS_INVALID_PARAMETER;
-			}
-
-			status = CSC_MemoryUtilsCopyMemory(pValue, (CSC_PCVOID)pElement, pThis->elementSize);
-
-			if (status != CSC_STATUS_SUCCESS)
-			{
-				return status;
-			}
-
-			status = CSC_DynamicArrayRemoveRangeImpl(pThis, pThis->elementCount - (CSC_SIZE_T)1, (CSC_SIZE_T)1, (CSC_BOOLEAN)TRUE);
-
-			if (status != CSC_STATUS_SUCCESS)
-			{
-				CSC_MemoryUtilsSetZeroMemory(pValue, pThis->elementSize);
-			}
-
-			return status;
-		}
-	}
-	else
-	{
-		return CSC_DynamicArrayRemoveRange(pThis, pThis->elementCount - (CSC_SIZE_T)1, (CSC_SIZE_T)1);
-	}
+	return CSC_DynamicArrayPopImpl(pThis, pValue, (CSC_BOOLEAN)TRUE, (CSC_BOOLEAN)FALSE);
 }
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayLazyPopValue(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue)
 {
-	CSC_PVOID pElement;
-	CSC_STATUS status;
-
-	if (!pThis || !pThis->elementCount)
-	{
-		return CSC_STATUS_INVALID_PARAMETER;
-	}
-
-	if (pValue)
-	{
-		if (pThis->pNestedContainerVTable)
-		{
-			return CSC_STATUS_INVALID_PARAMETER;
-		}
-		else
-		{
-			pElement = CSC_DynamicArrayBack(pThis);
-
-			if (pElement)
-			{
-				return CSC_STATUS_INVALID_PARAMETER;
-			}
-
-			status = CSC_MemoryUtilsCopyMemory(pValue, (CSC_PCVOID)pElement, pThis->elementSize);
-
-			if (status != CSC_STATUS_SUCCESS)
-			{
-				return status;
-			}
-
-			status = CSC_DynamicArrayRemoveRangeImpl(pThis, pThis->elementCount - (CSC_SIZE_T)1, (CSC_SIZE_T)1, (CSC_BOOLEAN)FALSE);
-
-			if (status != CSC_STATUS_SUCCESS)
-			{
-				CSC_MemoryUtilsSetZeroMemory(pValue, pThis->elementSize);
-			}
-
-			return status;
-		}
-	}
-	else
-	{
-		return CSC_DynamicArrayLazyRemoveRange(pThis, pThis->elementCount - (CSC_SIZE_T)1, (CSC_SIZE_T)1);
-	}
+	return CSC_DynamicArrayPopImpl(pThis, pValue, (CSC_BOOLEAN)FALSE, (CSC_BOOLEAN)FALSE);
 }
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayPopFront(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue)
 {
-	CSC_PVOID pElement;
-	CSC_STATUS status;
-
-	if (!pThis || !pThis->elementCount)
-	{
-		return CSC_STATUS_INVALID_PARAMETER;
-	}
-
-	if (pValue)
-	{
-		if (pThis->pNestedContainerVTable)
-		{
-			return CSC_STATUS_INVALID_PARAMETER;
-		}
-		else
-		{
-			pElement = CSC_DynamicArrayFront(pThis);
-
-			if (pElement)
-			{
-				return CSC_STATUS_INVALID_PARAMETER;
-			}
-
-			status = CSC_MemoryUtilsCopyMemory(pValue, (CSC_PCVOID)pElement, pThis->elementSize);
-
-			if (status != CSC_STATUS_SUCCESS)
-			{
-				return status;
-			}
-
-			status = CSC_DynamicArrayRemoveRangeImpl(pThis, (CSC_SIZE_T)0, (CSC_SIZE_T)1, (CSC_BOOLEAN)TRUE);
-
-			if (status != CSC_STATUS_SUCCESS)
-			{
-				CSC_MemoryUtilsSetZeroMemory(pValue, pThis->elementSize);
-			}
-
-			return status;
-		}
-	}
-	else
-	{
-		return CSC_DynamicArrayRemoveRange(pThis, (CSC_SIZE_T)0, (CSC_SIZE_T)1);
-	}
+	return CSC_DynamicArrayPopImpl(pThis, pValue, (CSC_BOOLEAN)TRUE, (CSC_BOOLEAN)TRUE);
 }
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayLazyPopFront(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue)
 {
-	CSC_PVOID pElement;
+	return CSC_DynamicArrayPopImpl(pThis, pValue, (CSC_BOOLEAN)FALSE, (CSC_BOOLEAN)TRUE);
+}
+
+static CSC_STATUS CSCMETHOD CSC_DynamicArrayPopImpl(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue, _In_ CONST CSC_BOOLEAN shrink, _In_ CONST CSC_BOOLEAN front)
+{
+	CSC_SIZE_T reserveSpaceBuffer, removeIndex;
+	CSC_DynamicArray arrayBuffer;
+	CSC_IContainer* pElementIContainer;
+	CSC_IContainer* pOutputIContainer;
+	CSC_PVOID pElement, pBuffer;
 	CSC_STATUS status;
 
 	if (!pThis || !pThis->elementCount)
@@ -1362,21 +1243,106 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayLazyPopFront(_Inout_ CSC_DynamicArray* CONS
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
+	removeIndex = ((front) ? (CSC_SIZE_T)0 : pThis->elementCount - (CSC_SIZE_T)1);
+
 	if (pValue)
 	{
-		if (pThis->pNestedContainerVTable)
+		pElement = ((front) ? CSC_DynamicArrayFront(pThis) : CSC_DynamicArrayBack(pThis));
+
+		if (!pElement)
 		{
 			return CSC_STATUS_INVALID_PARAMETER;
 		}
+
+		if (pThis->pNestedContainerVTable)
+		{
+			if (front || shrink)
+			{
+				pElementIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)pElement, csc_bit_IContainer);
+				status = pThis->pNestedContainerVTable->pInitialize(pValue, pThis->pNestedContainerVTable->pGetElementSize(pElementIContainer), pThis->pIAllocator);
+
+				if (status != CSC_STATUS_SUCCESS)
+				{
+					return status;
+				}
+
+				pOutputIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)pValue, csc_bit_IContainer);
+				status = pThis->pNestedContainerVTable->pCopy(pOutputIContainer, (CONST CSC_IContainer*)pElementIContainer);
+
+				if (status != CSC_STATUS_SUCCESS)
+				{
+					pThis->pNestedContainerVTable->pDestroy(pOutputIContainer);
+					return status;
+				}
+
+				status = CSC_DynamicArrayInitializeWithCopy(&arrayBuffer, pThis);
+
+				if (status != CSC_STATUS_SUCCESS)
+				{
+					pThis->pNestedContainerVTable->pDestroy(pOutputIContainer);
+					return status;
+				}
+
+				status = CSC_DynamicArrayRemoveRangeImpl(&arrayBuffer, removeIndex, (CSC_SIZE_T)1, shrink);
+
+				if (status != CSC_STATUS_SUCCESS)
+				{
+					CSC_DynamicArrayDestroy(&arrayBuffer);
+					pThis->pNestedContainerVTable->pDestroy(pOutputIContainer);
+					return status;
+				}
+
+				pBuffer = pThis->pData;
+				reserveSpaceBuffer = pThis->reservedSpace;
+
+				pThis->pData = arrayBuffer.pData;
+				pThis->reservedSpace = arrayBuffer.reservedSpace;
+				--pThis->elementCount;
+
+				arrayBuffer.pData = pBuffer;
+				arrayBuffer.reservedSpace = reserveSpaceBuffer;
+				++arrayBuffer.elementCount;
+
+				CSC_DynamicArrayDestroy(&arrayBuffer);
+
+				if (pThis->pIIterator)
+				{
+					CSC_IIteratorOnRemoval(pThis->pIIterator, removeIndex, (CSC_SIZE_T)1, pThis->elementCount);
+				}
+
+				return CSC_STATUS_SUCCESS;
+			}
+			else
+			{
+				pElementIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)pElement, csc_bit_IContainer);
+				status = pThis->pNestedContainerVTable->pInitialize(pValue, pThis->pNestedContainerVTable->pGetElementSize(pElementIContainer), pThis->pIAllocator);
+
+				if (status != CSC_STATUS_SUCCESS)
+				{
+					return status;
+				}
+
+				pOutputIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)pValue, csc_bit_IContainer);
+				status = pThis->pNestedContainerVTable->pCopy(pOutputIContainer, (CONST CSC_IContainer*)pElementIContainer);
+
+				if (status != CSC_STATUS_SUCCESS)
+				{
+					pThis->pNestedContainerVTable->pDestroy(pOutputIContainer);
+					return status;
+				}
+
+				status = CSC_DynamicArrayRemoveRangeImpl(pThis, removeIndex, (CSC_SIZE_T)1, shrink);
+
+				if (status != CSC_STATUS_SUCCESS)
+				{
+					pThis->pNestedContainerVTable->pDestroy(pOutputIContainer);
+				}
+
+				return status;
+			}
+		}
 		else
 		{
-			pElement = CSC_DynamicArrayFront(pThis);
-
-			if (pElement)
-			{
-				return CSC_STATUS_INVALID_PARAMETER;
-			}
-
 			status = CSC_MemoryUtilsCopyMemory(pValue, (CSC_PCVOID)pElement, pThis->elementSize);
 
 			if (status != CSC_STATUS_SUCCESS)
@@ -1384,7 +1350,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayLazyPopFront(_Inout_ CSC_DynamicArray* CONS
 				return status;
 			}
 
-			status = CSC_DynamicArrayRemoveRangeImpl(pThis, (CSC_SIZE_T)0, (CSC_SIZE_T)1, (CSC_BOOLEAN)FALSE);
+			status = CSC_DynamicArrayRemoveRangeImpl(pThis, removeIndex, (CSC_SIZE_T)1, shrink);
 
 			if (status != CSC_STATUS_SUCCESS)
 			{
@@ -1396,7 +1362,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayLazyPopFront(_Inout_ CSC_DynamicArray* CONS
 	}
 	else
 	{
-		return CSC_DynamicArrayLazyRemoveRange(pThis, (CSC_SIZE_T)0, (CSC_SIZE_T)1);
+		return ((shrink) ? CSC_DynamicArrayRemoveRange(pThis, removeIndex, (CSC_SIZE_T)1) : CSC_DynamicArrayLazyRemoveRange(pThis, removeIndex, (CSC_SIZE_T)1));
 	}
 }
 
@@ -1474,7 +1440,14 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRangeImpl(_Inout_ CSC_DynamicA
 	}
 	else
 	{
-		allocationSize = CSC_DynamicArrayCalculateRequestResize(pThis, pThis->elementCount + numOfElements, (CSC_BOOLEAN)FALSE);
+		if (numOfElements == (CSC_SIZE_T)1)
+		{
+			allocationSize = CSC_DynamicArrayCalculatePushSize(pThis);
+		}
+		else
+		{
+			allocationSize = CSC_DynamicArrayCalculateRequestResize(pThis, pThis->elementCount + numOfElements, (CSC_BOOLEAN)FALSE);
+		}
 	}
 
 	if (allocationSize == CSC_DYNAMIC_ARRAY_CALCULATION_ERROR)
@@ -1994,7 +1967,14 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayRemoveRangeImpl(_Inout_ CSC_DynamicA
 		return CSC_STATUS_GENERAL_FAILURE;
 	}
 
-	allocationSize = CSC_DynamicArrayCalculateRequestResize(pThis, pThis->elementCount - numOfElements, (CSC_BOOLEAN)FALSE);
+	if (numOfElements == (CSC_SIZE_T)1)
+	{
+		allocationSize = CSC_DynamicArrayCalculatePopSize(pThis);
+	}
+	else
+	{
+		allocationSize = CSC_DynamicArrayCalculateRequestResize(pThis, pThis->elementCount - numOfElements, (CSC_BOOLEAN)FALSE);
+	}
 
 	if (allocationSize == CSC_DYNAMIC_ARRAY_CALCULATION_ERROR)
 	{
@@ -2279,7 +2259,7 @@ static CSC_DynamicArray* CSCMETHOD CSC_DynamicArrayIContainerGetObjectPointer(_I
 	}
 }
 
-static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerInitialize(_Inout_ CONST CSC_PVOID pMemoryBaseAddress, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator)
+static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerInitialize(_Out_ CONST CSC_PVOID pMemoryBaseAddress, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_IAllocator* CONST pIAllocator)
 {
 	if (!pMemoryBaseAddress || !elementSize || !pIAllocator)
 	{
@@ -2652,7 +2632,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIIterableRegisterIterator(_Inout_ CS
 	}
 	else
 	{
-		pDynamicArray->pIIterator = pIIterator;
+		pDynamicArray->pIIterator = (CSC_IIterator*)pIIterator;
 		return CSC_STATUS_SUCCESS;
 	}
 }
