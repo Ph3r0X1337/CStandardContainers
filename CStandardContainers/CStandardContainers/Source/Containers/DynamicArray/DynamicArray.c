@@ -1704,7 +1704,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRange(_Inout_ CSC_DynamicArray* CONST
 		return status;
 	}
 
-	status = CSC_DynamicArrayInsertRangeImpl(pThis, insertIndex, numOfElements, pElements);
+	status = CSC_DynamicArrayInsertRangeImpl(&arrayBuffer, insertIndex, numOfElements, pElements);
 
 	if (status != CSC_STATUS_SUCCESS)
 	{
@@ -2642,7 +2642,14 @@ CSC_PVOID CSCMETHOD CSC_DynamicArrayData(_In_ CONST CSC_DynamicArray* CONST pThi
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayIsEmpty(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-	return ((CSC_DynamicArrayIsValid(pThis) == CSC_STATUS_SUCCESS && pThis->elementCount && pThis->pData) ? CSC_STATUS_GENERAL_FAILURE : CSC_STATUS_SUCCESS);
+	if (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+	else
+	{
+		return ((pThis->elementCount && pThis->pData && pThis->reservedSpace) ? CSC_STATUS_GENERAL_FAILURE : CSC_STATUS_SUCCESS);
+	}
 }
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayIsValid(_In_ CONST CSC_DynamicArray* CONST pThis)
@@ -2658,7 +2665,7 @@ CSC_SIZE_T CSCMETHOD CSC_DynamicArrayGetSize(_In_ CONST CSC_DynamicArray* CONST 
 
 CSC_SIZE_T CSCMETHOD CSC_DynamicArrayGetCapacity(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-	return ((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS && pThis->reservedSpace) ? CSC_CONTAINER_INVALID_LENGTH : pThis->reservedSpace / pThis->elementSize);
+	return ((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? CSC_CONTAINER_INVALID_LENGTH : ((pThis->reservedSpace) ? pThis->reservedSpace / pThis->elementSize : (CSC_SIZE_T)0));
 }
 
 CSC_SIZE_T CSCMETHOD CSC_DynamicArrayGetMaxElements(_In_ CONST CSC_DynamicArray* CONST pThis)
