@@ -12,15 +12,15 @@ CSC_STATUS CSCMETHOD CSC_IIterableRegisterIterator(_Inout_ CSC_IIterable* CONST 
 	}
 }
 
-CSC_STATUS CSCMETHOD CSC_IIterableUnregisterIterator(_Inout_ CSC_IIterable* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_IIterableUnregisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator)
 {
-	if (!pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pUnregisterIterator)
+	if (!pIIterator || !pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pUnregisterIterator)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 	else
 	{
-		return pThis->pIIterableVirtualTable->pUnregisterIterator(pThis);
+		return pThis->pIIterableVirtualTable->pUnregisterIterator(pThis, pIIterator);
 	}
 }
 

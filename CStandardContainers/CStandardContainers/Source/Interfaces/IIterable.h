@@ -22,7 +22,7 @@ struct _CSC_IIterable;
 
 // Type definitions of the function pointer types of the IIterable interfaces methods, which need to be implemented by types that utilize the interface.
 typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERABLE_REGISTER_ITERATOR)(_Inout_ struct _CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator);
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERABLE_UNREGISTER_ITERATOR)(_Inout_ struct _CSC_IIterable* CONST pThis);
+typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERABLE_UNREGISTER_ITERATOR)(_Inout_ struct _CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator);
 
 typedef CSC_PVOID(CSCMETHOD* CSC_P_I_ITERABLE_FIRST_ELEMENT)(_In_ CONST struct _CSC_IIterable* CONST pThis);
 typedef CSC_PVOID(CSCMETHOD* CSC_P_I_ITERABLE_NEXT_ELEMENT)(_In_ CONST struct _CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement);
@@ -58,7 +58,7 @@ typedef struct _CSC_IIterable
 CSC_STATUS CSCMETHOD CSC_IIterableRegisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator);
 // Calls the underlying method on the IIterable to unregister an observing IIterator object, which is typically the object that invokes the method.
 // Should return CSC_STATUS_SUCCESS on success, otherwise an error code is returned.
-CSC_STATUS CSCMETHOD CSC_IIterableUnregisterIterator(_Inout_ CSC_IIterable* CONST pThis);
+CSC_STATUS CSCMETHOD CSC_IIterableUnregisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator);
 
 // Calls the underlying method on the IIterable to retrieve the first element of the IIterable object, typically is invoked by an IIterator object.
 // Should return a pointer to the requested element on success, otherwise a null pointer is returned.
