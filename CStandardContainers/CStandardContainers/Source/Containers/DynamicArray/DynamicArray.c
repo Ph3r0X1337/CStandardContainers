@@ -110,7 +110,7 @@ static CSC_SIZE_T CSCAPI CSC_DynamicArrayCalculateAllocReserve(_In_ CONST CSC_SI
 		return CSC_DYNAMIC_ARRAY_CALCULATION_ERROR;
 	}
 
-	if (numOfElements > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE / elementSize || elementSize > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE)
+	if (elementSize > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE || numOfElements > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE / elementSize)
 	{
 		return CSC_DYNAMIC_ARRAY_CALCULATION_ERROR;
 	}
@@ -1438,7 +1438,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayFill(_Inout_ CSC_DynamicArray* CONST pThis,
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayFillImpl(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pValue)
 {
 	CONST CSC_IContainer* pDefaultValueIContainer;
-	CSC_STATUS status = CSC_DynamicArrayIsValid(pThis);
+	CONST CSC_STATUS status = CSC_DynamicArrayIsValid(pThis);
 
 	if (status != CSC_STATUS_SUCCESS)
 	{
@@ -1467,12 +1467,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayFillImpl(_Inout_ CSC_DynamicArray* C
 
 	if (pThis->elementCount)
 	{
-		status = CSC_DynamicArrayClear(pThis);
-
-		if (status != CSC_STATUS_SUCCESS)
-		{
-			return status;
-		}
+		CSC_DynamicArrayClear(pThis);
 	}
 
 	return CSC_DynamicArrayResizeImpl(pThis, numOfElements, pValue, (CSC_BOOLEAN)FALSE, (CSC_BOOLEAN)TRUE);
@@ -1564,16 +1559,130 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayFillRange(_Inout_ CSC_DynamicArray* CONST p
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayCopy(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_DynamicArray* CONST pSrc)
 {
-	return CSC_STATUS_SUCCESS;
+	CONST CSC_STATUS status = CSC_DynamicArrayIsValid(pSrc);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+	else
+	{
+		return CSC_DynamicArrayCopyArray(pThis, pSrc->elementSize, pSrc->elementCount, pSrc->pData, pSrc->pNestedContainerVTable);
+	}
 }
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayMove(_Inout_ CSC_DynamicArray* CONST pThis, _Inout_ CSC_DynamicArray* CONST pSrc)
 {
+	CSC_STATUS status;
+
+	if (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS || CSC_DynamicArrayIsValid(pSrc) != CSC_STATUS_SUCCESS)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (pThis == pSrc)
+	{
+		return CSC_STATUS_SUCCESS;
+	}
+
+	if (pThis->pIAllocator == pSrc->pIAllocator)
+	{
+		status = CSC_DynamicArrayErase(pThis);
+
+		if (status != CSC_STATUS_SUCCESS)
+		{
+			return status;
+		}
+
+		pThis->elementSize = pSrc->elementSize;
+		pThis->pNestedContainerVTable = pSrc->pNestedContainerVTable;
+		pThis->elementCount = pSrc->elementCount;
+		pThis->reservedSpace = pSrc->reservedSpace;
+		pThis->pData = pSrc->pData;
+
+		pSrc->elementCount = (CSC_SIZE_T)0;
+		pSrc->reservedSpace = (CSC_SIZE_T)0;
+		pSrc->pData = NULL;
+
+		if (pSrc->pIIterator)
+		{
+			CSC_IIteratorInvalidateIteration(pSrc->pIIterator);
+		}
+	}
+	else
+	{
+		status = CSC_DynamicArrayCopyArray(pThis, pSrc->elementSize, pSrc->elementCount, pSrc->pData, pSrc->pNestedContainerVTable);
+
+		if (status != CSC_STATUS_SUCCESS)
+		{
+			return status;
+		}
+
+		CSC_DynamicArrayErase(pSrc);
+	}
+
 	return CSC_STATUS_SUCCESS;
 }
 
-CSC_STATUS CSCMETHOD CSC_DynamicArrayCopyArray(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_PCVOID pElements)
+CSC_STATUS CSCMETHOD CSC_DynamicArrayCopyArray(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_PCVOID pElements, _In_opt_ CONST CSC_IContainerVirtualTable* CONST pNestedContainerVTable)
 {
+	CSC_PVOID pBuffer;
+	CSC_SIZE_T oldReserve;
+	CSC_DynamicArray arrayBuffer;
+	CSC_STATUS status = CSC_DynamicArrayIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if (!elementSize || !numOfElements || !pElements || elementSize > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE || numOfElements > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE / elementSize)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (!pNestedContainerVTable && pThis->reservedSpace >= elementSize * numOfElements)
+	{
+		CSC_DynamicArrayClear(pThis);
+
+		pThis->elementSize = elementSize;
+		pThis->elementCount = numOfElements;
+		pThis->pNestedContainerVTable = (CONST CSC_IContainerVirtualTable*)NULL;
+
+		CSC_MemoryUtilsCopyMemory(pThis->pData, pElements, elementSize * numOfElements);
+	}
+	else
+	{
+		status = CSC_DynamicArrayInitializeWithArray(&arrayBuffer, elementSize, numOfElements, pElements, pThis->pIAllocator, pNestedContainerVTable);
+
+		if (status != CSC_STATUS_SUCCESS)
+		{
+			return status;
+		}
+
+		oldReserve = arrayBuffer.reservedSpace;
+		pBuffer = arrayBuffer.pData;
+		
+		arrayBuffer.elementSize = pThis->elementSize;
+		arrayBuffer.elementCount = pThis->elementCount;
+		arrayBuffer.reservedSpace = pThis->reservedSpace;
+		arrayBuffer.pData = pThis->pData;
+		arrayBuffer.pNestedContainerVTable = pThis->pNestedContainerVTable;
+
+		pThis->elementSize = elementSize;
+		pThis->elementCount = numOfElements;
+		pThis->reservedSpace = oldReserve;
+		pThis->pData = pBuffer;
+		pThis->pNestedContainerVTable = pNestedContainerVTable;
+
+		CSC_DynamicArrayDestroy(&arrayBuffer);
+
+		if (pThis->pIIterator)
+		{
+			CSC_IIteratorInvalidateIteration(pThis->pIIterator);
+		}
+	}
+
 	return CSC_STATUS_SUCCESS;
 }
 
@@ -2452,6 +2561,58 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayRemoveRangeImpl(_Inout_ CSC_DynamicA
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayReverse(_Inout_ CSC_DynamicArray* CONST pThis)
 {
+	CSC_PVOID pOldData;
+	CSC_SIZE_T iterator, oldReserve;
+	CSC_DynamicArray arrayBuffer;
+	CSC_STATUS status = CSC_DynamicArrayIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	status = CSC_DynamicArrayInitialize(&arrayBuffer, pThis->elementSize, pThis->pIAllocator, pThis->pNestedContainerVTable);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	status = CSC_DynamicArrayResizeImpl(&arrayBuffer, pThis->elementCount, (CSC_PCVOID)NULL, (CSC_BOOLEAN)TRUE, (CSC_BOOLEAN)TRUE);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		CSC_DynamicArrayDestroy(&arrayBuffer);
+		return status;
+	}
+
+	for (iterator = (CSC_SIZE_T)0; iterator < pThis->elementCount; ++iterator)
+	{
+		status = CSC_DynamicArrayInsertRangeImpl(&arrayBuffer, arrayBuffer.elementCount, (CSC_SIZE_T)1, (CSC_PCVOID)((CONST CSC_BYTE* CONST)pThis->pData + pThis->elementSize * (pThis->elementCount - iterator - (CSC_SIZE_T)1)));
+
+		if (status != CSC_STATUS_SUCCESS)
+		{
+			CSC_DynamicArrayDestroy(&arrayBuffer);
+			return status;
+		}
+	}
+
+	oldReserve = pThis->reservedSpace;
+	pOldData = pThis->pData;
+
+	pThis->reservedSpace = arrayBuffer.reservedSpace;
+	pThis->pData = arrayBuffer.pData;
+
+	arrayBuffer.reservedSpace = oldReserve;
+	arrayBuffer.pData = pOldData;
+
+	CSC_DynamicArrayDestroy(&arrayBuffer);
+
+	if (pThis->pIIterator)
+	{
+		CSC_IIteratorInvalidateIteration(pThis->pIIterator);
+	}
+
 	return CSC_STATUS_SUCCESS;
 }
 
