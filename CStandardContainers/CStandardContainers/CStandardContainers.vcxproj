@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Configuration\Configuration.h" />
     <ClInclude Include="Source\Containers\DynamicArray\DynamicArray.h" />
+    <ClInclude Include="Source\Include\CStandardContainers.h" />
     <ClInclude Include="Source\Interfaces\IAllocator.h" />
     <ClInclude Include="Source\Interfaces\IBaseInterface.h" />
     <ClInclude Include="Source\Interfaces\IContainer.h" />
