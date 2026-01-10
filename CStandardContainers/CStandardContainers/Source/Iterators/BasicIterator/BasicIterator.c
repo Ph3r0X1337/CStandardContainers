@@ -98,38 +98,272 @@ CSC_STATUS CSCMETHOD CSC_BasicIteratorDestroy(_Inout_ CSC_BasicIterator* CONST p
 
 CSC_STATUS CSCMETHOD CSC_BasicIteratorRegisterIterable(_Inout_ CSC_BasicIterator* CONST pThis, _Inout_ CSC_IIterable* CONST pIIterable)
 {
-	return CSC_STATUS_SUCCESS;
+	CSC_STATUS status = CSC_BasicIteratorIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if (!pIIterable)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (pThis->pIIterable)
+	{
+		status = CSC_BasicIteratorUnregisterIterable(pThis);
+
+		if (status != CSC_STATUS_SUCCESS)
+		{
+			return status;
+		}
+	}
+
+	status = CSC_IIterableRegisterIterator(pIIterable, &pThis->iteratorInterface);
+
+	if (status == CSC_STATUS_SUCCESS)
+	{
+		pThis->pIIterable = pIIterable;
+	}
+
+	return status;
 }
 
 CSC_STATUS CSCMETHOD CSC_BasicIteratorUnregisterIterable(_Inout_ CSC_BasicIterator* CONST pThis)
 {
-	return CSC_STATUS_SUCCESS;
+	CSC_STATUS status = CSC_BasicIteratorIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if (pThis->iterationValid)
+	{
+		status = CSC_BasicIteratorInvalidateIteration(pThis);
+
+		if (status != CSC_STATUS_SUCCESS)
+		{
+			return status;
+		}
+	}
+
+	if (!pThis->pIIterable)
+	{
+		return CSC_STATUS_SUCCESS;
+	}
+
+	status = CSC_IIterableUnregisterIterator(pThis->pIIterable, &pThis->iteratorInterface);
+
+	if (status == CSC_STATUS_SUCCESS)
+	{
+		pThis->pIIterable = (CSC_IIterable*)NULL;
+	}
+
+	return status;
 }
 
 
 CSC_PVOID CSCMETHOD CSC_BasicIteratorFirstElement(_Inout_ CSC_BasicIterator* CONST pThis)
 {
-	return NULL;
+	CSC_PVOID pElement;
+	CSC_SIZE_T elementSize, elementCount;
+
+	if (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable)
+	{
+		return NULL;
+	}
+
+	if (!pThis->iterationValid)
+	{
+		elementSize = CSC_IIterableGetElementSize(pThis->pIIterable);
+		elementCount = CSC_IIterableGetElementCount(pThis->pIIterable);
+
+		if (!elementSize || !elementCount || elementCount == CSC_ITERATOR_INVALID_LENGTH)
+		{
+			return NULL;
+		}
+
+		pElement = CSC_IIterableFirstElement(pThis->pIIterable);
+
+		if (!pElement)
+		{
+			return NULL;
+		}
+
+		pThis->elementSize = elementSize;
+		pThis->elementCount = elementCount;
+		pThis->currentIndex = (CSC_SIZE_T)0;
+		pThis->pCurrentElement = pElement;
+		pThis->iterationValid = (CSC_BOOLEAN)TRUE;
+	}
+	else
+	{
+		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, (CSC_SIZE_T)0, pThis->currentIndex, pThis->pCurrentElement);
+
+		if (!pElement)
+		{
+			CSC_BasicIteratorInvalidateIteration(pThis);
+			return NULL;
+		}
+		else
+		{
+			pThis->currentIndex = (CSC_SIZE_T)0;
+		}
+	}
+
+	return pElement;
 }
 
 CSC_PVOID CSCMETHOD CSC_BasicIteratorNextElement(_Inout_ CSC_BasicIterator* CONST pThis)
 {
-	return NULL;
+	if (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable || !pThis->iterationValid)
+	{
+		return NULL;
+	}
+
+	pThis->pCurrentElement = CSC_IIterableNextElement(pThis->pIIterable, pThis->currentIndex, pThis->pCurrentElement);
+
+	if (!pThis->pCurrentElement)
+	{
+		CSC_BasicIteratorInvalidateIteration(pThis);
+		return NULL;
+	}
+	else
+	{
+		++pThis->currentIndex;
+		return pThis->pCurrentElement;
+	}
 }
 
 CSC_PVOID CSCMETHOD CSC_BasicIteratorLastElement(_Inout_ CSC_BasicIterator* CONST pThis)
 {
-	return NULL;
+	CSC_PVOID pElement;
+	CSC_SIZE_T elementSize, elementCount;
+
+	if (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable)
+	{
+		return NULL;
+	}
+
+	if (!pThis->iterationValid)
+	{
+		elementSize = CSC_IIterableGetElementSize(pThis->pIIterable);
+		elementCount = CSC_IIterableGetElementCount(pThis->pIIterable);
+
+		if (!elementSize || !elementCount || elementCount == CSC_ITERATOR_INVALID_LENGTH)
+		{
+			return NULL;
+		}
+
+		pElement = CSC_IIterableLastElement(pThis->pIIterable);
+
+		if (!pElement)
+		{
+			return NULL;
+		}
+
+		pThis->elementSize = elementSize;
+		pThis->elementCount = elementCount;
+		pThis->currentIndex = elementCount - (CSC_SIZE_T)1;
+		pThis->pCurrentElement = pElement;
+		pThis->iterationValid = (CSC_BOOLEAN)TRUE;
+	}
+	else
+	{
+		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, pThis->elementCount - (CSC_SIZE_T)1, pThis->currentIndex, pThis->pCurrentElement);
+
+		if (!pElement)
+		{
+			CSC_BasicIteratorInvalidateIteration(pThis);
+			return NULL;
+		}
+		else
+		{
+			pThis->currentIndex = pThis->elementCount - (CSC_SIZE_T)1;
+		}
+	}
+
+	return pElement;
 }
 
 CSC_PVOID CSCMETHOD CSC_BasicIteratorPreviousElement(_Inout_ CSC_BasicIterator* CONST pThis)
 {
-	return NULL;
+	if (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable || !pThis->iterationValid)
+	{
+		return NULL;
+	}
+
+	if (!pThis->currentIndex)
+	{
+		CSC_BasicIteratorInvalidateIteration(pThis);
+		return NULL;
+	}
+
+	pThis->pCurrentElement = CSC_IIterablePreviousElement(pThis->pIIterable, pThis->currentIndex, pThis->pCurrentElement);
+
+	if (!pThis->pCurrentElement)
+	{
+		CSC_BasicIteratorInvalidateIteration(pThis);
+		return NULL;
+	}
+	else
+	{
+		--pThis->currentIndex;
+		return pThis->pCurrentElement;
+	}
 }
 
-CSC_PVOID CSCMETHOD CSC_BasicIteratorMoveToIndex(_Inout_ CSC_BasicIterator* CONST pThis)
+CSC_PVOID CSCMETHOD CSC_BasicIteratorMoveToIndex(_Inout_ CSC_BasicIterator* CONST pThis, _In_ CONST CSC_SIZE_T index)
 {
-	return NULL;
+	CSC_PVOID pElement;
+	CSC_SIZE_T elementSize, elementCount;
+
+	if (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable)
+	{
+		return NULL;
+	}
+
+	if (!pThis->iterationValid)
+	{
+		elementSize = CSC_IIterableGetElementSize(pThis->pIIterable);
+		elementCount = CSC_IIterableGetElementCount(pThis->pIIterable);
+
+		if (!elementSize || !elementCount || elementCount == CSC_ITERATOR_INVALID_LENGTH || index >= elementCount)
+		{
+			return NULL;
+		}
+
+		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, index, CSC_ITERATOR_INVALID_INDEX, NULL);
+
+		if (!pElement)
+		{
+			return NULL;
+		}
+
+		pThis->elementSize = elementSize;
+		pThis->elementCount = elementCount;
+		pThis->currentIndex = index;
+		pThis->pCurrentElement = pElement;
+		pThis->iterationValid = (CSC_BOOLEAN)TRUE;
+	}
+	else
+	{
+		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, index, pThis->currentIndex, pThis->pCurrentElement);
+
+		if (!pElement)
+		{
+			CSC_BasicIteratorInvalidateIteration(pThis);
+			return NULL;
+		}
+		else
+		{
+			pThis->currentIndex = index;
+		}
+	}
+
+	return pElement;
 }
 
 
@@ -152,27 +386,27 @@ CSC_STATUS CSCMETHOD CSC_BasicIteratorInvalidateIteration(_Inout_ CSC_BasicItera
 
 CSC_SIZE_T CSCMETHOD CSC_BasicIteratorGetElementSize(_In_ CONST CSC_BasicIterator* CONST pThis)
 {
-	return (CSC_SIZE_T)0;
+	return (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable) ? (CSC_SIZE_T)0 : (pThis->iterationValid) ? pThis->elementSize : CSC_IIterableGetElementSize(pThis->pIIterable);
 }
 
 CSC_SIZE_T CSCMETHOD CSC_BasicIteratorGetElementCount(_In_ CONST CSC_BasicIterator* CONST pThis)
 {
-	return (CSC_SIZE_T)0;
+	return (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable) ? CSC_ITERATOR_INVALID_LENGTH : (pThis->iterationValid) ? pThis->elementCount : CSC_IIterableGetElementCount(pThis->pIIterable);
 }
 
 CSC_SIZE_T CSCMETHOD CSC_BasicIteratorGetCurrentIndex(_In_ CONST CSC_BasicIterator* CONST pThis)
 {
-	return (CSC_SIZE_T)0;
+	return (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable || !pThis->iterationValid) ? CSC_ITERATOR_INVALID_INDEX : pThis->currentIndex;
 }
 
 CSC_PVOID CSCMETHOD CSC_BasicIteratorGetCurrentElement(_In_ CONST CSC_BasicIterator* CONST pThis)
 {
-	return NULL;
+	return (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable || !pThis->iterationValid) ? NULL : pThis->pCurrentElement;
 }
 
-CSC_PVOID CSCMETHOD CSC_BasicIteratorGetElementAt(_In_ CONST CSC_BasicIterator* CONST pThis)
+CSC_PVOID CSCMETHOD CSC_BasicIteratorGetElementAt(_In_ CONST CSC_BasicIterator* CONST pThis, _In_ CONST CSC_SIZE_T index)
 {
-	return NULL;
+	return (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable) ? NULL : CSC_IIterableGetElementAt(pThis->pIIterable, index, ((pThis->iterationValid) ? pThis->currentIndex : CSC_ITERATOR_INVALID_INDEX), ((pThis->iterationValid) ? pThis->pCurrentElement : NULL));
 }
 
 
