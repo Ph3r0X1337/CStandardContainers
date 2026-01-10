@@ -163,6 +163,7 @@
     <ClInclude Include="Source\Interfaces\IContainer.h" />
     <ClInclude Include="Source\Interfaces\IIterable.h" />
     <ClInclude Include="Source\Interfaces\IIterator.h" />
+    <ClInclude Include="Source\Iterators\BasicIterator\BasicIterator.h" />
     <ClInclude Include="Source\Utils\MemoryUtils.h" />
     <ClInclude Include="Source\Utils\StringUtils.h" />
   </ItemGroup>
@@ -173,6 +174,7 @@
     <ClCompile Include="Source\Interfaces\IContainer.c" />
     <ClCompile Include="Source\Interfaces\IIterable.c" />
     <ClCompile Include="Source\Interfaces\IIterator.c" />
+    <ClCompile Include="Source\Iterators\BasicIterator\BasicIterator.c" />
     <ClCompile Include="Source\Utils\MemoryUtils.c" />
     <ClCompile Include="Source\Utils\StringUtils.c" />
   </ItemGroup>
