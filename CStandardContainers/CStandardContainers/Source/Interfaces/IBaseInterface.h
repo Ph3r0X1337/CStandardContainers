@@ -1,6 +1,10 @@
 #ifndef CSC_I_BASE_INTERFACE
 #define CSC_I_BASE_INTERFACE
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
 Description:
 The IBaseInterface must be implemented by any object in the CSC library that makes use of polymorphism.
@@ -43,5 +47,9 @@ typedef struct _CSC_IBaseInterface
 // Returns a nullptr if the object does not contain the interface or if the underlying method couldn't be called due to a defective object being supplied.
 // On success the function will return a pointer to an interface in form of a CSC_PCVOID.
 CSC_PCVOID CSCMETHOD CSC_IBaseInterfaceGetInterface(_In_ CONST CSC_IBaseInterface* CONST pThis, _In_ CONST EBaseInterfaceType interfaceType);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef CSC_I_CONTAINER
 #define CSC_I_CONTAINER
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
 Description:
 The IContainer interface must be implemented by all containers in the CSC library that make use of allocators.
@@ -133,5 +137,9 @@ CSC_IAllocator* CSCMETHOD CSC_IContainerGetIAllocator(_In_ CONST CSC_IContainer*
 // Calls the underlying method to retrieve the nested container's virtual table, if one exists.
 // Will return a nullptr if the virtual table does not exist or if an error occurred while calling the method.
 CSC_IContainerVirtualTable* CSCMETHOD CSC_IContainerGetNestedContainerVTable(_In_ CONST struct _CSC_IContainer* CONST pThis);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

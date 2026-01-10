@@ -1,6 +1,10 @@
 #ifndef CSC_DYNAMIC_ARRAY
 #define CSC_DYNAMIC_ARRAY
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "../../Configuration/Configuration.h"
 #include "../../Interfaces/IBaseInterface.h"
 #include "../../Interfaces/IAllocator.h"
@@ -81,5 +85,9 @@ CSC_IContainer* CSCMETHOD CSC_DynamicArrayGetIContainer(_In_ CONST CSC_DynamicAr
 CSC_IIterable* CSCMETHOD CSC_DynamicArrayGetIIterable(_In_ CONST CSC_DynamicArray* CONST pThis);
 CSC_IAllocator* CSCMETHOD CSC_DynamicArrayGetIAllocator(_In_ CONST CSC_DynamicArray* CONST pThis);
 CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayGetNestedContainerVTable(_In_ CONST CSC_DynamicArray* CONST pThis);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

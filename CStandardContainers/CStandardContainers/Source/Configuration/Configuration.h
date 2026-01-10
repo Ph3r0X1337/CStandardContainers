@@ -1,6 +1,10 @@
 #ifndef CSC_CONFIGURATION
 #define CSC_CONFIGURATION
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
 Description:
 The Configuration.h file contains the main configuration used by the library to adjust to the underlying system/architecture.
@@ -224,6 +228,10 @@ typedef BOOLEAN CSC_BOOLEAN;
 #define CSC_MEMORY_UTILS_USE_RECURSION FALSE
 #define CSC_MEMORY_UTILS_USE_SIZE_BASED_OPTIMIZATION TRUE
 
+#endif
+
+#ifdef __cplusplus
+};
 #endif
 
 #endif

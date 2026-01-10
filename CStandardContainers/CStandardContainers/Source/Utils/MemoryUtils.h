@@ -1,6 +1,10 @@
 #ifndef CSC_MEMORY_UTILS
 #define CSC_MEMORY_UTILS
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
 Description:
 The MemoryUtils provide a rich variaty of helper functions to perform operations like copying, moving, setting and comparing data in memory.
@@ -74,5 +78,9 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSwapValues256(_Inout_ CONST CSC_PVOID pFirst, _
 // Overlapping move operations are supported by the function.
 // Returns CSC_STATUS_SUCCESS on success, otherwise an error code is returned.
 CSC_STATUS CSCAPI CSC_MemoryUtilsMoveValue(_Out_ CONST CSC_PVOID pDst, _Inout_ CONST CSC_PVOID pSrc, _In_ CONST CSC_SIZE_T size);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef CSC_I_ITERABLE
 #define CSC_I_ITERABLE
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
 Description:
 The IIterable interface must be implemented by all iterable objects in the CSC library that wish to be iterable through the IIterable interface.
@@ -82,5 +86,9 @@ CSC_SIZE_T CSCMETHOD CSC_IIterableGetElementCount(_In_ CONST CSC_IIterable* CONS
 // Calls the underlying method on the IIterable to retrieve the element size of the elements held by the IIterable object, typically is invoked by an IIterator object.
 // On success the element size of the elements the IIterable is holding is returned, otherwise (CSC_SIZE_T)0 is returned.
 CSC_SIZE_T CSCMETHOD CSC_IIterableGetElementSize(_In_ CONST CSC_IIterable* CONST pThis);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

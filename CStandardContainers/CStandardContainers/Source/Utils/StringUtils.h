@@ -1,6 +1,10 @@
 #ifndef CSC_STRING_UTILS
 #define CSC_STRING_UTILS
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
 Description:
 The StringUtils provide a small selection of helper functions to work with ansi or UTF-16 LE strings.
@@ -71,5 +75,9 @@ CSC_BOOLEAN CSCAPI CSC_StringUtilsIsBMPCharacter(_In_ CONST CSC_WCHAR wChar);
 CSC_BOOLEAN CSCAPI CSC_StringUtilsIsSurrogatePair(_In_ CONST CSC_WCHAR leading, _In_ CONST CSC_WCHAR trailing);
 // Helper function to determine the UTF-16 code point type of a supplied UTF-16 code unit.
 CSC_CodePointType CSCAPI CSC_StringUtilsGetCodePointType(_In_ CONST CSC_WCHAR wChar);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef CSC_I_ALLOCATOR
 #define CSC_I_ALLOCATOR
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
 Description:
 The IAllocator interface must be implemented by allocators that are supposed to be used with the CSC library.
@@ -65,5 +69,9 @@ CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST CSC_IAllocator* CONST pThis, 
 // Calls the underlying method implemented by the allocator object to check if the allocator is in a usable state.
 // Should return true or false depending on the situation.
 CSC_BOOLEAN CSCMETHOD CSC_IAllocatorIsUsable(_In_ CONST CSC_IAllocator* CONST pThis);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

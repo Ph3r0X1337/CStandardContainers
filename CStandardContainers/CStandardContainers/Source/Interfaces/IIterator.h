@@ -1,6 +1,10 @@
 #ifndef CSC_I_ITERATOR
 #define CSC_I_ITERATOR
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
 Description:
 The IIterator interface must be implemented by all iterator objects that wish to iterate over the iterables of the CSC library.
@@ -62,5 +66,9 @@ CSC_STATUS CSCMETHOD CSC_IIteratorOnRemoval(_Inout_ CSC_IIterator* CONST pThis, 
 // The iterable object should unregister the bound iterator itself, hence this method should not invoke unregistration on the iterable.
 // Should return CSC_STATUS_SUCCESS on success, otherwise an error code is returned.
 CSC_STATUS CSCMETHOD CSC_IIteratorOnDestruction(_Inout_ CSC_IIterator* CONST pThis);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif
