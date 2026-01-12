@@ -2177,39 +2177,46 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRangeImpl(_Inout_ CSC_DynamicA
 
 		CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData);
 	}
-	else if (pThis->pNestedContainerVTable)
+	else
 	{
-		for (iterator = (CSC_SIZE_T)0; iterator < numOfElements; ++iterator)
+		if (pThis->pNestedContainerVTable)
 		{
-			pElementIContainer = (CONST CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)((CONST CSC_BYTE* CONST)pElements + pThis->elementSize * iterator), csc_bit_IContainer);
-			status = pThis->pNestedContainerVTable->pInitialize((CSC_PVOID)((CSC_BYTE* CONST)pNewData + pThis->elementSize * iterator), pThis->pNestedContainerVTable->pGetElementSize(pElementIContainer), pThis->pIAllocator);
-
-			if (status != CSC_STATUS_SUCCESS)
+			for (iterator = (CSC_SIZE_T)0; iterator < numOfElements; ++iterator)
 			{
-				--iterator;
-				break;
+				pElementIContainer = (CONST CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)((CONST CSC_BYTE* CONST)pElements + pThis->elementSize * iterator), csc_bit_IContainer);
+				status = pThis->pNestedContainerVTable->pInitialize((CSC_PVOID)((CSC_BYTE* CONST)pNewData + pThis->elementSize * iterator), pThis->pNestedContainerVTable->pGetElementSize(pElementIContainer), pThis->pIAllocator);
+
+				if (status != CSC_STATUS_SUCCESS)
+				{
+					--iterator;
+					break;
+				}
+
+				pIteratorIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)((CONST CSC_BYTE* CONST)pNewData + pThis->elementSize * iterator), csc_bit_IContainer);
+				status = pThis->pNestedContainerVTable->pCopy(pIteratorIContainer, pElementIContainer);
+
+				if (status != CSC_STATUS_SUCCESS)
+				{
+					break;
+				}
 			}
 
-			pIteratorIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)((CONST CSC_BYTE* CONST)pNewData + pThis->elementSize * iterator), csc_bit_IContainer);
-			status = pThis->pNestedContainerVTable->pCopy(pIteratorIContainer, pElementIContainer);
-
-			if (status != CSC_STATUS_SUCCESS)
+			while (iterator >= (CSC_SIZE_T)0 && iterator < numOfElements)
 			{
-				break;
+				pIteratorIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)((CONST CSC_BYTE* CONST)pNewData + pThis->elementSize * iterator), csc_bit_IContainer);
+				pThis->pNestedContainerVTable->pDestroy(pIteratorIContainer);
+
+				if (!iterator)
+				{
+					break;
+				}
+
+				--iterator;
 			}
 		}
-
-		while (iterator >= (CSC_SIZE_T)0 && iterator < numOfElements)
+		else if (pElements)
 		{
-			pIteratorIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)((CONST CSC_BYTE* CONST)pNewData + pThis->elementSize * iterator), csc_bit_IContainer);
-			pThis->pNestedContainerVTable->pDestroy(pIteratorIContainer);
-
-			if (!iterator)
-			{
-				break;
-			}
-
-			--iterator;
+			status = CSC_MemoryUtilsCopyMemory(pNewData, pElements, pThis->elementSize * numOfElements);
 		}
 	}
 
