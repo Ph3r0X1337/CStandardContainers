@@ -2555,6 +2555,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayRemoveRangeImpl(_Inout_ CSC_DynamicA
 	CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData);
 
 	pThis->pData = pNewData;
+	pThis->reservedSpace = allocationSize;
 	pThis->elementCount -= numOfElements;
 
 	if (pThis->pIIterator)
