@@ -3,8 +3,8 @@
 #include "../../Utils/MemoryUtils.h"
 #include <stddef.h>
 
-// Definition of container limits and behaviour based on the data bus address width.
-// Architectures with an address width of 32 bits or more share the same restrictions in maximum size.
+/* Definition of container limits and behaviour based on the data bus address width. */
+/* Architectures with an address width of 32 bits or more share the same restrictions in maximum size. */
 #if CSC_ADDRESS_BUS_WIDTH_DATA < CSC_ADDRESS_BUS_WIDTH_DATA_32BIT
 #define CSC_DYNAMIC_ARRAY_MINIMUM_SPACE (CSC_SIZE_T)0x10
 #define CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE (CSC_SIZE_T)0x4000

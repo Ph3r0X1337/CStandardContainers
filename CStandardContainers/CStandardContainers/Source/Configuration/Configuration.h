@@ -20,39 +20,39 @@ The C89/ANSI-C standard does not define 64-Bit types like long long, hence using
 Same principle applies to taking advantage of size based optimization in the MemoryUtils, however this feature can be disabled in the configuration.
 */
 
-// Definition of the various data bus widths supported by the library.
+/* Definition of the various data bus widths supported by the library. */
 #define CSC_DATA_BUS_WIDTH_8BIT 0x8
 #define CSC_DATA_BUS_WIDTH_16BIT 0x10
 #define CSC_DATA_BUS_WIDTH_32BIT 0x20
 #define CSC_DATA_BUS_WIDTH_64BIT 0x40
 
-// Definition of the various data bus address widths supported by the library.
+/* Definition of the various data bus address widths supported by the library. */
 #define CSC_ADDRESS_BUS_WIDTH_DATA_16BIT 0x10
 #define CSC_ADDRESS_BUS_WIDTH_DATA_32BIT 0x20
 #define CSC_ADDRESS_BUS_WIDTH_DATA_64BIT 0x40
 
-// Definition of the various code bus address widths supported by the library.
+/* Definition of the various code bus address widths supported by the library. */
 #define CSC_ADDRESS_BUS_WIDTH_CODE_16BIT 0x10
 #define CSC_ADDRESS_BUS_WIDTH_CODE_32BIT 0x20
 #define CSC_ADDRESS_BUS_WIDTH_CODE_64BIT 0x40
 
-// Define macros for the configurations available.
-// Only one configuration can be active at a time.
-//#define CSC_CONFIG_DEFAULT
+/* Define macros for the configurations available. */
+/* Only one configuration can be active at a time. */
+/*#define CSC_CONFIG_DEFAULT*/
 #define CSC_CONFIG_WINDOWS_NATIVE
 
-// Beginning of the default configuration.
-// Can be used as a template to implement custom configurations.
+/* Beginning of the default configuration. */
+/* Can be used as a template to implement custom configurations. */
 #ifdef CSC_CONFIG_DEFAULT
 
-// Macro definitions for selecting the calling conventions for methods and functions.
+/* Macro definitions for selecting the calling conventions for methods and functions. */
 #define CSCAPI
 #define CSCMETHOD
 
-// Macro for the const keyword to match the Windows coding style of the library.
+/* Macro for the const keyword to match the Windows coding style of the library. */
 #define CONST const
 
-// Macro definitions that can be used to implement annotions, if supported by the compiler.
+/* Macro definitions that can be used to implement annotions, if supported by the compiler. */
 #define _In_
 #define _In_opt_
 #define _Inout_
@@ -61,10 +61,10 @@ Same principle applies to taking advantage of size based optimization in the Mem
 
 #define _When_(x)
 
-// Default configuration assumes a data width of 64-Bit.
+/* Default configuration assumes a data width of 64 - Bit. */
 #define CSC_DATA_BUS_WIDTH CSC_DATA_BUS_WIDTH_64BIT
 
-// Decision logic for assigning the basic integer types supported by the library.
+/* Decision logic for assigning the basic integer types supported by the library. */
 #if CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_8BIT
 typedef unsigned char CSC_UINT;
 typedef signed char CSC_INT;
@@ -88,10 +88,10 @@ typedef signed long long CSC_INT;
 #endif
 #endif
 
-// Default configuration assumes a Von-Neumann architecture with a 64-Bit address bus.
+/* Default configuration assumes a Von - Neumann architecture with a 64 - Bit address bus. */
 #define CSC_ADDRESS_BUS_WIDTH_CODE CSC_ADDRESS_BUS_WIDTH_CODE_64BIT
 
-// Decision logic for assigning the integer type that can be used to hold code pointers.
+/* Decision logic for assigning the integer type that can be used to hold code pointers. */
 #if CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_16BIT
 typedef unsigned short CSC_CODE_POINTER_TYPE;
 #else
@@ -106,10 +106,10 @@ typedef unsigned long long CSC_CODE_POINTER_TYPE;
 #endif
 #endif
 
-// Default configuration assumes a Von-Neumann architecture with a 64-Bit address bus.
+/* Default configuration assumes a Von - Neumann architecture with a 64 - Bit address bus. */
 #define CSC_ADDRESS_BUS_WIDTH_DATA CSC_ADDRESS_BUS_WIDTH_DATA_64BIT
 
-// Decision logic for assigning the integer type that can be used to hold data pointers.
+/* Decision logic for assigning the integer type that can be used to hold data pointers. */
 #if CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_16BIT
 typedef unsigned short CSC_DATA_POINTER_TYPE;
 #else
@@ -124,30 +124,30 @@ typedef unsigned long long CSC_DATA_POINTER_TYPE;
 #endif
 #endif
 
-// Definition of the unsigned integer type that has the same width as a data pointer.
-// Should not be used to hold or compare pointers itself, rather for offset calculations or indeces that have to match data pointer dimensions.
+/* Definition of the unsigned integer type that has the same width as a data pointer. */
+/* Should not be used to hold or compare pointers itself, rather for offset calculations or indeces that have to match data pointer dimensions. */
 typedef CSC_DATA_POINTER_TYPE CSC_SIZE_T;
 
-// Definition of types used to hold characters of ANSI, UCS-2 or UTF-16 strings.
+/* Definition of types used to hold characters of ANSI, UCS - 2 or UTF - 16 strings. */
 typedef unsigned char CSC_CHAR;
 typedef unsigned short CSC_WCHAR;
 
-// Definition of fixed-size unsigned integer types corresponding to assembly instructions (x86-Style).
+/* Definition of fixed - size unsigned integer types corresponding to assembly instructions(x86 - Style). */
 typedef unsigned char CSC_BYTE;
 typedef unsigned short CSC_WORD;
-// Definition of the CSC_DWORD and CSC_QWORD types is optional, only define them if your architecture/compiler supports them.
+/* Definition of the CSC_DWORD and CSC_QWORD types is optional, only define them if your architecture / compiler supports them. */
 typedef unsigned long CSC_DWORD;
 typedef unsigned long long CSC_QWORD;
 
-// Definitions for type agnostic pointers used by the library.
+/* Definitions for type agnostic pointers used by the library. */
 typedef void* CSC_PVOID;
 typedef CONST void* CSC_PCVOID;
 
-// Definition of return types used by the library.
+/* Definition of return types used by the library. */
 typedef signed long CSC_STATUS;
 typedef unsigned char CSC_BOOLEAN;
 
-// Definition of various status codes for the CSC_STATUS type.
+/* Definition of various status codes for the CSC_STATUS type. */
 #define CSC_STATUS_SUCCESS 0l
 #define CSC_STATUS_GENERAL_FAILURE -1l
 #define CSC_STATUS_INVALID_PARAMETER -2l
@@ -155,14 +155,14 @@ typedef unsigned char CSC_BOOLEAN;
 #define CSC_STATUS_MEMORY_NOT_ALLOCATED -4l
 #define CSC_STATUS_NOT_IMPLEMENTED -5l
 
-// Definition of the null pointer.
+/* Definition of the null pointer. */
 #define NULL (CSC_PVOID)0
 
-// Definition of the values true and false for the CSC_BOOLEAN type.
+/* Definition of the values true and false for the CSC_BOOLEAN type. */
 #define FALSE 0
 #define TRUE 1
 
-// Definitions used to adjust the behaviour of the MemoryUtils.
+/* Definitions used to adjust the behaviour of the MemoryUtils. */
 #define CSC_MEMORY_UTILS_USE_UNALIGNED_ACCESS FALSE
 #define CSC_MEMORY_UTILS_USE_RECURSION FALSE
 #define CSC_MEMORY_UTILS_USE_SIZE_BASED_OPTIMIZATION FALSE
@@ -170,8 +170,8 @@ typedef unsigned char CSC_BOOLEAN;
 #endif
 
 
-// Beginning of the Windows native configuration.
-// Supports x86-32 and x86-64 architectures, potentially also ARM32 architectures.
+/* Beginning of the Windows native configuration. */
+/* Supports x86 - 32 and x86 - 64 architectures, potentially also ARM32 architectures. */
 #ifdef CSC_CONFIG_WINDOWS_NATIVE
 
 #include <Windows.h>

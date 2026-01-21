@@ -10,16 +10,16 @@ Description:
 
 */
 
-// Include the current configuration of the library containing various type definitions and other things.
+/* Include the current configuration of the library containing various type definitions and other things. */
 #include "../../Configuration/Configuration.h"
-// Include the IBaseInterface as the BasicIterator needs it to implement it's own IIterator interface. 
+/* Include the IBaseInterface as the BasicIterator needs it to implement it's own IIterator interface. */
 #include "../../Interfaces/IBaseInterface.h"
-// Include the IIterator interface as BasicIterator implements this interface.
+/* Include the IIterator interface as BasicIterator implements this interface. */
 #include "../../Interfaces/IIterator.h"
-// Include the IIterable interface as the BasicIterator requires working with the IIterable interface.
+/* Include the IIterable interface as the BasicIterator requires working with the IIterable interface. */
 #include "../../Interfaces/IIterable.h"
 
-// Definition of BasicIterator type.
+/* Definition of BasicIterator type. */
 typedef struct _CSC_BasicIterator
 {
 	CSC_IBaseInterface baseInterface;

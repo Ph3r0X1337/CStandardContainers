@@ -220,24 +220,24 @@ CSC_BOOLEAN CSCAPI CSC_StringUtilsIsSurrogatePair(_In_ CONST CSC_WCHAR leading, 
 
 CSC_CodePointType CSCAPI CSC_StringUtilsGetCodePointType(_In_ CONST CSC_WCHAR wChar)
 {
-	// Check value for BMP range.
+	/* Check value for BMP range. */
 	if ((CSC_WORD)wChar < CSC_HIGH_SURROGATE_MIN || (CSC_WORD)wChar > CSC_LOW_SURROGATE_MAX)
 	{
 		return csc_cpt_bmp;
 	}
 
-	// Check value for high surrogate range.
+	/* Check value for high surrogate range. */
 	if ((CSC_WORD)wChar <= CSC_HIGH_SURROGATE_MAX && (CSC_WORD)wChar >= CSC_HIGH_SURROGATE_MIN)
 	{
 		return csc_cpt_surrogate_high;
 	}
 
-	// Check value for low surrogate range.
+	/* Check value for low surrogate range. */
 	if ((CSC_WORD)wChar <= CSC_LOW_SURROGATE_MAX && (CSC_WORD)wChar >= CSC_LOW_SURROGATE_MIN)
 	{
 		return csc_cpt_surrogate_low;
 	}
 
-	// Should never occurr.
+	/* Should never occurr. */
 	return csc_cpt_invalid;
 }
