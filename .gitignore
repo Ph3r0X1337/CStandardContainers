@@ -37,3 +37,5 @@ CStandardContainers/Debug/CStandardContainers.idb
 CStandardContainers/Debug/CStandardContainers.pdb
 *.ipch
 /CStandardContainers/CStandardContainers/Debug
+/CStandardContainers/.vs/CStandardContainers/v17
+/CStandardContainers/.vs/CStandardContainers/FileContentIndex
