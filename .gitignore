@@ -39,3 +39,6 @@ CStandardContainers/Debug/CStandardContainers.pdb
 /CStandardContainers/CStandardContainers/Debug
 /CStandardContainers/.vs/CStandardContainers/v17
 /CStandardContainers/.vs/CStandardContainers/FileContentIndex
+/CStandardContainers/CStandardContainers/x64
+*.idb
+*.pdb

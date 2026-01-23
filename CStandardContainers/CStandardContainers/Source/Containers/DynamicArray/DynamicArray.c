@@ -2700,27 +2700,27 @@ CSC_SIZE_T CSCMETHOD CSC_DynamicArrayGetElementSize(_In_ CONST CSC_DynamicArray*
 
 CSC_IBaseInterface* CSCMETHOD CSC_DynamicArrayGetIBaseInterface(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-	return ((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IBaseInterface*)NULL : &pThis->baseInterface);
+	return (CSC_IBaseInterface*)((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : &pThis->baseInterface);
 }
 
 CSC_IContainer* CSCMETHOD CSC_DynamicArrayGetIContainer(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-	return ((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IContainer*)NULL : &pThis->containerInterface);
+	return (CSC_IContainer*)((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : &pThis->containerInterface);
 }
 
 CSC_IIterable* CSCMETHOD CSC_DynamicArrayGetIIterable(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-	return ((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IIterable*)NULL : &pThis->iterableInterface);
+	return (CSC_IIterable*)((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : &pThis->iterableInterface);
 }
 
 CSC_IAllocator* CSCMETHOD CSC_DynamicArrayGetIAllocator(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-	return ((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IAllocator*)NULL : (CSC_IAllocator*)pThis->pIAllocator);
+	return (CSC_IAllocator*)((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : pThis->pIAllocator);
 }
 
 CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayGetNestedContainerVTable(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-	return ((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IContainerVirtualTable*)NULL : pThis->pNestedContainerVTable);
+	return (CSC_IContainerVirtualTable*)((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : pThis->pNestedContainerVTable);
 }
 
 

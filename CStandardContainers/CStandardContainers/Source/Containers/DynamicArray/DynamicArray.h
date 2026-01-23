@@ -5,6 +5,11 @@
 extern "C" {
 #endif
 
+/*
+Description:
+
+*/
+
 #include "../../Configuration/Configuration.h"
 #include "../../Interfaces/IBaseInterface.h"
 #include "../../Interfaces/IAllocator.h"

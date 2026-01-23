@@ -48,6 +48,9 @@
     <ClInclude Include="Source\Iterators\BasicIterator\BasicIterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Containers\LinkedList\LinkedList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Interfaces\IBaseInterface.c">
@@ -75,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Iterators\BasicIterator\BasicIterator.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Containers\LinkedList\LinkedList.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Configuration\Configuration.h" />
     <ClInclude Include="Source\Containers\DynamicArray\DynamicArray.h" />
+    <ClInclude Include="Source\Containers\LinkedList\LinkedList.h" />
     <ClInclude Include="Source\Include\CStandardContainers.h" />
     <ClInclude Include="Source\Interfaces\IAllocator.h" />
     <ClInclude Include="Source\Interfaces\IBaseInterface.h" />
@@ -169,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Containers\DynamicArray\DynamicArray.c" />
+    <ClCompile Include="Source\Containers\LinkedList\LinkedList.c" />
     <ClCompile Include="Source\Interfaces\IAllocator.c" />
     <ClCompile Include="Source\Interfaces\IBaseInterface.c" />
     <ClCompile Include="Source\Interfaces\IContainer.c" />
