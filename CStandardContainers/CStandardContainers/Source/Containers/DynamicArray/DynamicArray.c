@@ -2674,7 +2674,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayIsEmpty(_In_ CONST CSC_DynamicArray* CONST 
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayIsValid(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-	return (!pThis || !pThis->elementSize || pThis->baseInterface.pIBaseInterfaceVirtualTable != &g_dynamicArrayVirtualTable.baseInterfaceVTable || pThis->containerInterface.pIContainerVirtualTable != &g_dynamicArrayVirtualTable.containerInterfaceVTable || pThis->iterableInterface.pIIterableVirtualTable != &g_dynamicArrayVirtualTable.iterableInterfaceVTable || !pThis->pIAllocator || pThis->pData && !pThis->reservedSpace || pThis->reservedSpace && !pThis->pData ||(pThis->elementCount * pThis->elementSize) > pThis->reservedSpace || pThis->elementCount > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE / pThis->elementSize || pThis->elementSize > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE) ? CSC_STATUS_INVALID_PARAMETER : CSC_STATUS_SUCCESS;
+	return (!pThis || !pThis->elementSize || pThis->baseInterface.pIBaseInterfaceVirtualTable != &g_dynamicArrayVirtualTable.baseInterfaceVTable || pThis->containerInterface.pIContainerVirtualTable != &g_dynamicArrayVirtualTable.containerInterfaceVTable || pThis->iterableInterface.pIIterableVirtualTable != &g_dynamicArrayVirtualTable.iterableInterfaceVTable || !pThis->pIAllocator || (pThis->pData && !pThis->reservedSpace) || (pThis->reservedSpace && !pThis->pData) ||(pThis->elementCount * pThis->elementSize) > pThis->reservedSpace || pThis->elementCount > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE / pThis->elementSize || pThis->elementSize > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE) ? CSC_STATUS_INVALID_PARAMETER : CSC_STATUS_SUCCESS;
 }
 
 
@@ -2772,13 +2772,13 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerInitialize(_Out_ CONST CSC
 	}
 	else
 	{
-		return CSC_DynamicArrayInitialize(pMemoryBaseAddress, elementSize, pIAllocator, (CONST CSC_IContainerVirtualTable* CONST)NULL);
+		return CSC_DynamicArrayInitialize((CSC_DynamicArray* CONST)pMemoryBaseAddress, elementSize, pIAllocator, (CONST CSC_IContainerVirtualTable* CONST)NULL);
 	}
 }
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerErase(_Inout_ CSC_IContainer* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -2792,7 +2792,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerErase(_Inout_ CSC_IContain
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerDestroy(_Inout_ CSC_IContainer* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -2806,8 +2806,8 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerDestroy(_Inout_ CSC_IConta
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST struct _CSC_IContainer* CONST pOther)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
-	CSC_DynamicArray* pOtherDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pOther);
+	CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pOtherDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pOther);
 
 	if (!pDynamicArray || !pOtherDynamicArray)
 	{
@@ -2821,8 +2821,8 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerCopy(_Inout_ CSC_IContaine
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerMove(_Inout_ CSC_IContainer* CONST pThis, _Inout_ struct _CSC_IContainer* CONST pOther)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
-	CSC_DynamicArray* pOtherDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pOther);
+	CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CSC_DynamicArray* CONST pOtherDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pOther);
 
 	if (!pDynamicArray || !pOtherDynamicArray)
 	{
@@ -2836,7 +2836,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerMove(_Inout_ CSC_IContaine
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerInsertRange(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray || !numOfElements)
 	{
@@ -2850,7 +2850,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerInsertRange(_Inout_ CSC_IC
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerRemoveRange(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray || !numOfElements)
 	{
@@ -2871,7 +2871,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerSwapValues(_Inout_ CSC_ICo
 	CSC_IContainer* pBufferIContainer;
 	CSC_PVOID pFirstElement, pSecondElement, pBuffer;
 	CSC_DynamicArray arrayBuffer;
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -2983,7 +2983,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerSwapValues(_Inout_ CSC_ICo
 
 static CSC_PVOID CSCMETHOD CSC_DynamicArrayIContainerAccessElement(_In_ CONST CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T index)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -2997,7 +2997,7 @@ static CSC_PVOID CSCMETHOD CSC_DynamicArrayIContainerAccessElement(_In_ CONST CS
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerIsValid(_In_ CONST CSC_IContainer* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3011,7 +3011,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerIsValid(_In_ CONST CSC_ICo
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerIsEmpty(_In_ CONST CSC_IContainer* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3025,7 +3025,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerIsEmpty(_In_ CONST CSC_ICo
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerIsElementContainer(_In_ CONST CSC_IContainer* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3039,7 +3039,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerIsElementContainer(_In_ CO
 
 static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIContainerGetSize(_In_ CONST CSC_IContainer* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3053,7 +3053,7 @@ static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIContainerGetSize(_In_ CONST CSC_ICo
 
 static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIContainerGetElementSize(_In_ CONST CSC_IContainer* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3067,7 +3067,7 @@ static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIContainerGetElementSize(_In_ CONST 
 
 static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIContainerGetMaxElements(_In_ CONST CSC_IContainer* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3081,7 +3081,7 @@ static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIContainerGetMaxElements(_In_ CONST 
 
 static CSC_IAllocator* CSCMETHOD CSC_DynamicArrayIContainerGetIAllocator(_In_ CONST CSC_IContainer* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3095,7 +3095,7 @@ static CSC_IAllocator* CSCMETHOD CSC_DynamicArrayIContainerGetIAllocator(_In_ CO
 
 static CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayIContainerGetNestedContainerVTable(_In_ CONST struct _CSC_IContainer* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIContainerGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3122,7 +3122,7 @@ static CSC_DynamicArray* CSCMETHOD CSC_DynamicArrayIIterableGetObjectPointer(_In
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIIterableRegisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIIterableGetObjectPointer(pThis);
+	CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
 
 	if (!pIIterator || !pDynamicArray || CSC_DynamicArrayIsValid(pDynamicArray) != CSC_STATUS_SUCCESS)
 	{
@@ -3142,7 +3142,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIIterableRegisterIterator(_Inout_ CS
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIIterableUnregisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIIterableGetObjectPointer(pThis);
+	CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
 
 	if (!pDynamicArray || CSC_DynamicArrayIsValid(pDynamicArray) != CSC_STATUS_SUCCESS || !pDynamicArray->pIIterator || pDynamicArray->pIIterator != pIIterator)
 	{
@@ -3157,7 +3157,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIIterableUnregisterIterator(_Inout_ 
 
 static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterableFirstElement(_In_ CONST CSC_IIterable* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIIterableGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3171,7 +3171,7 @@ static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterableFirstElement(_In_ CONST CSC_
 
 static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterableNextElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIIterableGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray * CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
 
 	if (!pDynamicArray || currentIndex == CSC_CONTAINER_INVALID_INDEX)
 	{
@@ -3185,7 +3185,7 @@ static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterableNextElement(_In_ CONST CSC_I
 
 static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterableLastElement(_In_ CONST CSC_IIterable* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIIterableGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3199,7 +3199,7 @@ static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterableLastElement(_In_ CONST CSC_I
 
 static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterablePreviousElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIIterableGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
 
 	if (!pDynamicArray || !currentIndex)
 	{
@@ -3213,7 +3213,7 @@ static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterablePreviousElement(_In_ CONST C
 
 static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterableGetElementAt(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_opt_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_PVOID pCurrentElement)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIIterableGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3227,7 +3227,7 @@ static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterableGetElementAt(_In_ CONST CSC_
 
 static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIIterableGetElementCount(_In_ CONST CSC_IIterable* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIIterableGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
@@ -3241,7 +3241,7 @@ static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIIterableGetElementCount(_In_ CONST 
 
 static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIIterableGetElementSize(_In_ CONST CSC_IIterable* CONST pThis)
 {
-	CSC_DynamicArray* pDynamicArray = CSC_DynamicArrayIIterableGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
 
 	if (!pDynamicArray)
 	{
