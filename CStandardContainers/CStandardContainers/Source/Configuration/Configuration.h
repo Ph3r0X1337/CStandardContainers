@@ -210,7 +210,7 @@ typedef DWORD CSC_DWORD;
 typedef QWORD CSC_QWORD;
 
 typedef PVOID CSC_PVOID;
-typedef const void* CSC_PCVOID;
+typedef CONST void* CSC_PCVOID;
 
 typedef SIZE_T CSC_SIZE_T;
 
