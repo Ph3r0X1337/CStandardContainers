@@ -1544,7 +1544,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayFillRange(_Inout_ CSC_DynamicArray* CONST p
 
 CSC_STATUS CSCMETHOD CSC_DynamicArrayCopy(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_DynamicArray* CONST pSrc)
 {
-	CONST CSC_STATUS status = CSC_DynamicArrayIsValid(pSrc);
+	CSC_STATUS status = CSC_DynamicArrayIsValid(pSrc);
 
 	if (status != CSC_STATUS_SUCCESS)
 	{
@@ -1552,7 +1552,24 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayCopy(_Inout_ CSC_DynamicArray* CONST pThis,
 	}
 	else
 	{
-		return CSC_DynamicArrayCopyArray(pThis, pSrc->elementSize, pSrc->elementCount, pSrc->pData, pSrc->pNestedContainerVTable);
+		if (pSrc->elementCount)
+		{
+			return CSC_DynamicArrayCopyArray(pThis, pSrc->elementSize, pSrc->elementCount, pSrc->pData, pSrc->pNestedContainerVTable);
+		}
+		else
+		{
+			status = CSC_DynamicArrayErase(pThis);
+
+			if (status != CSC_STATUS_SUCCESS)
+			{
+				return status;
+			}
+
+			pThis->elementSize = pSrc->elementSize;
+			pThis->pNestedContainerVTable = pSrc->pNestedContainerVTable;
+
+			return CSC_STATUS_SUCCESS;
+		}
 	}
 }
 
@@ -1596,11 +1613,26 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayMove(_Inout_ CSC_DynamicArray* CONST pThis,
 	}
 	else
 	{
-		status = CSC_DynamicArrayCopyArray(pThis, pSrc->elementSize, pSrc->elementCount, pSrc->pData, pSrc->pNestedContainerVTable);
-
-		if (status != CSC_STATUS_SUCCESS)
+		if (pSrc->elementCount)
 		{
-			return status;
+			status = CSC_DynamicArrayCopyArray(pThis, pSrc->elementSize, pSrc->elementCount, pSrc->pData, pSrc->pNestedContainerVTable);
+
+			if (status != CSC_STATUS_SUCCESS)
+			{
+				return status;
+			}
+		}
+		else
+		{
+			status = CSC_DynamicArrayErase(pThis);
+
+			if (status != CSC_STATUS_SUCCESS)
+			{
+				return status;
+			}
+
+			pThis->elementSize = pSrc->elementSize;
+			pThis->pNestedContainerVTable = pSrc->pNestedContainerVTable;
 		}
 
 		CSC_DynamicArrayErase(pSrc);
@@ -1729,7 +1761,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertArray(_Inout_ CSC_DynamicArray* CONST
 	}
 	else
 	{
-		return ((pSrc->elementCount) ? CSC_DynamicArrayInsertRange(pThis, insertIndex, pSrc->elementCount, pSrc->pData) : CSC_STATUS_INVALID_PARAMETER);
+		return ((pSrc->elementCount) ? CSC_DynamicArrayInsertRange(pThis, insertIndex, pSrc->elementCount, pSrc->pData) : CSC_STATUS_SUCCESS);
 	}
 }
 
