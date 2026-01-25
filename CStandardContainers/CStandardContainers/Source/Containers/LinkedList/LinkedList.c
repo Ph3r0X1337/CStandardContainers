@@ -88,6 +88,7 @@ static CONST CSC_LinkedListVirtualTable g_linkedListVirtualTable =
 };
 
 
+static CSC_STATUS CSCMETHOD CSC_LinkedListCopyImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_LinkedList* CONST pSrc);
 static CSC_STATUS CSCMETHOD CSC_LinkedListFillImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pValue);
 static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements);
 static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_LinkedList* CONST pOther);
@@ -134,20 +135,15 @@ CSC_STATUS CSCMETHOD CSC_LinkedListInitialize(_Out_ CSC_LinkedList* CONST pThis,
 
 CSC_STATUS CSCMETHOD CSC_LinkedListInitializeWithSize(_Out_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_BOOLEAN circular, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pDefaultValue, _In_ CONST CSC_IAllocator* CONST pIAllocator, _In_opt_ CONST CSC_IContainerVirtualTable* CONST pNestedContainerVTable)
 {
-	CSC_LinkedList llBuffer;
-	CSC_STATUS status = CSC_LinkedListZeroMemory(pThis);
-
-	if (status != CSC_STATUS_SUCCESS)
-	{
-		return status;
-	}
+	CSC_STATUS status;
 
 	if (!elementSize || elementSize > CSC_LINKED_LIST_MAXIMUM_ELEMENT_SIZE || numOfElements > CSC_LINKED_LIST_MAXIMUM_SPACE / (elementSize + sizeof(CSC_LLNode)) || !pIAllocator || (numOfElements && pNestedContainerVTable && !pDefaultValue))
 	{
+		CSC_LinkedListZeroMemory(pThis);
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	status = CSC_LinkedListInitialize(&llBuffer, elementSize, circular, pIAllocator, pNestedContainerVTable);
+	status = CSC_LinkedListInitialize(pThis, elementSize, circular, pIAllocator, pNestedContainerVTable);
 
 	if (status != CSC_STATUS_SUCCESS)
 	{
@@ -159,33 +155,68 @@ CSC_STATUS CSCMETHOD CSC_LinkedListInitializeWithSize(_Out_ CSC_LinkedList* CONS
 		return CSC_STATUS_SUCCESS;
 	}
 
-	status = CSC_LinkedListFillImpl(&llBuffer, numOfElements, pDefaultValue);
+	status = CSC_LinkedListFillImpl(pThis, numOfElements, pDefaultValue);
 
 	if (status != CSC_STATUS_SUCCESS)
 	{
-		CSC_LinkedListDestroy(&llBuffer);
-		return status;
+		CSC_LinkedListDestroy(pThis);
 	}
 
-	status = CSC_MemoryUtilsCopyMemory((CSC_PVOID)pThis, (CSC_PCVOID)&llBuffer, sizeof(llBuffer));
-
-	if (status != CSC_STATUS_SUCCESS)
-	{
-		CSC_LinkedListDestroy(&llBuffer);
-		return status;
-	}
-
-	return CSC_STATUS_SUCCESS;
+	return status;
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListInitializeWithCopy(_Out_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_LinkedList* CONST pSrc)
 {
-	return CSC_STATUS_SUCCESS;
+	CSC_STATUS status = CSC_LinkedListIsValid(pSrc);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		CSC_LinkedListZeroMemory(pThis);
+		return status;
+	}
+
+	status = CSC_LinkedListInitialize(pThis, pSrc->elementSize, pSrc->circular, pSrc->pIAllocator, pSrc->pNestedContainerVTable);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	status = CSC_LinkedListCopyImpl(pThis, pSrc);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		CSC_LinkedListDestroy(pThis);
+	}
+
+	return status;
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListInitializeWithArray(_Out_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_BOOLEAN circular, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_PCVOID pElements, _In_ CONST CSC_IAllocator* CONST pIAllocator, _In_opt_ CONST CSC_IContainerVirtualTable* CONST pNestedContainerVTable)
 {
-	return CSC_STATUS_SUCCESS;
+	CSC_STATUS status;
+
+	if (!elementSize || elementSize > CSC_LINKED_LIST_MAXIMUM_ELEMENT_SIZE || !numOfElements || numOfElements > CSC_LINKED_LIST_MAXIMUM_SPACE / (elementSize + sizeof(CSC_LLNode)) || !pIAllocator || (pNestedContainerVTable && !pElements))
+	{
+		CSC_LinkedListZeroMemory(pThis);
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	status = CSC_LinkedListInitialize(pThis, elementSize, circular, pIAllocator, pNestedContainerVTable);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	status = CSC_LinkedListInsertRangeImpl(pThis, (CSC_SIZE_T)0, numOfElements, pElements);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		CSC_LinkedListDestroy(pThis);
+	}
+
+	return status;
 }
 
 
@@ -289,6 +320,11 @@ CSC_STATUS CSCMETHOD CSC_LinkedListCopy(_Inout_ CSC_LinkedList* CONST pThis, _In
 	return CSC_STATUS_SUCCESS;
 }
 
+static CSC_STATUS CSCMETHOD CSC_LinkedListCopyImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_LinkedList* CONST pSrc)
+{
+	return CSC_STATUS_SUCCESS;
+}
+
 CSC_STATUS CSCMETHOD CSC_LinkedListMove(_Inout_ CSC_LinkedList* CONST pThis, _Inout_ CSC_LinkedList* CONST pSrc)
 {
 	return CSC_STATUS_SUCCESS;
@@ -323,6 +359,8 @@ CSC_STATUS CSCMETHOD CSC_LinkedListInsertRange(_Inout_ CSC_LinkedList* CONST pTh
 
 static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements)
 {
+
+
 	return CSC_STATUS_SUCCESS;
 }
 
