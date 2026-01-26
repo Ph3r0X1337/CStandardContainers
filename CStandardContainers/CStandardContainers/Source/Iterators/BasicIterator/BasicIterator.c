@@ -29,7 +29,7 @@ static CONST CSC_BasicIteratorVirtualTable g_basicIteratorVirtualTable =
 	}
 };
 
-CSC_STATUS CSCMETHOD CSC_BasicIteratorZeroMemory(_Out_ CSC_BasicIterator* CONST pThis)
+static CSC_STATUS CSCMETHOD CSC_BasicIteratorZeroMemory(_Out_ CSC_BasicIterator* CONST pThis)
 {
 	if (!pThis)
 	{
@@ -52,9 +52,16 @@ CSC_STATUS CSCMETHOD CSC_BasicIteratorZeroMemory(_Out_ CSC_BasicIterator* CONST 
 	return CSC_STATUS_SUCCESS;
 }
 
-CSC_STATUS CSCMETHOD CSC_BasicIteratorInitialize(_Out_ CSC_BasicIterator* CONST pThis)
+CSC_STATUS CSCMETHOD CSC_BasicIteratorInitialize(_When_(return == CSC_STATUS_SUCCESS, _Out_) CSC_BasicIterator* CONST pThis)
 {
-	CSC_STATUS status = CSC_BasicIteratorZeroMemory(pThis);
+	CSC_STATUS status = CSC_BasicIteratorIsValid(pThis);
+
+	if (status == CSC_STATUS_SUCCESS)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	status = CSC_BasicIteratorZeroMemory(pThis);
 
 	if (status != CSC_STATUS_SUCCESS)
 	{

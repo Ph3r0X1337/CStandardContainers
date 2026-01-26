@@ -32,8 +32,7 @@ typedef struct _CSC_BasicIterator
 	CSC_BOOLEAN iterationValid;
 } CSC_BasicIterator;
 
-CSC_STATUS CSCMETHOD CSC_BasicIteratorZeroMemory(_Out_ CSC_BasicIterator* CONST pThis);
-CSC_STATUS CSCMETHOD CSC_BasicIteratorInitialize(_Out_ CSC_BasicIterator* CONST pThis);
+CSC_STATUS CSCMETHOD CSC_BasicIteratorInitialize(_When_(return == CSC_STATUS_SUCCESS, _Out_) CSC_BasicIterator* CONST pThis);
 CSC_STATUS CSCMETHOD CSC_BasicIteratorDestroy(_Inout_ CSC_BasicIterator* CONST pThis);
 
 CSC_STATUS CSCMETHOD CSC_BasicIteratorRegisterIterable(_Inout_ CSC_BasicIterator* CONST pThis, _Inout_ CSC_IIterable* CONST pIIterable);
