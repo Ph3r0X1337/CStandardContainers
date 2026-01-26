@@ -418,11 +418,9 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList
 		}
 	}
 
-	status = CSC_IAllocatorIsUsable(pThis->pIAllocator);
-
-	if (status != CSC_STATUS_SUCCESS)
+	if (!CSC_IAllocatorIsUsable(pThis->pIAllocator))
 	{
-		return status;
+		return CSC_STATUS_GENERAL_FAILURE;
 	}
 
 	pInsertElement = NULL;
@@ -670,11 +668,9 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedL
 		return CSC_STATUS_SUCCESS;
 	}
 
-	status = CSC_IAllocatorIsUsable(pThis->pIAllocator);
-
-	if (status != CSC_STATUS_SUCCESS)
+	if (!CSC_IAllocatorIsUsable(pThis->pIAllocator))
 	{
-		return status;
+		return CSC_STATUS_GENERAL_FAILURE;
 	}
 
 	pInsertElement = NULL;
