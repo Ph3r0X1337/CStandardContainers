@@ -202,7 +202,7 @@ CSC_STATUS CSCMETHOD CSC_LinkedListInitializeWithCopy(_When_(return == CSC_STATU
 		return status;
 	}
 
-	status = CSC_LinkedListCopyImpl(pThis, pSrc);
+	status = CSC_LinkedListInsertListCopyImpl(pThis, (CSC_SIZE_T)0, pSrc);
 
 	if (status != CSC_STATUS_SUCCESS)
 	{
@@ -505,12 +505,12 @@ CSC_STATUS CSCMETHOD CSC_LinkedListFillRange(_Inout_ CSC_LinkedList* CONST pThis
 
 CSC_STATUS CSCMETHOD CSC_LinkedListInsertElement(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_opt_ CONST CSC_PCVOID pValue)
 {
-	return CSC_STATUS_SUCCESS;
+	return CSC_LinkedListInsertRangeImpl(pThis, insertIndex, (CSC_SIZE_T)1, pValue);
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListInsertRange(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements)
 {
-	return CSC_STATUS_SUCCESS;
+	return CSC_LinkedListInsertRangeImpl(pThis, insertIndex, numOfElements, pElements);
 }
 
 static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements)
@@ -775,7 +775,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList
 
 CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopy(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_LinkedList* CONST pOther)
 {
-	return CSC_STATUS_SUCCESS;
+	return CSC_LinkedListInsertListCopyImpl(pThis, insertIndex, pOther);
 }
 
 static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_LinkedList* CONST pOther)
@@ -1049,12 +1049,12 @@ CSC_STATUS CSCMETHOD CSC_LinkedListInsertListMove(_Inout_ CSC_LinkedList* CONST 
 
 CSC_STATUS CSCMETHOD CSC_LinkedListRemoveElement(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex)
 {
-	return CSC_STATUS_SUCCESS;
+	return CSC_LinkedListRemoveRangeImpl(pThis, removeIndex, (CSC_SIZE_T)1);
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListRemoveRange(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements)
 {
-	return CSC_STATUS_SUCCESS;
+	return CSC_LinkedListRemoveRangeImpl(pThis, removeIndex, numOfElements);
 }
 
 static CSC_STATUS CSCMETHOD CSC_LinkedListRemoveRangeImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements)
@@ -1150,7 +1150,14 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListRemoveRangeImpl(_Inout_ CSC_LinkedList
 
 CSC_STATUS CSCMETHOD CSC_LinkedListPushElement(_Inout_ CSC_LinkedList* CONST pThis, _In_opt_ CONST CSC_PCVOID pValue)
 {
-	return CSC_STATUS_SUCCESS;
+	CONST CSC_STATUS status = CSC_LinkedListIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	return CSC_LinkedListInsertRangeImpl(pThis, pThis->elementCount, (CSC_SIZE_T)1, pValue);
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListPopElement(_Inout_ CSC_LinkedList* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue)
@@ -1161,7 +1168,14 @@ CSC_STATUS CSCMETHOD CSC_LinkedListPopElement(_Inout_ CSC_LinkedList* CONST pThi
 
 CSC_STATUS CSCMETHOD CSC_LinkedListAppendCopy(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_LinkedList* CONST pOther)
 {
-	return CSC_STATUS_SUCCESS;
+	CONST CSC_STATUS status = CSC_LinkedListIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	return CSC_LinkedListInsertListCopyImpl(pThis, pThis->elementCount, pOther);
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListAppendMove(_Inout_ CSC_LinkedList* CONST pThis, _Inout_ CSC_LinkedList* CONST pOther)
@@ -1209,7 +1223,9 @@ CSC_STATUS CSCMETHOD CSC_LinkedListClose(_Inout_ CSC_LinkedList* CONST pThis)
 
 CSC_PVOID CSCMETHOD CSC_LinkedListAccessElement(_In_ CONST CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T index)
 {
-	return NULL;
+	CONST CSC_LLNode* CONST pNodeBuffer = (CONST CSC_LLNode* CONST)CSC_LinkedListAccessNodeImpl(pThis, index, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+
+	return (pNodeBuffer) ? CSC_LinkedListGetElementFromLLNode(pNodeBuffer) : NULL;
 }
 
 static CSC_LLNode* CSCMETHOD CSC_LinkedListAccessNodeImpl(_In_ CONST CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_LLNode* CONST pCurrentNode)
