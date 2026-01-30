@@ -494,6 +494,201 @@ CSC_STATUS CSCMETHOD CSC_LinkedListFill(_Inout_ CSC_LinkedList* CONST pThis, _In
 
 static CSC_STATUS CSCMETHOD CSC_LinkedListFillImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pValue)
 {
+	CSC_PVOID pIterator;
+	CSC_LinkedList llBuffer;
+	CSC_SIZE_T iterator, defaultValueElementSize;
+	CSC_IContainer* pIteratorIContainer;
+	CSC_LLNode *pFirst, *pLast, *pOld;
+	CONST CSC_IContainer* pElementIContainer;
+	CSC_STATUS status = CSC_LinkedListIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if (numOfElements > CSC_LINKED_LIST_MAXIMUM_SPACE / (pThis->elementSize + sizeof(CSC_LLNode)))
+	{
+		return CSC_STATUS_GENERAL_FAILURE;
+	}
+
+	if (!numOfElements || (pThis->pNestedContainerVTable && !pValue))
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	status = CSC_LinkedListInitialize(&llBuffer, pThis->elementSize, pThis->circular, pThis->pIAllocator, pThis->pNestedContainerVTable);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if (llBuffer.pNestedContainerVTable)
+	{
+		pElementIContainer = (CONST CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)pValue, csc_bit_IContainer);
+
+		if (!pElementIContainer || pElementIContainer->pIContainerVirtualTable != llBuffer.pNestedContainerVTable)
+		{
+			CSC_LinkedListDestroy(&llBuffer);
+			return CSC_STATUS_INVALID_PARAMETER;
+		}
+
+		defaultValueElementSize = llBuffer.pNestedContainerVTable->pGetElementSize(pElementIContainer);
+
+		if (!defaultValueElementSize)
+		{
+			CSC_LinkedListDestroy(&llBuffer);
+			return CSC_STATUS_INVALID_PARAMETER;
+		}
+	}
+
+	if (!CSC_IAllocatorIsUsable(llBuffer.pIAllocator))
+	{
+		CSC_LinkedListDestroy(&llBuffer);
+		return CSC_STATUS_GENERAL_FAILURE;
+	}
+
+	pOld = NULL;
+	pFirst = NULL;
+	pLast = NULL;
+
+	for (iterator = (CSC_SIZE_T)0; iterator < numOfElements; ++iterator)
+	{
+		pLast = (CSC_LLNode*)CSC_IAllocatorAllocZero(llBuffer.pIAllocator, (llBuffer.elementSize + sizeof(CSC_LLNode)));
+
+		if (!pLast)
+		{
+			while (pOld)
+			{
+				pFirst = pOld;
+				pOld = pOld->pPrevious;
+
+				if (llBuffer.pNestedContainerVTable)
+				{
+					pIteratorIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)CSC_LinkedListGetElementFromLLNode((CONST CSC_LLNode* CONST)pFirst), csc_bit_IContainer);
+					llBuffer.pNestedContainerVTable->pDestroy(pIteratorIContainer);
+				}
+
+				CSC_IAllocatorFree(llBuffer.pIAllocator, (CSC_PVOID)pFirst);
+			}
+
+			CSC_LinkedListDestroy(&llBuffer);
+			return CSC_STATUS_GENERAL_FAILURE;
+		}
+
+		if (llBuffer.pNestedContainerVTable)
+		{
+			pIterator = CSC_LinkedListGetElementFromLLNode((CONST CSC_LLNode* CONST)pLast);
+			status = llBuffer.pNestedContainerVTable->pInitialize(pIterator, defaultValueElementSize, llBuffer.pIAllocator);
+
+			if (status == CSC_STATUS_SUCCESS)
+			{
+				pIteratorIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)pIterator, csc_bit_IContainer);
+
+				if (llBuffer.pNestedContainerVTable->pCopy(pIteratorIContainer, pElementIContainer) != CSC_STATUS_SUCCESS)
+				{
+					llBuffer.pNestedContainerVTable->pDestroy(pIteratorIContainer);
+					CSC_IAllocatorFree(llBuffer.pIAllocator, (CSC_PVOID)pLast);
+					pLast = NULL;
+				}
+			}
+			else
+			{
+				CSC_IAllocatorFree(llBuffer.pIAllocator, (CSC_PVOID)pLast);
+				pLast = NULL;
+			}
+		}
+		else if (pValue)
+		{
+			if (CSC_MemoryUtilsCopyMemory(CSC_LinkedListGetElementFromLLNode((CONST CSC_LLNode* CONST)pLast), pValue, llBuffer.elementSize) != CSC_STATUS_SUCCESS)
+			{
+				CSC_IAllocatorFree(llBuffer.pIAllocator, (CSC_PVOID)pLast);
+				pLast = NULL;
+			}
+		}
+
+		if (!pLast)
+		{
+			while (pOld)
+			{
+				pFirst = pOld;
+				pOld = pOld->pPrevious;
+
+				if (llBuffer.pNestedContainerVTable)
+				{
+					pIteratorIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)CSC_LinkedListGetElementFromLLNode((CONST CSC_LLNode* CONST)pFirst), csc_bit_IContainer);
+					llBuffer.pNestedContainerVTable->pDestroy(pIteratorIContainer);
+				}
+
+				CSC_IAllocatorFree(llBuffer.pIAllocator, (CSC_PVOID)pFirst);
+			}
+
+			CSC_LinkedListDestroy(&llBuffer);
+			return CSC_STATUS_GENERAL_FAILURE;
+		}
+
+		if (!pFirst)
+		{
+			pFirst = pLast;
+		}
+
+		pLast->pPrevious = pOld;
+		pLast->pNext = NULL;
+
+		if (pOld)
+		{
+			pOld->pNext = pLast;
+		}
+
+		pOld = pLast;
+	}
+
+	do
+	{
+		if (pFirst && pLast)
+		{
+			pLast->pNext = ((llBuffer.circular) ? pFirst : NULL);
+			pFirst->pPrevious = ((llBuffer.circular) ? pLast : NULL);
+			llBuffer.elementCount = numOfElements;
+			llBuffer.pListHead = pFirst;
+			break;
+		}
+
+		while (pOld)
+		{
+			pFirst = pOld;
+			pOld = pOld->pPrevious;
+
+			if (llBuffer.pNestedContainerVTable)
+			{
+				pIteratorIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)CSC_LinkedListGetElementFromLLNode((CONST CSC_LLNode* CONST)pFirst), csc_bit_IContainer);
+				llBuffer.pNestedContainerVTable->pDestroy(pIteratorIContainer);
+			}
+
+			CSC_IAllocatorFree(llBuffer.pIAllocator, (CSC_PVOID)pFirst);
+		}
+
+		CSC_LinkedListDestroy(&llBuffer);
+		return CSC_STATUS_GENERAL_FAILURE;
+
+	} while (FALSE);
+
+	pOld = llBuffer.pListHead;
+
+	llBuffer.elementCount = pThis->elementCount;
+	llBuffer.pListHead = pThis->pListHead;
+
+	pThis->elementCount = numOfElements;
+	pThis->pListHead = pOld;
+
+	CSC_LinkedListDestroy(&llBuffer);
+
+	if (pThis->pIIterator)
+	{
+		CSC_IIteratorInvalidateIteration(pThis->pIIterator);
+	}
+
 	return CSC_STATUS_SUCCESS;
 }
 

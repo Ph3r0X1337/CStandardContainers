@@ -648,11 +648,11 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayShrinkToFit(_Inout_ CSC_DynamicArray* CONST
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pDefaultValue, _In_ CONST CSC_BOOLEAN reserve, _In_ CONST CSC_BOOLEAN shrink)
 {
-	CONST CSC_IContainer* pDefaultValueIContainer;
+	CSC_PVOID pNewData;
 	CSC_IContainer* pIteratorIContainer;
 	CSC_IContainer* pIteratorIContainerSrc;
-	CSC_PVOID pNewData;
-	CSC_SIZE_T allocationSize, iterator, oldSize;
+	CONST CSC_IContainer* pDefaultValueIContainer;
+	CSC_SIZE_T allocationSize, iterator, oldSize, defaultValueElementSize;
 	CSC_STATUS status = CSC_DynamicArrayIsValid(pThis);
 
 	if (status != CSC_STATUS_SUCCESS)
@@ -694,9 +694,16 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 						return CSC_STATUS_INVALID_PARAMETER;
 					}
 
+					defaultValueElementSize = pThis->pNestedContainerVTable->pGetElementSize(pDefaultValueIContainer);
+
+					if (!defaultValueElementSize)
+					{
+						return CSC_STATUS_INVALID_PARAMETER;
+					}
+
 					for (iterator = pThis->elementCount; iterator < numOfElements; ++iterator)
 					{
-						status = pThis->pNestedContainerVTable->pInitialize((CSC_PVOID)((CSC_BYTE* CONST)pThis->pData + pThis->elementSize * iterator), pThis->pNestedContainerVTable->pGetElementSize(pDefaultValueIContainer), pThis->pIAllocator);
+						status = pThis->pNestedContainerVTable->pInitialize((CSC_PVOID)((CSC_BYTE* CONST)pThis->pData + pThis->elementSize * iterator), defaultValueElementSize, pThis->pIAllocator);
 
 						if (status != CSC_STATUS_SUCCESS)
 						{
@@ -880,6 +887,14 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 						return CSC_STATUS_INVALID_PARAMETER;
 					}
 
+					defaultValueElementSize = pThis->pNestedContainerVTable->pGetElementSize(pDefaultValueIContainer);
+
+					if (!defaultValueElementSize)
+					{
+						CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+						return CSC_STATUS_INVALID_PARAMETER;
+					}
+
 					for (iterator = (CSC_SIZE_T)0; iterator < pThis->elementCount; ++iterator)
 					{
 						pIteratorIContainerSrc = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)((CONST CSC_BYTE* CONST)pThis->pData + pThis->elementSize * iterator), csc_bit_IContainer);
@@ -919,7 +934,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 					{
 						for (iterator = pThis->elementCount; iterator < numOfElements; ++iterator)
 						{
-							status = pThis->pNestedContainerVTable->pInitialize((CSC_PVOID)((CSC_BYTE* CONST)pNewData + pThis->elementSize * iterator), pThis->pNestedContainerVTable->pGetElementSize(pDefaultValueIContainer), pThis->pIAllocator);
+							status = pThis->pNestedContainerVTable->pInitialize((CSC_PVOID)((CSC_BYTE* CONST)pNewData + pThis->elementSize * iterator), defaultValueElementSize, pThis->pIAllocator);
 
 							if (status != CSC_STATUS_SUCCESS)
 							{
@@ -1044,9 +1059,17 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 			return CSC_STATUS_INVALID_PARAMETER;
 		}
 
+		defaultValueElementSize = pThis->pNestedContainerVTable->pGetElementSize(pDefaultValueIContainer);
+
+		if (!defaultValueElementSize)
+		{
+			CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+			return CSC_STATUS_INVALID_PARAMETER;
+		}
+
 		for (iterator = (CSC_SIZE_T)0; iterator < numOfElements; ++iterator)
 		{
-			status = pThis->pNestedContainerVTable->pInitialize((CSC_PVOID)((CONST CSC_BYTE* CONST)pNewData + pThis->elementSize * iterator), pThis->pNestedContainerVTable->pGetElementSize(pDefaultValueIContainer), pThis->pIAllocator);
+			status = pThis->pNestedContainerVTable->pInitialize((CSC_PVOID)((CONST CSC_BYTE* CONST)pNewData + pThis->elementSize * iterator), defaultValueElementSize, pThis->pIAllocator);
 
 			if (status != CSC_STATUS_SUCCESS)
 			{
