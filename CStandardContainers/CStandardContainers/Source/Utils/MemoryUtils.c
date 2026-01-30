@@ -1038,30 +1038,22 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsCopyMemory(_Out_ CONST CSC_PVOID pDst, _In_ CON
 #if CSC_MEMORY_UTILS_USE_RECURSION == FALSE
 #if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_16BIT
 	return CSC_MemoryUtilsMemMoveBasic(pDst, pSrc, size);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
 	return CSC_MemoryUtilsMemMoveNonRecursive(pDst, pSrc, size, csc_st_word);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
 	return CSC_MemoryUtilsMemMoveNonRecursive(pDst, pSrc, size, csc_st_dword);
 #else
 	return CSC_MemoryUtilsMemMoveNonRecursive(pDst, pSrc, size, csc_st_qword);
 #endif
-#endif
-#endif
 #else
 #if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_16BIT
 	return CSC_MemoryUtilsMemMoveBasic(pDst, pSrc, size);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
 	return CSC_MemoryUtilsMemMove(pDst, pSrc, size, csc_st_word);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
 	return CSC_MemoryUtilsMemMove(pDst, pSrc, size, csc_st_dword);
 #else
 	return CSC_MemoryUtilsMemMove(pDst, pSrc, size, csc_st_qword);
-#endif
-#endif
 #endif
 #endif
 #endif
@@ -1085,30 +1077,22 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSetMemory(_Out_ CONST CSC_PVOID pDst, _In_ CONS
 #if CSC_MEMORY_UTILS_USE_RECURSION == FALSE
 #if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_16BIT
 	return CSC_MemoryUtilsMemSetBasic(pDst, value, size);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
 	return CSC_MemoryUtilsMemSetNonRecursive(pDst, value, size, csc_st_word);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
 	return CSC_MemoryUtilsMemSetNonRecursive(pDst, value, size, csc_st_dword);
 #else
 	return CSC_MemoryUtilsMemSetNonRecursive(pDst, value, size, csc_st_qword);
 #endif
-#endif
-#endif
 #else
 #if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_16BIT
 	return CSC_MemoryUtilsMemSetBasic(pDst, value, size);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
 	return CSC_MemoryUtilsMemSet(pDst, value, size, csc_st_word);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
 	return CSC_MemoryUtilsMemSet(pDst, value, size, csc_st_dword);
 #else
 	return CSC_MemoryUtilsMemSet(pDst, value, size, csc_st_qword);
-#endif
-#endif
 #endif
 #endif
 #endif
@@ -1173,30 +1157,22 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemory(_In_ CONST CSC_PCVOID pFirst, _In
 #if CSC_MEMORY_UTILS_USE_RECURSION == FALSE
 #if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_16BIT
 	return CSC_MemoryUtilsCompareMemoryBasic(pFirst, pSecond, size);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
 	return CSC_MemoryUtilsCompareMemoryNonRecursive(pFirst, pSecond, size, csc_st_word);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
 	return CSC_MemoryUtilsCompareMemoryNonRecursive(pFirst, pSecond, size, csc_st_dword);
 #else
 	return CSC_MemoryUtilsCompareMemoryNonRecursive(pFirst, pSecond, size, csc_st_qword);
 #endif
-#endif
-#endif
 #else
 #if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_16BIT
 	return CSC_MemoryUtilsCompareMemoryBasic(pFirst, pSecond, size);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_32BIT
 	return CSC_MemoryUtilsCompareMemoryRecursive(pFirst, pSecond, size, csc_st_word);
-#else
-#if CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
+#elif CSC_DATA_BUS_WIDTH < CSC_DATA_BUS_WIDTH_64BIT
 	return CSC_MemoryUtilsCompareMemoryRecursive(pFirst, pSecond, size, csc_st_dword);
 #else
 	return CSC_MemoryUtilsCompareMemoryRecursive(pFirst, pSecond, size, csc_st_qword);
-#endif
-#endif
 #endif
 #endif
 #endif

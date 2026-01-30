@@ -68,24 +68,18 @@ Same principle applies to taking advantage of size based optimization in the Mem
 #if CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_8BIT
 typedef unsigned char CSC_UINT;
 typedef signed char CSC_INT;
-#else
-#if CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_16BIT
+#elif CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_16BIT
 typedef unsigned short CSC_UINT;
 typedef signed short CSC_INT;
-#else
-#if CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_32BIT
+#elif CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_32BIT
 typedef unsigned long CSC_UINT;
 typedef signed long CSC_INT;
-#else
-#if CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_64BIT
+#elif CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_64BIT
 typedef unsigned long long CSC_UINT;
 typedef signed long long CSC_INT;
 #else
 typedef unsigned long long CSC_UINT;
 typedef signed long long CSC_INT;
-#endif
-#endif
-#endif
 #endif
 
 /* Default configuration assumes a Von - Neumann architecture with a 64 - Bit address bus. */
@@ -94,16 +88,12 @@ typedef signed long long CSC_INT;
 /* Decision logic for assigning the integer type that can be used to hold code pointers. */
 #if CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_16BIT
 typedef unsigned short CSC_CODE_POINTER_TYPE;
-#else
-#if CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_32BIT
+#elif CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_32BIT
 typedef unsigned long CSC_CODE_POINTER_TYPE;
-#else
-#if CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_64BIT
+#elif CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_64BIT
 typedef unsigned long long CSC_CODE_POINTER_TYPE;
 #else
 typedef unsigned long long CSC_CODE_POINTER_TYPE;
-#endif
-#endif
 #endif
 
 /* Default configuration assumes a Von - Neumann architecture with a 64 - Bit address bus. */
@@ -112,16 +102,12 @@ typedef unsigned long long CSC_CODE_POINTER_TYPE;
 /* Decision logic for assigning the integer type that can be used to hold data pointers. */
 #if CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_16BIT
 typedef unsigned short CSC_DATA_POINTER_TYPE;
-#else
-#if CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_32BIT
+#elif CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_32BIT
 typedef unsigned long CSC_DATA_POINTER_TYPE;
-#else
-#if CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_64BIT
+#elif CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_64BIT
 typedef unsigned long long CSC_DATA_POINTER_TYPE;
 #else
 typedef unsigned long long CSC_DATA_POINTER_TYPE;
-#endif
-#endif
 #endif
 
 /* Definition of the unsigned integer type that has the same width as a data pointer. */
