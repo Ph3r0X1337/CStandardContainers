@@ -863,7 +863,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList
 		return status;
 	}
 
-	if ((pThis->elementCount + numOfElements) > CSC_LINKED_LIST_MAXIMUM_SPACE / (pThis->elementSize + sizeof(CSC_LLNode)))
+	if (numOfElements > (CSC_LINKED_LIST_MAXIMUM_SPACE / (pThis->elementSize + sizeof(CSC_LLNode))) - pThis->elementCount)
 	{
 		return CSC_STATUS_GENERAL_FAILURE;
 	}
@@ -1128,7 +1128,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedL
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	if ((pThis->elementCount + pOther->elementCount) > CSC_LINKED_LIST_MAXIMUM_SPACE / (pThis->elementSize + sizeof(CSC_LLNode)))
+	if (pOther->elementCount > (CSC_LINKED_LIST_MAXIMUM_SPACE / (pThis->elementSize + sizeof(CSC_LLNode))) - pThis->elementCount)
 	{
 		return CSC_STATUS_GENERAL_FAILURE;
 	}
@@ -1379,6 +1379,150 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedL
 
 CSC_STATUS CSCMETHOD CSC_LinkedListInsertListMove(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _Inout_ CSC_LinkedList* CONST pOther)
 {
+	CSC_SIZE_T otherElementCount;
+	CSC_LLNode *pInsertElement, *pPrevElement, *pOtherFirstElement, *pOtherLastElement;
+	CSC_STATUS status = CSC_LinkedListIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if (pThis == pOther)
+	{
+		return CSC_LinkedListInsertListCopyImpl(pThis, insertIndex, pOther);
+	}
+
+	status = CSC_LinkedListIsValid(pOther);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if (pThis->pIAllocator == pOther->pIAllocator)
+	{
+		if (insertIndex > pThis->elementCount || pThis->elementSize != pOther->elementSize || pThis->pNestedContainerVTable != pOther->pNestedContainerVTable)
+		{
+			return CSC_STATUS_INVALID_PARAMETER;
+		}
+
+		otherElementCount = pOther->elementCount;
+
+		if (otherElementCount > (CSC_LINKED_LIST_MAXIMUM_SPACE / (pThis->elementSize + sizeof(CSC_LLNode))) - pThis->elementCount)
+		{
+			return CSC_STATUS_GENERAL_FAILURE;
+		}
+
+		if (!otherElementCount)
+		{
+			return CSC_STATUS_SUCCESS;
+		}
+
+		pOtherFirstElement = CSC_LinkedListAccessNodeImpl(pOther, (CSC_SIZE_T)0, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+		pOtherLastElement = CSC_LinkedListAccessNodeImpl(pOther, otherElementCount - (CSC_SIZE_T)1, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+
+		if (!pOtherFirstElement || !pOtherLastElement)
+		{
+			return CSC_STATUS_GENERAL_FAILURE;
+		}
+
+		if (!insertIndex)
+		{
+			if (insertIndex != pThis->elementCount)
+			{
+				pInsertElement = CSC_LinkedListAccessNodeImpl(pThis, (CSC_SIZE_T)0, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+
+				if (!pInsertElement)
+				{
+					return CSC_STATUS_GENERAL_FAILURE;
+				}
+
+				pOtherFirstElement->pPrevious = pInsertElement->pPrevious;
+				pOtherLastElement->pNext = pInsertElement;
+
+				if (pOtherFirstElement->pPrevious)
+				{
+					pOtherFirstElement->pPrevious->pNext = pOtherFirstElement;
+				}
+
+				pInsertElement->pPrevious = pOtherLastElement;
+			}
+			else
+			{
+				if (pThis->circular != pOther->circular)
+				{
+					pOtherLastElement->pNext = ((pThis->circular) ? pOtherFirstElement : NULL);
+					pOtherFirstElement->pPrevious = ((pThis->circular) ? pOtherLastElement : NULL);
+				}
+			}
+
+			pThis->pListHead = pOtherFirstElement;
+		}
+		else
+		{
+			if (insertIndex == pThis->elementCount)
+			{
+				pPrevElement = CSC_LinkedListAccessNodeImpl(pThis, pThis->elementCount - (CSC_SIZE_T)1, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+
+				if (!pPrevElement)
+				{
+					return CSC_STATUS_GENERAL_FAILURE;
+				}
+
+				pOtherFirstElement->pPrevious = pPrevElement;
+				pOtherLastElement->pNext = pPrevElement->pNext;
+
+				if (pOtherLastElement->pNext)
+				{
+					pOtherLastElement->pNext->pPrevious = pOtherLastElement;
+				}
+
+				pPrevElement->pNext = pOtherFirstElement;
+			}
+			else
+			{
+				pInsertElement = CSC_LinkedListAccessNodeImpl(pThis, insertIndex, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+
+				if (!pInsertElement)
+				{
+					return CSC_STATUS_GENERAL_FAILURE;
+				}
+
+				pOtherFirstElement->pPrevious = pInsertElement->pPrevious;
+				pOtherLastElement->pNext = pInsertElement;
+
+				pOtherFirstElement->pPrevious->pNext = pOtherFirstElement;
+				pInsertElement->pPrevious = pOtherLastElement;
+			}
+		}
+
+		pThis->elementCount += otherElementCount;
+		pOther->elementCount = (CSC_SIZE_T)0;
+		pOther->pListHead = (CSC_LLNode*)NULL;
+
+		if (pThis->pIIterator)
+		{
+			CSC_IIteratorOnInsertion(pThis->pIIterator, insertIndex, otherElementCount, pThis->elementCount);
+		}
+
+		if (pOther->pIIterator)
+		{
+			CSC_IIteratorInvalidateIteration(pOther->pIIterator);
+		}
+	}
+	else
+	{
+		status = CSC_LinkedListInsertListCopyImpl(pThis, insertIndex, pOther);
+
+		if (status != CSC_STATUS_SUCCESS)
+		{
+			return status;
+		}
+
+		CSC_LinkedListErase(pOther);
+	}
+
 	return CSC_STATUS_SUCCESS;
 }
 
@@ -1657,7 +1801,14 @@ CSC_STATUS CSCMETHOD CSC_LinkedListAppendCopy(_Inout_ CSC_LinkedList* CONST pThi
 
 CSC_STATUS CSCMETHOD CSC_LinkedListAppendMove(_Inout_ CSC_LinkedList* CONST pThis, _Inout_ CSC_LinkedList* CONST pOther)
 {
-	return CSC_STATUS_SUCCESS;
+	CONST CSC_STATUS status = CSC_LinkedListIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	return CSC_LinkedListInsertListMove(pThis, pThis->elementCount, pOther);
 }
 
 
