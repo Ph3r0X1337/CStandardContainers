@@ -27,7 +27,7 @@ CSC_STATUS CSCMETHOD CSC_IIteratorUpdateIteration(_Inout_ CSC_IIterator* CONST p
 
 CSC_STATUS CSCMETHOD CSC_IIteratorOnInsertion(_Inout_ CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize)
 {
-	if (!numOfElements || insertIndex + numOfElements > newSize || !pThis || !pThis->pIIteratorVirtualTable || !pThis->pIIteratorVirtualTable->pOnInsertion)
+	if (!numOfElements || insertIndex >= newSize || numOfElements > newSize - insertIndex || !pThis || !pThis->pIIteratorVirtualTable || !pThis->pIIteratorVirtualTable->pOnInsertion)
 	{
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
