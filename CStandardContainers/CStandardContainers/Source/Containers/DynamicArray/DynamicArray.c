@@ -314,7 +314,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayInitializeWithSize(_When_(return == CSC_STA
 		return CSC_STATUS_INVALID_PARAMETER;
 	}
 
-	status = CSC_DynamicArrayInitialize(&pThis, elementSize, pIAllocator, pNestedContainerVTable);
+	status = CSC_DynamicArrayInitialize(pThis, elementSize, pIAllocator, pNestedContainerVTable);
 
 	if (status != CSC_STATUS_SUCCESS)
 	{
@@ -1300,7 +1300,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayPopImpl(_Inout_ CSC_DynamicArray* CO
 					return status;
 				}
 
-				pOutputIContainer = (CONST CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)pValue, csc_bit_IContainer);
+				pOutputIContainer = (CSC_IContainer*)CSC_IBaseInterfaceGetInterface((CONST CSC_IBaseInterface* CONST)pValue, csc_bit_IContainer);
 				status = pThis->pNestedContainerVTable->pCopy(pOutputIContainer, pElementIContainer);
 
 				if (status != CSC_STATUS_SUCCESS)
