@@ -2336,6 +2336,109 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListIContainerRemoveRange(_Inout_ CSC_ICon
 
 static CSC_STATUS CSCMETHOD CSC_LinkedListIContainerSwapValues(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T firstIndex, _In_ CONST CSC_SIZE_T secondIndex)
 {
+	CSC_SIZE_T firstAccessIndex, secondAccessIndex, indexBuffer;
+	CSC_LLNode *pFirst, *pSecond, *pFirstPrevious, *pFirstNext, *pSecondPrevious, *pSecondNext, *pNodeBuffer;
+	CSC_LinkedList* CONST pLinkedList = (CSC_LinkedList* CONST)CSC_LinkedListIContainerGetObjectPointer(pThis);
+
+	if (!pLinkedList || !pLinkedList->elementCount || firstIndex >= pLinkedList->elementCount || secondIndex >= pLinkedList->elementCount)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (firstIndex == secondIndex)
+	{
+		return CSC_STATUS_SUCCESS;
+	}
+
+	firstAccessIndex = (firstIndex < secondIndex) ? firstIndex : secondIndex;
+	secondAccessIndex = (firstIndex < secondIndex) ? secondIndex : firstIndex;
+
+	if (pLinkedList->circular && (firstAccessIndex > pLinkedList->elementCount - secondAccessIndex))
+	{
+		indexBuffer = firstAccessIndex;
+		firstAccessIndex = secondAccessIndex;
+		secondAccessIndex = indexBuffer;
+	}
+
+	pFirst = CSC_LinkedListAccessNodeImpl(pLinkedList, firstAccessIndex, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+
+	if (!pFirst)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	pSecond = CSC_LinkedListAccessNodeImpl(pLinkedList, secondAccessIndex, firstAccessIndex, (CONST CSC_LLNode* CONST)pFirst);
+
+	if (!pSecond)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (pLinkedList->pListHead == pFirst)
+	{
+		pLinkedList->pListHead = pSecond;
+	}
+	else if (pLinkedList->pListHead == pSecond)
+	{
+		pLinkedList->pListHead = pFirst;
+	}
+
+	pFirstPrevious = pFirst->pPrevious;
+	pFirstNext = pFirst->pNext;
+	pSecondPrevious = pSecond->pPrevious;
+	pSecondNext = pSecond->pNext;
+
+	if (pFirstPrevious && pSecondPrevious)
+	{
+		pNodeBuffer = pFirstPrevious->pNext;
+		pFirstPrevious->pNext = pSecondPrevious->pNext;
+		pSecondPrevious->pNext = pNodeBuffer;
+	}
+	else
+	{
+		if (pFirstPrevious)
+		{
+			pFirstPrevious->pNext = pSecond;
+		}
+
+		if (pSecondPrevious)
+		{
+			pSecondPrevious->pNext = pFirst;
+		}
+	}
+
+	if (pFirstNext && pSecondNext)
+	{
+		pNodeBuffer = pFirstNext->pPrevious;
+		pFirstNext->pPrevious = pSecondNext->pPrevious;
+		pSecondNext->pPrevious = pNodeBuffer;
+	}
+	else
+	{
+		if (pFirstNext)
+		{
+			pFirstNext->pPrevious = pSecond;
+		}
+
+		if (pSecondNext)
+		{
+			pSecondNext->pPrevious = pFirst;
+		}
+	}
+
+	pNodeBuffer = pFirst->pPrevious;
+	pFirst->pPrevious = pSecond->pPrevious;
+	pSecond->pPrevious = pNodeBuffer;
+
+	pNodeBuffer = pFirst->pNext;
+	pFirst->pNext = pSecond->pNext;
+	pSecond->pNext = pNodeBuffer;
+
+	if (pLinkedList->pIIterator)
+	{
+		CSC_IIteratorUpdateIteration(pLinkedList->pIIterator);
+	}
+
 	return CSC_STATUS_SUCCESS;
 }
 

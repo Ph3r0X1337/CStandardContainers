@@ -3028,6 +3028,11 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerSwapValues(_Inout_ CSC_ICo
 
 		CSC_DynamicArrayDestroy(&arrayBuffer);
 
+		if (status == CSC_STATUS_SUCCESS && pDynamicArray->pIIterator)
+		{
+			CSC_IIteratorUpdateIteration(pDynamicArray->pIIterator);
+		}
+
 		return status;
 	}
 	else
