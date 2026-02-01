@@ -43,10 +43,10 @@ static CSC_IContainerVirtualTable* CSCMETHOD CSC_LinkedListIContainerGetNestedCo
 static CSC_STATUS CSCMETHOD CSC_LinkedListIIterableRegisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator);
 static CSC_STATUS CSCMETHOD CSC_LinkedListIIterableUnregisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator);
 static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableFirstElement(_In_ CONST CSC_IIterable* CONST pThis);
-static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableNextElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement);
+static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableNextElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T currentIndex, _In_ CONST CSC_PCVOID pCurrentElement);
 static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableLastElement(_In_ CONST CSC_IIterable* CONST pThis);
-static CSC_PVOID CSCMETHOD CSC_LinkedListIIterablePreviousElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement);
-static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableGetElementAt(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_opt_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_PVOID pCurrentElement);
+static CSC_PVOID CSCMETHOD CSC_LinkedListIIterablePreviousElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T currentIndex, _In_ CONST CSC_PCVOID pCurrentElement);
+static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableGetElementAt(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_opt_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_PCVOID pCurrentElement);
 static CSC_SIZE_T CSCMETHOD CSC_LinkedListIIterableGetElementCount(_In_ CONST CSC_IIterable* CONST pThis);
 static CSC_SIZE_T CSCMETHOD CSC_LinkedListIIterableGetElementSize(_In_ CONST CSC_IIterable* CONST pThis);
 
@@ -95,6 +95,8 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList
 static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_LinkedList* CONST pOther);
 static CSC_STATUS CSCMETHOD CSC_LinkedListRemoveRangeImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements);
 static CSC_STATUS CSCMETHOD CSC_LinkedListPopImpl(_Inout_ CSC_LinkedList* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue, _In_ CONST CSC_BOOLEAN front);
+static CSC_STATUS CSCMETHOD CSC_LinkedListRotateImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T rotationCount, _In_ CONST CSC_BOOLEAN forward);
+static CSC_STATUS CSCMETHOD CSC_LinkedListChainControl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_BOOLEAN circular);
 static CSC_LLNode* CSCMETHOD CSC_LinkedListAccessNodeImpl(_In_ CONST CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_LLNode* CONST pCurrentNode);
 
 
@@ -531,9 +533,9 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListFillImpl(_Inout_ CSC_LinkedList* CONST
 		return CSC_STATUS_GENERAL_FAILURE;
 	}
 
-	pOld = NULL;
-	pFirst = NULL;
-	pLast = NULL;
+	pOld = (CSC_LLNode*)NULL;
+	pFirst = (CSC_LLNode*)NULL;
+	pLast = (CSC_LLNode*)NULL;
 
 	if (llBuffer.pNestedContainerVTable)
 	{
@@ -585,13 +587,13 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListFillImpl(_Inout_ CSC_LinkedList* CONST
 				{
 					llBuffer.pNestedContainerVTable->pDestroy(pIteratorIContainer);
 					CSC_IAllocatorFree(llBuffer.pIAllocator, (CSC_PVOID)pLast);
-					pLast = NULL;
+					pLast = (CSC_LLNode*)NULL;
 				}
 			}
 			else
 			{
 				CSC_IAllocatorFree(llBuffer.pIAllocator, (CSC_PVOID)pLast);
-				pLast = NULL;
+				pLast = (CSC_LLNode*)NULL;
 			}
 
 			if (!pLast)
@@ -617,7 +619,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListFillImpl(_Inout_ CSC_LinkedList* CONST
 			}
 
 			pLast->pPrevious = pOld;
-			pLast->pNext = NULL;
+			pLast->pNext = (CSC_LLNode*)NULL;
 
 			if (pOld)
 			{
@@ -649,7 +651,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListFillImpl(_Inout_ CSC_LinkedList* CONST
 			if (pValue && CSC_MemoryUtilsCopyMemory(CSC_LinkedListGetElementFromLLNode((CONST CSC_LLNode* CONST)pLast), pValue, llBuffer.elementSize) != CSC_STATUS_SUCCESS)
 			{
 				CSC_IAllocatorFree(llBuffer.pIAllocator, (CSC_PVOID)pLast);
-				pLast = NULL;
+				pLast = (CSC_LLNode*)NULL;
 			}
 
 			if (!pLast)
@@ -671,7 +673,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListFillImpl(_Inout_ CSC_LinkedList* CONST
 			}
 
 			pLast->pPrevious = pOld;
-			pLast->pNext = NULL;
+			pLast->pNext = (CSC_LLNode*)NULL;
 
 			if (pOld)
 			{
@@ -686,8 +688,8 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListFillImpl(_Inout_ CSC_LinkedList* CONST
 	{
 		if (pFirst && pLast)
 		{
-			pLast->pNext = ((llBuffer.circular) ? pFirst : NULL);
-			pFirst->pPrevious = ((llBuffer.circular) ? pLast : NULL);
+			pLast->pNext = (llBuffer.circular) ? pFirst : (CSC_LLNode*)NULL;
+			pFirst->pPrevious = (llBuffer.circular) ? pLast : (CSC_LLNode*)NULL;
 			llBuffer.elementCount = numOfElements;
 			llBuffer.pListHead = pFirst;
 			break;
@@ -891,14 +893,14 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList
 		return CSC_STATUS_GENERAL_FAILURE;
 	}
 
-	pInsertElement = NULL;
-	pPrevElement = NULL;
+	pInsertElement = (CSC_LLNode*)NULL;
+	pPrevElement = (CSC_LLNode*)NULL;
 
 	if (!insertIndex)
 	{
 		if (insertIndex != pThis->elementCount)
 		{
-			pInsertElement = CSC_LinkedListAccessNodeImpl(pThis, (CSC_SIZE_T)0, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+			pInsertElement = pThis->pListHead;
 
 			if (!pInsertElement)
 			{
@@ -928,9 +930,9 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList
 		}
 	}
 
-	pOld = NULL;
-	pFirst = NULL;
-	pLast = NULL;
+	pOld = (CSC_LLNode*)NULL;
+	pFirst = (CSC_LLNode*)NULL;
+	pLast = (CSC_LLNode*)NULL;
 
 	for (iterator = (CSC_SIZE_T)0; iterator < numOfElements; ++iterator)
 	{
@@ -970,13 +972,13 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList
 				{
 					pThis->pNestedContainerVTable->pDestroy(pIteratorIContainer);
 					CSC_IAllocatorFree(pThis->pIAllocator, (CSC_PVOID)pLast);
-					pLast = NULL;
+					pLast = (CSC_LLNode*)NULL;
 				}
 			}
 			else
 			{
 				CSC_IAllocatorFree(pThis->pIAllocator, (CSC_PVOID)pLast);
-				pLast = NULL;
+				pLast = (CSC_LLNode*)NULL;
 			}
 		}
 		else if (pElements)
@@ -984,7 +986,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList
 			if (CSC_MemoryUtilsCopyMemory(CSC_LinkedListGetElementFromLLNode((CONST CSC_LLNode* CONST)pLast), (CSC_PCVOID)((CONST CSC_BYTE* CONST)pElements + iterator * pThis->elementSize), pThis->elementSize) != CSC_STATUS_SUCCESS)
 			{
 				CSC_IAllocatorFree(pThis->pIAllocator, (CSC_PVOID)pLast);
-				pLast = NULL;
+				pLast = (CSC_LLNode*)NULL;
 			}
 		}
 
@@ -1013,7 +1015,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList
 		}
 
 		pLast->pPrevious = pOld;
-		pLast->pNext = NULL;
+		pLast->pNext = (CSC_LLNode*)NULL;
 
 		if (pOld)
 		{
@@ -1031,8 +1033,8 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertRangeImpl(_Inout_ CSC_LinkedList
 			{
 				if (insertIndex == pThis->elementCount)
 				{
-					pLast->pNext = ((pThis->circular) ? pFirst : NULL);
-					pFirst->pPrevious = ((pThis->circular) ? pLast : NULL);
+					pLast->pNext = (pThis->circular) ? pFirst : (CSC_LLNode*)NULL;
+					pFirst->pPrevious = (pThis->circular) ? pLast : (CSC_LLNode*)NULL;
 					pThis->pListHead = pFirst;
 					break;
 				}
@@ -1148,14 +1150,14 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedL
 		return CSC_STATUS_GENERAL_FAILURE;
 	}
 
-	pInsertElement = NULL;
-	pPrevElement = NULL;
+	pInsertElement = (CSC_LLNode*)NULL;
+	pPrevElement = (CSC_LLNode*)NULL;
 
 	if (!insertIndex)
 	{
 		if (insertIndex != pThis->elementCount)
 		{
-			pInsertElement = CSC_LinkedListAccessNodeImpl(pThis, (CSC_SIZE_T)0, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+			pInsertElement = pThis->pListHead;
 
 			if (!pInsertElement)
 			{
@@ -1185,10 +1187,10 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedL
 		}
 	}
 
-	pOld = NULL;
-	pFirst = NULL;
-	pLast = NULL;
-	pBuffer = NULL;
+	pOld = (CSC_LLNode*)NULL;
+	pFirst = (CSC_LLNode*)NULL;
+	pLast = (CSC_LLNode*)NULL;
+	pBuffer = (CSC_LLNode*)NULL;
 
 	for (iterator = (CSC_SIZE_T)0; iterator < pOther->elementCount; ++iterator)
 	{
@@ -1218,7 +1220,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedL
 		if (!pBuffer)
 		{
 			CSC_IAllocatorFree(pThis->pIAllocator, (CSC_PVOID)pLast);
-			pLast = NULL;
+			pLast = (CSC_LLNode*)NULL;
 		}
 		else
 		{
@@ -1237,13 +1239,13 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedL
 					{
 						pThis->pNestedContainerVTable->pDestroy(pIteratorIContainer);
 						CSC_IAllocatorFree(pThis->pIAllocator, (CSC_PVOID)pLast);
-						pLast = NULL;
+						pLast = (CSC_LLNode*)NULL;
 					}
 				}
 				else
 				{
 					CSC_IAllocatorFree(pThis->pIAllocator, (CSC_PVOID)pLast);
-					pLast = NULL;
+					pLast = (CSC_LLNode*)NULL;
 				}
 			}
 			else
@@ -1251,7 +1253,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedL
 				if (CSC_MemoryUtilsCopyMemory(CSC_LinkedListGetElementFromLLNode((CONST CSC_LLNode* CONST)pLast), CSC_LinkedListGetElementFromLLNode((CONST CSC_LLNode* CONST)pBuffer), pThis->elementSize) != CSC_STATUS_SUCCESS)
 				{
 					CSC_IAllocatorFree(pThis->pIAllocator, (CSC_PVOID)pLast);
-					pLast = NULL;
+					pLast = (CSC_LLNode*)NULL;
 				}
 			}
 		}
@@ -1281,7 +1283,7 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedL
 		}
 
 		pLast->pPrevious = pOld;
-		pLast->pNext = NULL;
+		pLast->pNext = (CSC_LLNode*)NULL;
 
 		if (pOld)
 		{
@@ -1299,8 +1301,8 @@ static CSC_STATUS CSCMETHOD CSC_LinkedListInsertListCopyImpl(_Inout_ CSC_LinkedL
 			{
 				if (insertIndex == pThis->elementCount)
 				{
-					pLast->pNext = ((pThis->circular) ? pFirst : NULL);
-					pFirst->pPrevious = ((pThis->circular) ? pLast : NULL);
+					pLast->pNext = (pThis->circular) ? pFirst : (CSC_LLNode*)NULL;
+					pFirst->pPrevious = (pThis->circular) ? pLast : (CSC_LLNode*)NULL;
 					pThis->pListHead = pFirst;
 					break;
 				}
@@ -1431,7 +1433,7 @@ CSC_STATUS CSCMETHOD CSC_LinkedListInsertListMove(_Inout_ CSC_LinkedList* CONST 
 		{
 			if (insertIndex != pThis->elementCount)
 			{
-				pInsertElement = CSC_LinkedListAccessNodeImpl(pThis, (CSC_SIZE_T)0, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+				pInsertElement = pThis->pListHead;
 
 				if (!pInsertElement)
 				{
@@ -1452,8 +1454,8 @@ CSC_STATUS CSCMETHOD CSC_LinkedListInsertListMove(_Inout_ CSC_LinkedList* CONST 
 			{
 				if (pThis->circular != pOther->circular)
 				{
-					pOtherLastElement->pNext = ((pThis->circular) ? pOtherFirstElement : NULL);
-					pOtherFirstElement->pPrevious = ((pThis->circular) ? pOtherLastElement : NULL);
+					pOtherLastElement->pNext = (pThis->circular) ? pOtherFirstElement : (CSC_LLNode*)NULL;
+					pOtherFirstElement->pPrevious = (pThis->circular) ? pOtherLastElement : (CSC_LLNode*)NULL;
 				}
 			}
 
@@ -1814,37 +1816,145 @@ CSC_STATUS CSCMETHOD CSC_LinkedListAppendMove(_Inout_ CSC_LinkedList* CONST pThi
 
 CSC_STATUS CSCMETHOD CSC_LinkedListRotateForward(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T rotationCount)
 {
-	return CSC_STATUS_SUCCESS;
+	return CSC_LinkedListRotateImpl(pThis, rotationCount, (CSC_BOOLEAN)TRUE);
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListRotateForwardByOne(_Inout_ CSC_LinkedList* CONST pThis)
 {
-	return CSC_STATUS_SUCCESS;
+	return CSC_LinkedListRotateImpl(pThis, (CSC_SIZE_T)1, (CSC_BOOLEAN)TRUE);
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListRotateBackward(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T rotationCount)
 {
-	return CSC_STATUS_SUCCESS;
+	return CSC_LinkedListRotateImpl(pThis, rotationCount, (CSC_BOOLEAN)FALSE);
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListRotateBackwardByOne(_Inout_ CSC_LinkedList* CONST pThis)
 {
-	return CSC_STATUS_SUCCESS;
+	return CSC_LinkedListRotateImpl(pThis, (CSC_SIZE_T)1, (CSC_BOOLEAN)FALSE);
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListRotateToIndex(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T newHeadIndex)
 {
+	CONST CSC_STATUS status = CSC_LinkedListIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if (!pThis->circular || newHeadIndex >= pThis->elementCount)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	if (!newHeadIndex)
+	{
+		return CSC_STATUS_SUCCESS;
+	}
+
+	if (newHeadIndex > (pThis->elementCount >> (CSC_SIZE_T)1))
+	{
+		return CSC_LinkedListRotateForward(pThis, newHeadIndex);
+	}
+	else
+	{
+		return CSC_LinkedListRotateBackward(pThis, pThis->elementCount - newHeadIndex);
+	}
+}
+
+static CSC_STATUS CSCMETHOD CSC_LinkedListRotateImpl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T rotationCount, _In_ CONST CSC_BOOLEAN forward)
+{
+	CSC_LLNode* pIterator;
+	CSC_SIZE_T iterator, effectiveRotationCount;
+	CONST CSC_STATUS status = CSC_LinkedListIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if (pThis->elementCount <= (CSC_SIZE_T)1 || !pThis->circular || !rotationCount)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	pIterator = pThis->pListHead;
+
+	if (!pIterator)
+	{
+		return CSC_STATUS_GENERAL_FAILURE;
+	}
+
+	effectiveRotationCount = rotationCount % pThis->elementCount;
+
+	if (!effectiveRotationCount)
+	{
+		return CSC_STATUS_SUCCESS;
+	}
+
+	for (iterator = (CSC_SIZE_T)0; iterator < effectiveRotationCount; ++iterator)
+	{
+		pIterator = ((forward) ? pIterator->pNext : pIterator->pPrevious);
+
+		if (!pIterator)
+		{
+			return CSC_STATUS_GENERAL_FAILURE;
+		}
+	}
+
+	pThis->pListHead = pIterator;
+
+	if (pThis->pIIterator)
+	{
+		CSC_IIteratorInvalidateIteration(pThis->pIIterator);
+	}
+
 	return CSC_STATUS_SUCCESS;
 }
 
 
 CSC_STATUS CSCMETHOD CSC_LinkedListOpen(_Inout_ CSC_LinkedList* CONST pThis)
 {
-	return CSC_STATUS_SUCCESS;
+	return CSC_LinkedListChainControl(pThis, (CSC_BOOLEAN)FALSE);
 }
 
 CSC_STATUS CSCMETHOD CSC_LinkedListClose(_Inout_ CSC_LinkedList* CONST pThis)
 {
+	return CSC_LinkedListChainControl(pThis, (CSC_BOOLEAN)TRUE);
+}
+
+static CSC_STATUS CSCMETHOD CSC_LinkedListChainControl(_Inout_ CSC_LinkedList* CONST pThis, _In_ CONST CSC_BOOLEAN circular)
+{
+	CSC_LLNode *pFirst, *pLast;
+	CONST CSC_STATUS status = CSC_LinkedListIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if ((pThis->circular && circular) || (!pThis->circular && !circular))
+	{
+		return CSC_STATUS_SUCCESS;
+	}
+
+	if (pThis->elementCount)
+	{
+		pFirst = pThis->pListHead;
+		pLast = CSC_LinkedListAccessNodeImpl(pThis, pThis->elementCount - (CSC_SIZE_T)1, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+
+		if (!pFirst || !pLast)
+		{
+			return CSC_STATUS_GENERAL_FAILURE;
+		}
+
+		pFirst->pPrevious = (circular) ? pLast : (CSC_LLNode*)NULL;
+		pLast->pNext = (circular) ? pFirst : (CSC_LLNode*)NULL;
+	}
+
+	pThis->circular = circular;
+
 	return CSC_STATUS_SUCCESS;
 }
 
@@ -1862,15 +1972,129 @@ CSC_PVOID CSCMETHOD CSC_LinkedListAccessElement(_In_ CONST CSC_LinkedList* CONST
 
 	return (pNodeBuffer) ? CSC_LinkedListGetElementFromLLNode(pNodeBuffer) : NULL;
 }
-// LinkedListAccessNodeImpl assumes a valid pThis -> Remove comment later
+
 static CSC_LLNode* CSCMETHOD CSC_LinkedListAccessNodeImpl(_In_ CONST CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_LLNode* CONST pCurrentNode)
 {
-	return (CSC_LLNode*)NULL;
+	CSC_LLNode* pNode;
+	CSC_BOOLEAN forwardFromHead, forwardFromCurrentElement;
+	CSC_SIZE_T iterator, distanceToHead, distanceToCurrentElement;
+
+	if (!pThis || !pThis->elementCount || !pThis->pListHead || index >= pThis->elementCount)
+	{
+		return (CSC_LLNode*)NULL;
+	}
+
+	forwardFromHead = (pThis->circular && index > (pThis->elementCount >> (CSC_SIZE_T)1)) ? (CSC_BOOLEAN)FALSE : (CSC_BOOLEAN)TRUE;
+	distanceToHead =  (forwardFromHead) ? index : (pThis->elementCount - index);
+
+	if (currentIndex != CSC_CONTAINER_INVALID_INDEX && pCurrentNode && currentIndex < pThis->elementCount)
+	{
+		forwardFromCurrentElement = (index > currentIndex) ? (CSC_BOOLEAN)TRUE : (CSC_BOOLEAN)FALSE;
+		distanceToCurrentElement = (forwardFromCurrentElement) ? (index - currentIndex) : (currentIndex - index);
+
+		if (pThis->circular && distanceToCurrentElement > (pThis->elementCount >> (CSC_SIZE_T)1))
+		{
+			distanceToCurrentElement = pThis->elementCount - distanceToCurrentElement;
+			forwardFromCurrentElement = (forwardFromCurrentElement) ? (CSC_BOOLEAN)FALSE : (CSC_BOOLEAN)TRUE;
+		}
+
+		if (distanceToCurrentElement < distanceToHead)
+		{
+			pNode = (CSC_LLNode*)pCurrentNode;
+
+			for (iterator = (CSC_SIZE_T)0; iterator < distanceToCurrentElement; ++iterator)
+			{
+				if (!pNode)
+				{
+					return (CSC_LLNode*)NULL;
+				}
+
+				pNode = (forwardFromCurrentElement) ? pNode->pNext : pNode->pPrevious;
+			}
+		}
+		else
+		{
+			pNode = pThis->pListHead;
+
+			for (iterator = (CSC_SIZE_T)0; iterator < distanceToHead; ++iterator)
+			{
+				if (!pNode)
+				{
+					return (CSC_LLNode*)NULL;
+				}
+
+				pNode = (forwardFromHead) ? pNode->pNext : pNode->pPrevious;
+			}
+		}
+	}
+	else
+	{
+		pNode = pThis->pListHead;
+
+		for (iterator = (CSC_SIZE_T)0; iterator < distanceToHead; ++iterator)
+		{
+			if (!pNode)
+			{
+				return (CSC_LLNode*)NULL;
+			}
+
+			pNode = (forwardFromHead) ? pNode->pNext : pNode->pPrevious;
+		}
+	}
+
+	return pNode;
 }
 
 
 CSC_STATUS CSCMETHOD CSC_LinkedListReverse(_Inout_ CSC_LinkedList* CONST pThis)
 {
+	CSC_SIZE_T iterator;
+	CSC_LLNode *pNode, *pNodeBuffer;
+	CONST CSC_STATUS status = CSC_LinkedListIsValid(pThis);
+
+	if (status != CSC_STATUS_SUCCESS)
+	{
+		return status;
+	}
+
+	if (!pThis->pListHead)
+	{
+		return CSC_STATUS_INVALID_PARAMETER;
+	}
+
+	pNode = pThis->pListHead;
+	pThis->pListHead = CSC_LinkedListAccessNodeImpl(pThis, pThis->elementCount - (CSC_SIZE_T)1, CSC_CONTAINER_INVALID_INDEX, (CONST CSC_LLNode* CONST)NULL);
+
+	if (!pThis->pListHead)
+	{
+		pThis->pListHead = pNode;
+		return CSC_STATUS_GENERAL_FAILURE;
+	}
+
+	for (iterator = (CSC_SIZE_T)0; iterator < pThis->elementCount; ++iterator)
+	{
+		if (!pNode)
+		{
+			if (pThis->pIIterator)
+			{
+				CSC_IIteratorInvalidateIteration(pThis->pIIterator);
+			}
+
+			return CSC_STATUS_GENERAL_FAILURE;
+		}
+
+		pNodeBuffer = pNode->pNext;
+		pNode->pNext = pNode->pPrevious;
+		pNode->pPrevious = pNodeBuffer;
+
+		pNode = pNode->pPrevious;
+	}
+
+	if (pThis->pIIterator)
+	{
+		CSC_IIteratorInvalidateIteration(pThis->pIIterator);
+	}
+
 	return CSC_STATUS_SUCCESS;
 }
 
@@ -1925,7 +2149,7 @@ CSC_STATUS CSCMETHOD CSC_LinkedListIsCircular(_In_ CONST CSC_LinkedList* CONST p
 	}
 	else
 	{
-		return ((pThis->circular) ? CSC_STATUS_GENERAL_FAILURE : CSC_STATUS_SUCCESS);
+		return (pThis->circular) ? CSC_STATUS_GENERAL_FAILURE : CSC_STATUS_SUCCESS;
 	}
 }
 
@@ -2303,9 +2527,27 @@ static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableFirstElement(_In_ CONST CSC_II
 	}
 }
 
-static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableNextElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement)
+static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableNextElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T currentIndex, _In_ CONST CSC_PCVOID pCurrentElement)
 {
-	return NULL;
+	CSC_LLNode* pNode;
+	CSC_LLNode* pCurrentNode = (CSC_LLNode*)NULL;
+	CONST CSC_LinkedList* CONST pLinkedList = (CONST CSC_LinkedList* CONST)CSC_LinkedListIIterableGetObjectPointer(pThis);
+
+	if (!pLinkedList || currentIndex == CSC_CONTAINER_INVALID_INDEX)
+	{
+		return NULL;
+	}
+	else
+	{
+		if (pCurrentElement)
+		{
+			pCurrentNode = (CSC_LLNode*)((CSC_BYTE* CONST)pCurrentElement - sizeof(CSC_LLNode));
+		}
+
+		pNode = CSC_LinkedListAccessNodeImpl(pLinkedList, currentIndex + (CSC_SIZE_T)1, currentIndex, pCurrentNode);
+
+		return (pNode) ? CSC_LinkedListGetElementFromLLNode(pNode) : NULL;
+	}
 }
 
 static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableLastElement(_In_ CONST CSC_IIterable* CONST pThis)
@@ -2322,14 +2564,50 @@ static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableLastElement(_In_ CONST CSC_IIt
 	}
 }
 
-static CSC_PVOID CSCMETHOD CSC_LinkedListIIterablePreviousElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CSC_SIZE_T currentIndex, _In_ CSC_PVOID pCurrentElement)
+static CSC_PVOID CSCMETHOD CSC_LinkedListIIterablePreviousElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T currentIndex, _In_ CONST CSC_PCVOID pCurrentElement)
 {
-	return NULL;
+	CSC_LLNode* pNode;
+	CSC_LLNode* pCurrentNode = (CSC_LLNode*)NULL;
+	CONST CSC_LinkedList* CONST pLinkedList = (CONST CSC_LinkedList* CONST)CSC_LinkedListIIterableGetObjectPointer(pThis);
+
+	if (!pLinkedList || !currentIndex)
+	{
+		return NULL;
+	}
+	else
+	{
+		if (pCurrentElement)
+		{
+			pCurrentNode = (CSC_LLNode*)((CSC_BYTE* CONST)pCurrentElement - sizeof(CSC_LLNode));
+		}
+
+		pNode = CSC_LinkedListAccessNodeImpl(pLinkedList, currentIndex - (CSC_SIZE_T)1, currentIndex, pCurrentNode);
+
+		return (pNode) ? CSC_LinkedListGetElementFromLLNode(pNode) : NULL;
+	}
 }
 
-static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableGetElementAt(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_opt_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_PVOID pCurrentElement)
+static CSC_PVOID CSCMETHOD CSC_LinkedListIIterableGetElementAt(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T index, _In_opt_ CONST CSC_SIZE_T currentIndex, _In_opt_ CONST CSC_PCVOID pCurrentElement)
 {
-	return NULL;
+	CSC_LLNode* pNode;
+	CSC_LLNode* pCurrentNode = (CSC_LLNode*)NULL;
+	CONST CSC_LinkedList* CONST pLinkedList = (CONST CSC_LinkedList* CONST)CSC_LinkedListIIterableGetObjectPointer(pThis);
+
+	if (!pLinkedList)
+	{
+		return NULL;
+	}
+	else
+	{
+		if (currentIndex != CSC_CONTAINER_INVALID_INDEX && pCurrentElement)
+		{
+			pCurrentNode = (CSC_LLNode*)((CSC_BYTE* CONST)pCurrentElement - sizeof(CSC_LLNode));
+		}
+
+		pNode = CSC_LinkedListAccessNodeImpl(pLinkedList, index, currentIndex, pCurrentNode);
+
+		return (pNode) ? CSC_LinkedListGetElementFromLLNode(pNode) : NULL;
+	}
 }
 
 static CSC_SIZE_T CSCMETHOD CSC_LinkedListIIterableGetElementCount(_In_ CONST CSC_IIterable* CONST pThis)

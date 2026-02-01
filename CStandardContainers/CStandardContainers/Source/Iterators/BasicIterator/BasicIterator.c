@@ -207,7 +207,7 @@ CSC_PVOID CSCMETHOD CSC_BasicIteratorFirstElement(_Inout_ CSC_BasicIterator* CON
 	}
 	else
 	{
-		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, (CSC_SIZE_T)0, pThis->currentIndex, pThis->pCurrentElement);
+		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, (CSC_SIZE_T)0, pThis->currentIndex, (CSC_PCVOID)pThis->pCurrentElement);
 
 		if (!pElement)
 		{
@@ -230,7 +230,7 @@ CSC_PVOID CSCMETHOD CSC_BasicIteratorNextElement(_Inout_ CSC_BasicIterator* CONS
 		return NULL;
 	}
 
-	pThis->pCurrentElement = CSC_IIterableNextElement(pThis->pIIterable, pThis->currentIndex, pThis->pCurrentElement);
+	pThis->pCurrentElement = CSC_IIterableNextElement(pThis->pIIterable, pThis->currentIndex, (CSC_PCVOID)pThis->pCurrentElement);
 
 	if (!pThis->pCurrentElement)
 	{
@@ -279,7 +279,7 @@ CSC_PVOID CSCMETHOD CSC_BasicIteratorLastElement(_Inout_ CSC_BasicIterator* CONS
 	}
 	else
 	{
-		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, pThis->elementCount - (CSC_SIZE_T)1, pThis->currentIndex, pThis->pCurrentElement);
+		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, pThis->elementCount - (CSC_SIZE_T)1, pThis->currentIndex, (CSC_PCVOID)pThis->pCurrentElement);
 
 		if (!pElement)
 		{
@@ -308,7 +308,7 @@ CSC_PVOID CSCMETHOD CSC_BasicIteratorPreviousElement(_Inout_ CSC_BasicIterator* 
 		return NULL;
 	}
 
-	pThis->pCurrentElement = CSC_IIterablePreviousElement(pThis->pIIterable, pThis->currentIndex, pThis->pCurrentElement);
+	pThis->pCurrentElement = CSC_IIterablePreviousElement(pThis->pIIterable, pThis->currentIndex, (CSC_PCVOID)pThis->pCurrentElement);
 
 	if (!pThis->pCurrentElement)
 	{
@@ -342,7 +342,7 @@ CSC_PVOID CSCMETHOD CSC_BasicIteratorMoveToIndex(_Inout_ CSC_BasicIterator* CONS
 			return NULL;
 		}
 
-		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, index, CSC_ITERATOR_INVALID_INDEX, NULL);
+		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, index, CSC_ITERATOR_INVALID_INDEX, (CSC_PCVOID)NULL);
 
 		if (!pElement)
 		{
@@ -357,7 +357,7 @@ CSC_PVOID CSCMETHOD CSC_BasicIteratorMoveToIndex(_Inout_ CSC_BasicIterator* CONS
 	}
 	else
 	{
-		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, index, pThis->currentIndex, pThis->pCurrentElement);
+		pElement = CSC_IIterableGetElementAt(pThis->pIIterable, index, pThis->currentIndex, (CSC_PCVOID)pThis->pCurrentElement);
 
 		if (!pElement)
 		{
@@ -413,7 +413,7 @@ CSC_PVOID CSCMETHOD CSC_BasicIteratorGetCurrentElement(_In_ CONST CSC_BasicItera
 
 CSC_PVOID CSCMETHOD CSC_BasicIteratorGetElementAt(_In_ CONST CSC_BasicIterator* CONST pThis, _In_ CONST CSC_SIZE_T index)
 {
-	return (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable) ? NULL : CSC_IIterableGetElementAt(pThis->pIIterable, index, ((pThis->iterationValid) ? pThis->currentIndex : CSC_ITERATOR_INVALID_INDEX), ((pThis->iterationValid) ? pThis->pCurrentElement : NULL));
+	return (CSC_BasicIteratorIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->pIIterable) ? NULL : CSC_IIterableGetElementAt(pThis->pIIterable, index, ((pThis->iterationValid) ? pThis->currentIndex : CSC_ITERATOR_INVALID_INDEX), (CSC_PCVOID)((pThis->iterationValid) ? pThis->pCurrentElement : NULL));
 }
 
 
@@ -530,7 +530,7 @@ static CSC_STATUS CSCMETHOD CSC_BasicIteratorIIteratorUpdateIteration(_Inout_ CS
 		}
 		else
 		{
-			pBasicIterator->pCurrentElement = CSC_IIterableGetElementAt(pBasicIterator->pIIterable, pBasicIterator->currentIndex, CSC_ITERATOR_INVALID_INDEX, NULL);
+			pBasicIterator->pCurrentElement = CSC_IIterableGetElementAt(pBasicIterator->pIIterable, pBasicIterator->currentIndex, CSC_ITERATOR_INVALID_INDEX, (CSC_PCVOID)NULL);
 
 			if (!pBasicIterator->pCurrentElement)
 			{
@@ -583,7 +583,7 @@ static CSC_STATUS CSCMETHOD CSC_BasicIteratorIIteratorOnInsertion(_Inout_ CSC_II
 		}
 		else
 		{
-			pBasicIterator->pCurrentElement = CSC_IIterableGetElementAt(pBasicIterator->pIIterable, pBasicIterator->currentIndex, CSC_ITERATOR_INVALID_INDEX, NULL);
+			pBasicIterator->pCurrentElement = CSC_IIterableGetElementAt(pBasicIterator->pIIterable, pBasicIterator->currentIndex, CSC_ITERATOR_INVALID_INDEX, (CSC_PCVOID)NULL);
 
 			if (!pBasicIterator->pCurrentElement)
 			{
@@ -644,7 +644,7 @@ static CSC_STATUS CSCMETHOD CSC_BasicIteratorIIteratorOnRemoval(_Inout_ CSC_IIte
 		}
 		else
 		{
-			pBasicIterator->pCurrentElement = CSC_IIterableGetElementAt(pBasicIterator->pIIterable, pBasicIterator->currentIndex, CSC_ITERATOR_INVALID_INDEX, NULL);
+			pBasicIterator->pCurrentElement = CSC_IIterableGetElementAt(pBasicIterator->pIIterable, pBasicIterator->currentIndex, CSC_ITERATOR_INVALID_INDEX, (CSC_PCVOID)NULL);
 
 			if (!pBasicIterator->pCurrentElement)
 			{
