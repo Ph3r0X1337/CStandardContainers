@@ -13,5 +13,8 @@
 #include "../Utils/StringUtils.h"
 
 #include "../Containers/DynamicArray/DynamicArray.h"
+#include "../Containers/LinkedList/LinkedList.h"
+
+#include "../Iterators/BasicIterator/BasicIterator.h"
 
 #endif
