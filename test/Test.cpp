@@ -207,5 +207,43 @@ int main() {
 
   CSC_DynamicArrayErase(&da);
 
+  CSC_DynamicArrayDestroy(&da);
+
+  if (CSC_DynamicArrayInitializeWithSize(&da, sizeof(IVec3), (SIZE_T)200, &def,
+                                         pAllocator,
+                                         nullptr) != CSC_STATUS_SUCCESS) {
+    std::println("Failed to initialize with size!");
+    return 1;
+  }
+
+  for (iterator = (SIZE_T)0; iterator < (SIZE_T)200; ++iterator) {
+    vecBuffer = (IVec3){(int)iterator, (int)iterator, (int)iterator};
+
+    pVecInArr = (IVec3 *)CSC_DynamicArrayAccessElement(&da, iterator);
+
+    if (pVecInArr)
+      *pVecInArr = vecBuffer;
+    else
+      std::println("Failed to access element {}!", iterator);
+  }
+
+  std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}\n",
+               (int)CSC_DynamicArrayGetSize(&da),
+               (int)CSC_DynamicArrayGetCapacity(&da),
+               (int)(CSC_DynamicArrayGetSize(&da) *
+                     CSC_DynamicArrayGetElementSize(&da)));
+
+  printVec(&da);
+
+  CSC_DynamicArrayErase(&da);
+
+  std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}\n",
+               (int)CSC_DynamicArrayGetSize(&da),
+               (int)/*CSC_DynamicArrayGetCapacity(&da)*/ da.reservedSpace,
+               (int)(CSC_DynamicArrayGetSize(&da) *
+                     CSC_DynamicArrayGetElementSize(&da)));
+
+  CSC_DynamicArrayDestroy(&da);
+
   return 0;
 }
