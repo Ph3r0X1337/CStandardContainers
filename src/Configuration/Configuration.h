@@ -7,17 +7,24 @@ extern "C" {
 
 /*
 Description:
-The Configuration.h file contains the main configuration used by the library to adjust to the underlying system/architecture.
-It contains a default configuration which can be copied and adjusted to implement a custom configuration.
-The CSC library requires an address width for code and data pointers of at least 16 bits, hence at least access two operations on 16-Bit operands is required.
-Furthermore, implemented allocators are expected to allocate memory on at least 16-Bit alignment.
-The default configuration currently assumes a 64-Bit Von-Neumann architecture with a data- and address-width of both 64-Bit.
-Configurations are activated through a #define preprocessor macro. WARNING: Only one configuration should be active!
-Inactive configurations have their #define macro commented out.
-The CSC library is mostly written C89/ANSI-C, however it makes use of single line comments which are not backed by this standard.
-Despite that, these comments can simply be converted to multi-line comments, which are backed by the standard.
-The C89/ANSI-C standard does not define 64-Bit types like long long, hence using this library in 64-Bit environment automatically requires the C99 standard.
-Same principle applies to taking advantage of size based optimization in the MemoryUtils, however this feature can be disabled in the configuration.
+The Configuration.h file contains the main configuration used by the library to
+adjust to the underlying system/architecture. It contains a default
+configuration which can be copied and adjusted to implement a custom
+configuration. The CSC library requires an address width for code and data
+pointers of at least 16 bits, hence at least access two operations on 16-Bit
+operands is required. Furthermore, implemented allocators are expected to
+allocate memory on at least 16-Bit alignment. The default configuration
+currently assumes a 64-Bit Von-Neumann architecture with a data- and
+address-width of both 64-Bit. Configurations are activated through a #define
+preprocessor macro. WARNING: Only one configuration should be active! Inactive
+configurations have their #define macro commented out. The CSC library is mostly
+written C89/ANSI-C, however it makes use of single line comments which are not
+backed by this standard. Despite that, these comments can simply be converted to
+multi-line comments, which are backed by the standard. The C89/ANSI-C standard
+does not define 64-Bit types like long long, hence using this library in 64-Bit
+environment automatically requires the C99 standard. Same principle applies to
+taking advantage of size based optimization in the MemoryUtils, however this
+feature can be disabled in the configuration.
 */
 
 /* Definition of the various data bus widths supported by the library. */
@@ -26,45 +33,51 @@ Same principle applies to taking advantage of size based optimization in the Mem
 #define CSC_DATA_BUS_WIDTH_32BIT 0x20
 #define CSC_DATA_BUS_WIDTH_64BIT 0x40
 
-/* Definition of the various data bus address widths supported by the library. */
+/* Definition of the various data bus address widths supported by the library.
+ */
 #define CSC_ADDRESS_BUS_WIDTH_DATA_16BIT 0x10
 #define CSC_ADDRESS_BUS_WIDTH_DATA_32BIT 0x20
 #define CSC_ADDRESS_BUS_WIDTH_DATA_64BIT 0x40
 
-/* Definition of the various code bus address widths supported by the library. */
+/* Definition of the various code bus address widths supported by the library.
+ */
 #define CSC_ADDRESS_BUS_WIDTH_CODE_16BIT 0x10
 #define CSC_ADDRESS_BUS_WIDTH_CODE_32BIT 0x20
 #define CSC_ADDRESS_BUS_WIDTH_CODE_64BIT 0x40
 
 /* Define macros for the configurations available. */
 /* Only one configuration can be active at a time. */
-/*#define CSC_CONFIG_DEFAULT*/
-#define CSC_CONFIG_WINDOWS_NATIVE
+#define CSC_CONFIG_DEFAULT
+// #define CSC_CONFIG_WINDOWS_NATIVE
 
 /* Beginning of the default configuration. */
 /* Can be used as a template to implement custom configurations. */
 #ifdef CSC_CONFIG_DEFAULT
 
-/* Macro definitions for selecting the calling conventions for methods and functions. */
+/* Macro definitions for selecting the calling conventions for methods and
+ * functions. */
 #define CSCAPI
 #define CSCMETHOD
 
-/* Macro for the const keyword to match the Windows coding style of the library. */
+/* Macro for the const keyword to match the Windows coding style of the library.
+ */
 #define CONST const
 
-/* Macro definitions that can be used to implement annotions, if supported by the compiler. */
+/* Macro definitions that can be used to implement annotions, if supported by
+ * the compiler. */
 #define _In_
 #define _In_opt_
 #define _Inout_
 #define _Out_
 #define _Out_opt_
 
-#define _When_(x)
+#define _When_(x, y)
 
 /* Default configuration assumes a data width of 64 - Bit. */
 #define CSC_DATA_BUS_WIDTH CSC_DATA_BUS_WIDTH_64BIT
 
-/* Decision logic for assigning the basic integer types supported by the library. */
+/* Decision logic for assigning the basic integer types supported by the
+ * library. */
 #if CSC_DATA_BUS_WIDTH == CSC_DATA_BUS_WIDTH_8BIT
 typedef unsigned char CSC_UINT;
 typedef signed char CSC_INT;
@@ -82,10 +95,12 @@ typedef unsigned long long CSC_UINT;
 typedef signed long long CSC_INT;
 #endif
 
-/* Default configuration assumes a Von - Neumann architecture with a 64 - Bit address bus. */
+/* Default configuration assumes a Von - Neumann architecture with a 64 - Bit
+ * address bus. */
 #define CSC_ADDRESS_BUS_WIDTH_CODE CSC_ADDRESS_BUS_WIDTH_CODE_64BIT
 
-/* Decision logic for assigning the integer type that can be used to hold code pointers. */
+/* Decision logic for assigning the integer type that can be used to hold code
+ * pointers. */
 #if CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_16BIT
 typedef unsigned short CSC_CODE_POINTER_TYPE;
 #elif CSC_ADDRESS_BUS_WIDTH_CODE == CSC_ADDRESS_BUS_WIDTH_CODE_32BIT
@@ -96,10 +111,12 @@ typedef unsigned long long CSC_CODE_POINTER_TYPE;
 typedef unsigned long long CSC_CODE_POINTER_TYPE;
 #endif
 
-/* Default configuration assumes a Von - Neumann architecture with a 64 - Bit address bus. */
+/* Default configuration assumes a Von - Neumann architecture with a 64 - Bit
+ * address bus. */
 #define CSC_ADDRESS_BUS_WIDTH_DATA CSC_ADDRESS_BUS_WIDTH_DATA_64BIT
 
-/* Decision logic for assigning the integer type that can be used to hold data pointers. */
+/* Decision logic for assigning the integer type that can be used to hold data
+ * pointers. */
 #if CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_16BIT
 typedef unsigned short CSC_DATA_POINTER_TYPE;
 #elif CSC_ADDRESS_BUS_WIDTH_DATA == CSC_ADDRESS_BUS_WIDTH_DATA_32BIT
@@ -110,24 +127,29 @@ typedef unsigned long long CSC_DATA_POINTER_TYPE;
 typedef unsigned long long CSC_DATA_POINTER_TYPE;
 #endif
 
-/* Definition of the unsigned integer type that has the same width as a data pointer. */
-/* Should not be used to hold or compare pointers itself, rather for offset calculations or indeces that have to match data pointer dimensions. */
+/* Definition of the unsigned integer type that has the same width as a data
+ * pointer. */
+/* Should not be used to hold or compare pointers itself, rather for offset
+ * calculations or indeces that have to match data pointer dimensions. */
 typedef CSC_DATA_POINTER_TYPE CSC_SIZE_T;
 
-/* Definition of types used to hold characters of ANSI, UCS - 2 or UTF - 16 strings. */
+/* Definition of types used to hold characters of ANSI, UCS - 2 or UTF - 16
+ * strings. */
 typedef unsigned char CSC_CHAR;
 typedef unsigned short CSC_WCHAR;
 
-/* Definition of fixed - size unsigned integer types corresponding to assembly instructions(x86 - Style). */
+/* Definition of fixed - size unsigned integer types corresponding to assembly
+ * instructions(x86 - Style). */
 typedef unsigned char CSC_BYTE;
 typedef unsigned short CSC_WORD;
-/* Definition of the CSC_DWORD and CSC_QWORD types is optional, only define them if your architecture / compiler supports them. */
+/* Definition of the CSC_DWORD and CSC_QWORD types is optional, only define them
+ * if your architecture / compiler supports them. */
 typedef unsigned long CSC_DWORD;
 typedef unsigned long long CSC_QWORD;
 
 /* Definitions for type agnostic pointers used by the library. */
-typedef void* CSC_PVOID;
-typedef CONST void* CSC_PCVOID;
+typedef void *CSC_PVOID;
+typedef CONST void *CSC_PCVOID;
 
 /* Definition of return types used by the library. */
 typedef signed long CSC_STATUS;
@@ -155,9 +177,9 @@ typedef unsigned char CSC_BOOLEAN;
 
 #endif
 
-
 /* Beginning of the Windows native configuration. */
-/* Supports x86 - 32 and x86 - 64 architectures, potentially also ARM32 architectures. */
+/* Supports x86 - 32 and x86 - 64 architectures, potentially also ARM32
+ * architectures. */
 #ifdef CSC_CONFIG_WINDOWS_NATIVE
 
 #include <Windows.h>
@@ -196,7 +218,7 @@ typedef DWORD CSC_DWORD;
 typedef QWORD CSC_QWORD;
 
 typedef PVOID CSC_PVOID;
-typedef CONST void* CSC_PCVOID;
+typedef CONST void *CSC_PCVOID;
 
 typedef SIZE_T CSC_SIZE_T;
 
@@ -221,4 +243,3 @@ typedef BOOLEAN CSC_BOOLEAN;
 #endif
 
 #endif
-
