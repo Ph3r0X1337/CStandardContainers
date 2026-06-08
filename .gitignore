@@ -30,15 +30,10 @@
 *.exe
 *.out
 *.app
-CStandardContainers/.vs/CStandardContainers/v16/.suo
-CStandardContainers/.vs/CStandardContainers/v16/Browse.VC.db
-CStandardContainers/CStandardContainers/CStandardContainers.vcxproj.user
-CStandardContainers/Debug/CStandardContainers.idb
-CStandardContainers/Debug/CStandardContainers.pdb
 *.ipch
-/CStandardContainers/CStandardContainers/Debug
-/CStandardContainers/.vs/CStandardContainers/v17
-/CStandardContainers/.vs/CStandardContainers/FileContentIndex
-/CStandardContainers/CStandardContainers/x64
 *.idb
 *.pdb
+
+# Build folders
+build/
+out/
