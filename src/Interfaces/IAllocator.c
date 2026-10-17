@@ -50,7 +50,7 @@ CSC_PVOID CSCMETHOD CSC_IAllocatorAllocZero(_In_ CONST CSC_IAllocator* CONST pTh
 }
 
 
-CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock)
+CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock, _In_ CONST CSC_SIZE_T size)
 {
 	if (!pMemoryBlock || !pThis || !pThis->pIAllocatorVirtualTable || !pThis->pIAllocatorVirtualTable->pFree)
 	{
@@ -58,7 +58,7 @@ CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST CSC_IAllocator* CONST pThis, 
 	}
 	else
 	{
-		return pThis->pIAllocatorVirtualTable->pFree(pThis, pMemoryBlock);
+		return pThis->pIAllocatorVirtualTable->pFree(pThis, pMemoryBlock, size);
 	}
 }
 

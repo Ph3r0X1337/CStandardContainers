@@ -1230,7 +1230,7 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSwapValuesHeap(_Inout_ CONST CSC_PVOID pFirst, 
 
 	if (status != CSC_STATUS_SUCCESS)
 	{
-		CSC_IAllocatorFree(pIAllocator, pBuffer);
+		CSC_IAllocatorFree(pIAllocator, pBuffer, size);
 		return status;
 	}
 
@@ -1238,13 +1238,13 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSwapValuesHeap(_Inout_ CONST CSC_PVOID pFirst, 
 
 	if (status != CSC_STATUS_SUCCESS)
 	{
-		CSC_IAllocatorFree(pIAllocator, pBuffer);
+		CSC_IAllocatorFree(pIAllocator, pBuffer, size);
 		return status;
 	}
 
 	status = CSC_MemoryUtilsCopyMemory(pSecond, pBuffer, size);
 
-	CSC_IAllocatorFree(pIAllocator, pBuffer);
+	CSC_IAllocatorFree(pIAllocator, pBuffer, size);
 	return status;
 }
 

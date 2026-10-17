@@ -55,7 +55,7 @@ int main() {
 
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}\n",
                (int)CSC_DynamicArrayGetSize(&da),
-               (int)CSC_DynamicArrayGetCapacity(&da),
+               (int)/*CSC_DynamicArrayGetCapacity(&da)*/ da.reservedSpace,
                (int)(CSC_DynamicArrayGetSize(&da) *
                      CSC_DynamicArrayGetElementSize(&da)));
 
@@ -78,7 +78,7 @@ int main() {
 
   std::println("Insertion of vector elements:\n");
 
-  CSC_DynamicArrayInsertRange(&da, 5, 10, &vecBuffer);
+  CSC_DynamicArrayInsertRange(&da, 5, 10, &vecBuffer); /* BUG: vecbuffer is only 1 element, out of bounds access -> Rather pass NULL for POD type like IVec3 */
 
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}\n",
                (int)CSC_DynamicArrayGetSize(&da),
@@ -132,7 +132,7 @@ int main() {
                      CSC_DynamicArrayGetElementSize(&da)));
   printVec(&da);
 
-  vecBuffer = (IVec3){1337, 1337, 1337};
+  vecBuffer = IVec3{1337, 1337, 1337};
 
   pVecInArr = (IVec3 *)CSC_DynamicArrayAccessElement(&da, 19);
 
@@ -160,7 +160,7 @@ int main() {
 
   std::println("Inserting element at the front:\n");
 
-  vecBuffer = (IVec3){6502, 6502, 6502};
+  vecBuffer = IVec3{6502, 6502, 6502};
 
   if (CSC_DynamicArrayInsertElement(&da, 0, &vecBuffer) != CSC_STATUS_SUCCESS) {
     std::println("Failed to insert an element at the front of the vector!");
@@ -189,7 +189,7 @@ int main() {
   std::println("Value before popping: X: {}, Y: {}, Z: {}\n", vecBuffer.x,
                vecBuffer.y, vecBuffer.z);
 
-  vecBuffer = (IVec3){6502, 6502, 6502};
+  vecBuffer = IVec3{6502, 6502, 6502};
 
   if (CSC_DynamicArrayPopFront(&da, &vecBuffer) != CSC_STATUS_SUCCESS) {
     std::println("Failed to pop an element at the front of the vector!");
@@ -217,7 +217,7 @@ int main() {
   }
 
   for (iterator = (SIZE_T)0; iterator < (SIZE_T)200; ++iterator) {
-    vecBuffer = (IVec3){(int)iterator, (int)iterator, (int)iterator};
+    vecBuffer = IVec3{(int)iterator, (int)iterator, (int)iterator};
 
     pVecInArr = (IVec3 *)CSC_DynamicArrayAccessElement(&da, iterator);
 
@@ -229,7 +229,7 @@ int main() {
 
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}\n",
                (int)CSC_DynamicArrayGetSize(&da),
-               (int)CSC_DynamicArrayGetCapacity(&da),
+               (int)/*CSC_DynamicArrayGetCapacity(&da)*/ da.reservedSpace,
                (int)(CSC_DynamicArrayGetSize(&da) *
                      CSC_DynamicArrayGetElementSize(&da)));
 

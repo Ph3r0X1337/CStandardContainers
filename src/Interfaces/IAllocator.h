@@ -27,7 +27,7 @@ typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ALLOCATOR_CLEANUP)(_Inout_ struct _CSC_IAl
 typedef CSC_PVOID(CSCMETHOD* CSC_P_I_ALLOCATOR_ALLOC)(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_SIZE_T size);
 typedef CSC_PVOID(CSCMETHOD* CSC_P_I_ALLOCATOR_ALLOC_ZERO)(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_SIZE_T size);
 
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ALLOCATOR_FREE)(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock);
+typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ALLOCATOR_FREE)(_In_ CONST struct _CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock, _In_ CONST CSC_SIZE_T size);
 
 typedef CSC_BOOLEAN(CSCMETHOD* CSC_P_I_ALLOCATOR_IS_USABLE)(_In_ CONST struct _CSC_IAllocator* CONST pThis);
 
@@ -64,7 +64,7 @@ CSC_PVOID CSCMETHOD CSC_IAllocatorAllocZero(_In_ CONST CSC_IAllocator* CONST pTh
 
 /* Calls the underlying free method implemented by the allocator object to free a priorly allocated memory block. */
 /* Should return CSC_STATUS_SUCCESS on success, otherwise an error code is returned. */
-CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock);
+CSC_STATUS CSCMETHOD CSC_IAllocatorFree(_In_ CONST CSC_IAllocator* CONST pThis, _In_ CONST CSC_PVOID pMemoryBlock, _In_ CONST CSC_SIZE_T size);
 
 /* Calls the underlying method implemented by the allocator object to check if the allocator is in a usable state. */
 /* Should return true or false depending on the situation. */

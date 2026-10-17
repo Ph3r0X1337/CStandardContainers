@@ -805,7 +805,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 				}
 			}
 
-			CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData);
+			CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData, pThis->reservedSpace);
 		}
 
 		return status;
@@ -883,7 +883,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 
 					if (!pDefaultValueIContainer || pDefaultValueIContainer->pIContainerVirtualTable != pThis->pNestedContainerVTable)
 					{
-						CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+						CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 						return CSC_STATUS_INVALID_PARAMETER;
 					}
 
@@ -891,7 +891,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 
 					if (!defaultValueElementSize)
 					{
-						CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+						CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 						return CSC_STATUS_INVALID_PARAMETER;
 					}
 
@@ -1043,11 +1043,11 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 
 		if (status != CSC_STATUS_SUCCESS)
 		{
-			CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+			CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 			return status;
 		}
 
-		CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData);
+		CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData, pThis->reservedSpace);
 	}
 	else if (!reserve && pThis->pNestedContainerVTable)
 	{
@@ -1055,7 +1055,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 
 		if (!pDefaultValueIContainer || pDefaultValueIContainer->pIContainerVirtualTable != pThis->pNestedContainerVTable)
 		{
-			CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+			CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 			return CSC_STATUS_INVALID_PARAMETER;
 		}
 
@@ -1063,7 +1063,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 
 		if (!defaultValueElementSize)
 		{
-			CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+			CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 			return CSC_STATUS_INVALID_PARAMETER;
 		}
 
@@ -1101,7 +1101,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayResizeImpl(_Inout_ CSC_DynamicArray*
 				--iterator;
 			}
 
-			CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+			CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 			return status;
 		}
 	}
@@ -1172,7 +1172,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayErase(_Inout_ CSC_DynamicArray* CONST pThis
 			return CSC_STATUS_GENERAL_FAILURE;
 		}
 
-		CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData);
+		CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData, pThis->reservedSpace);
 		pThis->pData = NULL;
 	}
 
@@ -2092,7 +2092,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRangeImpl(_Inout_ CSC_DynamicA
 					--iterator;
 				}
 
-				CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+				CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 				return status;
 			}
 
@@ -2147,7 +2147,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRangeImpl(_Inout_ CSC_DynamicA
 					--iterator;
 				}
 
-				CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+				CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 				return status;
 			}
 
@@ -2204,7 +2204,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRangeImpl(_Inout_ CSC_DynamicA
 						--iterator;
 					}
 
-					CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+					CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 					return status;
 				}
 			}
@@ -2215,7 +2215,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRangeImpl(_Inout_ CSC_DynamicA
 
 			if (status != CSC_STATUS_SUCCESS)
 			{
-				CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+				CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 				return status;
 			}
 
@@ -2225,7 +2225,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRangeImpl(_Inout_ CSC_DynamicA
 
 				if (status != CSC_STATUS_SUCCESS)
 				{
-					CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+					CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 					return status;
 				}
 			}
@@ -2238,11 +2238,11 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRangeImpl(_Inout_ CSC_DynamicA
 
 		if (status != CSC_STATUS_SUCCESS)
 		{
-			CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+			CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 			return status;
 		}
 
-		CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData);
+		CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData, pThis->reservedSpace);
 	}
 	else
 	{
@@ -2525,7 +2525,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayRemoveRangeImpl(_Inout_ CSC_DynamicA
 					--iterator;
 				}
 
-				CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+				CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 				return status;
 			}
 		}
@@ -2583,7 +2583,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayRemoveRangeImpl(_Inout_ CSC_DynamicA
 					--iterator;
 				}
 
-				CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+				CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 				return status;
 			}
 		}
@@ -2602,7 +2602,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayRemoveRangeImpl(_Inout_ CSC_DynamicA
 
 			if (status != CSC_STATUS_SUCCESS)
 			{
-				CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+				CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 				return status;
 			}
 		}
@@ -2613,13 +2613,13 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayRemoveRangeImpl(_Inout_ CSC_DynamicA
 
 			if (status != CSC_STATUS_SUCCESS)
 			{
-				CSC_IAllocatorFree(pThis->pIAllocator, pNewData);
+				CSC_IAllocatorFree(pThis->pIAllocator, pNewData, allocationSize);
 				return status;
 			}
 		}
 	}
 
-	CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData);
+	CSC_IAllocatorFree(pThis->pIAllocator, pThis->pData, pThis->reservedSpace);
 
 	pThis->pData = pNewData;
 	pThis->reservedSpace = allocationSize;
@@ -2970,7 +2970,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerSwapValues(_Inout_ CSC_ICo
 
 		if (!pFirstIContainer || !pSecondIContainer)
 		{
-			CSC_IAllocatorFree(arrayBuffer.pIAllocator, pBuffer);
+			CSC_IAllocatorFree(arrayBuffer.pIAllocator, pBuffer, arrayBuffer.elementSize);
 			CSC_DynamicArrayDestroy(&arrayBuffer);
 			return CSC_STATUS_GENERAL_FAILURE;
 		}
@@ -2979,7 +2979,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerSwapValues(_Inout_ CSC_ICo
 
 		if (status != CSC_STATUS_SUCCESS)
 		{
-			CSC_IAllocatorFree(arrayBuffer.pIAllocator, pBuffer);
+			CSC_IAllocatorFree(arrayBuffer.pIAllocator, pBuffer, arrayBuffer.elementSize);
 			CSC_DynamicArrayDestroy(&arrayBuffer);
 			return status;
 		}
@@ -3012,7 +3012,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerSwapValues(_Inout_ CSC_ICo
 		} while (FALSE);
 
 		arrayBuffer.pNestedContainerVTable->pDestroy(pBufferIContainer);
-		CSC_IAllocatorFree(arrayBuffer.pIAllocator, pBuffer);
+		CSC_IAllocatorFree(arrayBuffer.pIAllocator, pBuffer, arrayBuffer.elementSize);
 
 		if (status == CSC_STATUS_SUCCESS)
 		{
@@ -3231,7 +3231,7 @@ static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterableFirstElement(_In_ CONST CSC_
 
 static CSC_PVOID CSCMETHOD CSC_DynamicArrayIIterableNextElement(_In_ CONST CSC_IIterable* CONST pThis, _In_ CONST CSC_SIZE_T currentIndex, _In_ CONST CSC_PCVOID pCurrentElement)
 {
-	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray * CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
+	CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIIterableGetObjectPointer(pThis);
 
 	if (!pDynamicArray || currentIndex == CSC_CONTAINER_INVALID_INDEX)
 	{

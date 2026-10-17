@@ -7,7 +7,7 @@ extern "C" {
 
 #include <CStandardContainers.h>
 
-CSC_IAllocator *CSCAPI CSC_StandardAllocatorGetAllocator();
+CSC_IAllocator* CSCAPI CSC_StandardAllocatorGetAllocator();
 
 #ifdef __cplusplus
 };
