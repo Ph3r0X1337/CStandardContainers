@@ -7,7 +7,7 @@ extern "C" {
 
 /*
 Description:
-The Configuration.h file contains the main configuration used by the library to adjust to the underlying system/architecture. 
+The Configuration.h file contains the main configuration used by the library to adjust to the underlying system / architecture. 
 It contains a default configuration which can be copied and adjusted to implement a custom configuration. 
 The CSC library requires an address width for code and data pointers of at least 16 bits, 
 hence at least access two operations on 16-Bit operands is required. 
@@ -92,7 +92,7 @@ typedef unsigned long long CSC_UINT;
 typedef signed long long CSC_INT;
 #endif
 
-/* Default configuration assumes a Von - Neumann architecture with a 64-Bit address bus. */
+/* Default configuration assumes a Von-Neumann architecture with a 64-Bit address bus. */
 #define CSC_ADDRESS_BUS_WIDTH_CODE CSC_ADDRESS_BUS_WIDTH_CODE_64BIT
 
 /* Decision logic for assigning the integer type that can be used to hold code pointers. */
@@ -106,7 +106,7 @@ typedef unsigned long long CSC_CODE_POINTER_TYPE;
 typedef unsigned long long CSC_CODE_POINTER_TYPE;
 #endif
 
-/* Default configuration assumes a Von - Neumann architecture with a 64-Bit address bus. */
+/* Default configuration assumes a Von-Neumann architecture with a 64-Bit address bus. */
 #define CSC_ADDRESS_BUS_WIDTH_DATA CSC_ADDRESS_BUS_WIDTH_DATA_64BIT
 
 /* Decision logic for assigning the integer type that can be used to hold data pointers. */
@@ -128,7 +128,7 @@ typedef CSC_DATA_POINTER_TYPE CSC_SIZE_T;
 typedef unsigned char CSC_CHAR;
 typedef unsigned short CSC_WCHAR;
 
-/* Definition of fixed - size unsigned integer types corresponding to assembly instructions(x86-Style). */
+/* Definition of fixed-size unsigned integer types corresponding to assembly instructions (x86-Style). */
 typedef unsigned char CSC_BYTE;
 typedef unsigned short CSC_WORD;
 /* Definition of the CSC_DWORD and CSC_QWORD types is optional, only define them if your architecture / compiler supports them. */

@@ -22,14 +22,14 @@ Description:
 /* Definition of BasicIterator type. */
 typedef struct _CSC_BasicIterator
 {
-	CSC_IBaseInterface baseInterface;
-	CSC_IIterator iteratorInterface;
-	CSC_IIterable* pIIterable;
-	CSC_SIZE_T elementSize;
-	CSC_SIZE_T elementCount;
-	CSC_SIZE_T currentIndex;
-	CSC_PVOID pCurrentElement;
-	CSC_BOOLEAN iterationValid;
+    CSC_IBaseInterface baseInterface;
+    CSC_IIterator iteratorInterface;
+    CSC_IIterable* pIIterable;
+    CSC_SIZE_T elementSize;
+    CSC_SIZE_T elementCount;
+    CSC_SIZE_T currentIndex;
+    CSC_PVOID pCurrentElement;
+    CSC_BOOLEAN iterationValid;
 } CSC_BasicIterator;
 
 CSC_STATUS CSCMETHOD CSC_BasicIteratorInitialize(_When_(return == CSC_STATUS_SUCCESS, _Out_) CSC_BasicIterator* CONST pThis);

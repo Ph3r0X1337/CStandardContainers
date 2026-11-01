@@ -34,18 +34,18 @@ typedef CSC_BOOLEAN(CSCMETHOD* CSC_P_I_ALLOCATOR_IS_USABLE)(_In_ CONST struct _C
 /* Definition of the virtual table layout of the IAllocator type. */
 typedef struct _CSC_IAllocatorVirtualTable
 {
-	CSC_P_I_ALLOCATOR_INIT pInitialize;
-	CSC_P_I_ALLOCATOR_CLEANUP pCleanup;
-	CSC_P_I_ALLOCATOR_ALLOC pAlloc;
-	CSC_P_I_ALLOCATOR_ALLOC_ZERO pAllocZero;
-	CSC_P_I_ALLOCATOR_FREE pFree;
-	CSC_P_I_ALLOCATOR_IS_USABLE pIsUsable;
+    CSC_P_I_ALLOCATOR_INIT pInitialize;
+    CSC_P_I_ALLOCATOR_CLEANUP pCleanup;
+    CSC_P_I_ALLOCATOR_ALLOC pAlloc;
+    CSC_P_I_ALLOCATOR_ALLOC_ZERO pAllocZero;
+    CSC_P_I_ALLOCATOR_FREE pFree;
+    CSC_P_I_ALLOCATOR_IS_USABLE pIsUsable;
 } CSC_IAllocatorVirtualTable;
 
 /* Definition of the IAllocator type, contains a pointer to the virtual table of the object that implements the interfaces methods. */
 typedef struct _CSC_IAllocator
 {
-	CSC_IAllocatorVirtualTable* pIAllocatorVirtualTable;
+    CSC_IAllocatorVirtualTable* pIAllocatorVirtualTable;
 } CSC_IAllocator;
 
 /* Calls the underlying initialization method implemented by the allocator object. */

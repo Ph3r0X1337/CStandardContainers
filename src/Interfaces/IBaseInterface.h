@@ -19,10 +19,10 @@ Hence every such object must implement an instance of IBaseInterface as its firs
 /* Custom interfaces extending the library can also be added here. */
 typedef enum _EBaseInterfaceType
 {
-	csc_bit_IAllocator = 0,
-	csc_bit_IContainer,
-	csc_bit_IIterator,
-	csc_bit_IIterable
+    csc_bit_IAllocator = 0,
+    csc_bit_IContainer,
+    csc_bit_IIterator,
+    csc_bit_IIterable
 } EBaseInterfaceType;
 
 /* Predecleration of the CSC_IBaseInterface type to be able to create the function pointer type for the method that the interface implements. */
@@ -34,13 +34,13 @@ typedef CSC_PCVOID(CSCMETHOD* CSC_P_I_BASE_INTERFACE_GET_INTERFACE)(_In_ CONST s
 /* Definition of the virtual table layout of the IBaseInterface type. */
 typedef struct _CSC_IBaseInterfaceVirtualTable
 {
-	CSC_P_I_BASE_INTERFACE_GET_INTERFACE pGetInterface;
+    CSC_P_I_BASE_INTERFACE_GET_INTERFACE pGetInterface;
 } CSC_IBaseInterfaceVirtualTable;
 
 /* Definition of the IBaseInterface type, contains a pointer to the virtual table of the object that implements the interfaces method. */
 typedef struct _CSC_IBaseInterface
 {
-	CSC_IBaseInterfaceVirtualTable* pIBaseInterfaceVirtualTable;
+    CSC_IBaseInterfaceVirtualTable* pIBaseInterfaceVirtualTable;
 } CSC_IBaseInterface;
 
 /* Function that can be used to query an interface of given type from an object. */

@@ -36,21 +36,21 @@ typedef CSC_SIZE_T(CSCMETHOD* CSC_P_I_ITERABLE_GET_ELEMENT_SIZE)(_In_ CONST stru
 /* Definition of the virtual table layout of the IIterable type. */
 typedef struct _CSC_IIterableVirtualTable
 {
-	CSC_P_I_ITERABLE_REGISTER_ITERATOR pRegisterIterator;
-	CSC_P_I_ITERABLE_UNREGISTER_ITERATOR pUnregisterIterator;
-	CSC_P_I_ITERABLE_FIRST_ELEMENT pFirstElement;
-	CSC_P_I_ITERABLE_NEXT_ELEMENT pNextElement;
-	CSC_P_I_ITERABLE_LAST_ELEMENT pLastElement;
-	CSC_P_I_ITERABLE_PREVIOUS_ELEMENT pPreviousElement;
-	CSC_P_I_ITERABLE_GET_ELEMENT_AT pGetElementAt;
-	CSC_P_I_ITERABLE_GET_ELEMENT_COUNT pGetElementCount;
-	CSC_P_I_ITERABLE_GET_ELEMENT_SIZE pGetElementSize;
+    CSC_P_I_ITERABLE_REGISTER_ITERATOR pRegisterIterator;
+    CSC_P_I_ITERABLE_UNREGISTER_ITERATOR pUnregisterIterator;
+    CSC_P_I_ITERABLE_FIRST_ELEMENT pFirstElement;
+    CSC_P_I_ITERABLE_NEXT_ELEMENT pNextElement;
+    CSC_P_I_ITERABLE_LAST_ELEMENT pLastElement;
+    CSC_P_I_ITERABLE_PREVIOUS_ELEMENT pPreviousElement;
+    CSC_P_I_ITERABLE_GET_ELEMENT_AT pGetElementAt;
+    CSC_P_I_ITERABLE_GET_ELEMENT_COUNT pGetElementCount;
+    CSC_P_I_ITERABLE_GET_ELEMENT_SIZE pGetElementSize;
 } CSC_IIterableVirtualTable;
 
 /* Definition of the IIterable type, contains a pointer to the virtual table of the object that implements the interfaces methods. */
 typedef struct _CSC_IIterable
 {
-	CSC_IIterableVirtualTable* pIIterableVirtualTable;
+    CSC_IIterableVirtualTable* pIIterableVirtualTable;
 } CSC_IIterable;
 
 /* Calls the underlying method on the IIterable to register an observing IIterator object, which is typically the object that invokes the method. */

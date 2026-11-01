@@ -21,22 +21,22 @@ struct _CSC_LLNode;
 
 typedef struct _CSC_LinkedList
 {
-	CSC_IBaseInterface baseInterface;
-	CSC_IContainer containerInterface;
-	CSC_IIterable iterableInterface;
-	CONST CSC_IAllocator* pIAllocator;
-	CSC_IIterator* pIIterator;
-	CONST CSC_IContainerVirtualTable* pNestedContainerVTable;
-	struct _CSC_LLNode* pListHead;
-	CSC_SIZE_T elementSize;
-	CSC_SIZE_T elementCount;
-	CSC_BOOLEAN circular;
+    CSC_IBaseInterface baseInterface;
+    CSC_IContainer containerInterface;
+    CSC_IIterable iterableInterface;
+    CONST CSC_IAllocator* pIAllocator;
+    CSC_IIterator* pIIterator;
+    CONST CSC_IContainerVirtualTable* pNestedContainerVTable;
+    struct _CSC_LLNode* pListHead;
+    CSC_SIZE_T elementSize;
+    CSC_SIZE_T elementCount;
+    CSC_BOOLEAN circular;
 } CSC_LinkedList;
 
 typedef struct _CSC_LLNode
 {
-	struct _CSC_LLNode* pNext;
-	struct _CSC_LLNode* pPrevious;
+    struct _CSC_LLNode* pNext;
+    struct _CSC_LLNode* pPrevious;
 } CSC_LLNode;
 
 CSC_STATUS CSCMETHOD CSC_LinkedListInitialize(_When_(return == CSC_STATUS_SUCCESS, _Out_) CSC_LinkedList* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_BOOLEAN circular, _In_ CONST CSC_IAllocator* CONST pIAllocator, _In_opt_ CONST CSC_IContainerVirtualTable* CONST pNestedContainerVTable);

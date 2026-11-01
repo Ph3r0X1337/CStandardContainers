@@ -35,17 +35,17 @@ typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_ON_DESTRUCTION)(_Inout_ struct _C
 /* Definition of the virtual table layout of the IIterator type. */
 typedef struct _CSC_IIteratorVirtualTable
 {
-	CSC_P_I_ITERATOR_INVALIDATE_ITERATION pInvalidateIteration;
-	CSC_P_I_ITERATOR_UPDATE_ITERATION pUpdateIteration;
-	CSC_P_I_ITERATOR_ON_INSERTION pOnInsertion;
-	CSC_P_I_ITERATOR_ON_REMOVAL pOnRemoval;
-	CSC_P_I_ITERATOR_ON_DESTRUCTION pOnDestruction;
+    CSC_P_I_ITERATOR_INVALIDATE_ITERATION pInvalidateIteration;
+    CSC_P_I_ITERATOR_UPDATE_ITERATION pUpdateIteration;
+    CSC_P_I_ITERATOR_ON_INSERTION pOnInsertion;
+    CSC_P_I_ITERATOR_ON_REMOVAL pOnRemoval;
+    CSC_P_I_ITERATOR_ON_DESTRUCTION pOnDestruction;
 } CSC_IIteratorVirtualTable;
 
 /* Definition of the IIterator type, contains a pointer to the virtual table of the object that implements the interfaces methods. */
 typedef struct _CSC_IIterator
 {
-	CSC_IIteratorVirtualTable* pIIteratorVirtualTable;
+    CSC_IIteratorVirtualTable* pIIteratorVirtualTable;
 } CSC_IIterator;
 
 /* Calls the underlying method to invalidate the iteration, if it is currently valid. */

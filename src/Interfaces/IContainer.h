@@ -62,29 +62,29 @@ typedef struct _CSC_IContainerVirtualTable* (CSCMETHOD* CSC_P_I_CONTAINER_GET_NE
 /* Definition of the virtual table layout of the IContainer type. */
 typedef struct _CSC_IContainerVirtualTable
 {
-	CSC_P_I_CONTAINER_INIT pInitialize;
-	CSC_P_I_CONTAINER_ERASE pErase;
-	CSC_P_I_CONTAINER_DESTROY pDestroy;
-	CSC_P_I_CONTAINER_COPY pCopy;
-	CSC_P_I_CONTAINER_MOVE pMove;
-	CSC_P_I_CONTAINER_INSERT_RANGE pInsertRange;
-	CSC_P_I_CONTAINER_REMOVE_RANGE pRemoveRange;
-	CSC_P_I_CONTAINER_SWAP_VALUES pSwapValues;
-	CSC_P_I_CONTAINER_ACCESS_ELEMENT pAccessElement;
-	CSC_P_I_CONTAINER_IS_VALID pIsValid;
-	CSC_P_I_CONTAINER_IS_EMPTY pIsEmpty;
-	CSC_P_I_CONTAINER_IS_ELEMENT_CONTAINER pIsElementContainer;
-	CSC_P_I_CONTAINER_GET_SIZE pGetSize;
-	CSC_P_I_CONTAINER_GET_ELEMENT_SIZE pGetElementSize;
-	CSC_P_I_CONTAINER_GET_MAX_ELEMENTS pGetMaxElements;
-	CSC_P_I_CONTAINER_GET_I_ALLCATOR pGetIAllocator;
-	CSC_P_I_CONTAINER_GET_NESTED_CONTAINER_VIRTUAL_TABLE pGetNestedContainerVTable;
+    CSC_P_I_CONTAINER_INIT pInitialize;
+    CSC_P_I_CONTAINER_ERASE pErase;
+    CSC_P_I_CONTAINER_DESTROY pDestroy;
+    CSC_P_I_CONTAINER_COPY pCopy;
+    CSC_P_I_CONTAINER_MOVE pMove;
+    CSC_P_I_CONTAINER_INSERT_RANGE pInsertRange;
+    CSC_P_I_CONTAINER_REMOVE_RANGE pRemoveRange;
+    CSC_P_I_CONTAINER_SWAP_VALUES pSwapValues;
+    CSC_P_I_CONTAINER_ACCESS_ELEMENT pAccessElement;
+    CSC_P_I_CONTAINER_IS_VALID pIsValid;
+    CSC_P_I_CONTAINER_IS_EMPTY pIsEmpty;
+    CSC_P_I_CONTAINER_IS_ELEMENT_CONTAINER pIsElementContainer;
+    CSC_P_I_CONTAINER_GET_SIZE pGetSize;
+    CSC_P_I_CONTAINER_GET_ELEMENT_SIZE pGetElementSize;
+    CSC_P_I_CONTAINER_GET_MAX_ELEMENTS pGetMaxElements;
+    CSC_P_I_CONTAINER_GET_I_ALLCATOR pGetIAllocator;
+    CSC_P_I_CONTAINER_GET_NESTED_CONTAINER_VIRTUAL_TABLE pGetNestedContainerVTable;
 } CSC_IContainerVirtualTable;
 
 /* Definition of the IContainer type, contains a pointer to the virtual table of the object that implements the interfaces methods. */
 typedef struct _CSC_IContainer
 {
-	CSC_IContainerVirtualTable* pIContainerVirtualTable;
+    CSC_IContainerVirtualTable* pIContainerVirtualTable;
 } CSC_IContainer;
 
 /* Calls the underlying initialization routine to create the container containing a pure data type with the specified size. */
