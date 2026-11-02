@@ -135,7 +135,7 @@ typedef unsigned short CSC_WORD;
 typedef unsigned long CSC_DWORD;
 typedef unsigned long long CSC_QWORD;
 
-/* Definitions for type agnostic pointers used by the library. */
+/* Definitions for type-agnostic pointers used by the library. */
 typedef void* CSC_PVOID;
 typedef CONST void* CSC_PCVOID;
 

@@ -48,6 +48,10 @@ typedef struct _CSC_IAllocator
     CSC_IAllocatorVirtualTable* pIAllocatorVirtualTable;
 } CSC_IAllocator;
 
+/* Returns the IAllocator virtual table pointer held by the IAllocator interface pointer. */
+/* If the supplied IAllocator pointer is a null pointer, the method will simply return a null pointer to indicate failure. */
+CSC_IAllocatorVirtualTable* CSC_IAllocatorGetVTable(_In_ CONST CSC_IAllocator* CONST pThis);
+
 /* Calls the underlying initialization method implemented by the allocator object. */
 /* Should return CSC_STATUS_SUCCESS on success, otherwise an error code is returned. */
 CSC_STATUS CSCMETHOD CSC_IAllocatorInit(_Inout_ CSC_IAllocator* CONST pThis);

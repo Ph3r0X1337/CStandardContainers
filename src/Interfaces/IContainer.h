@@ -30,7 +30,7 @@ The initialization method is called through the virtual table pointer, which is 
 #define CSC_CONTAINER_INVALID_LENGTH CSC_STRING_INVALID_LENGTH
 #define CSC_CONTAINER_INVALID_INDEX CSC_CONTAINER_INVALID_LENGTH
 
-/* Predecleration of the CSC_IContainer type and it's virtual table to be able to create the function pointer types for the methods that the interface implements. */
+/* Predecleration of the CSC_IContainer type and its virtual table to be able to create the function pointer types for the methods that the interface implements. */
 struct _CSC_IContainer;
 struct _CSC_IContainerVirtualTable;
 
@@ -87,10 +87,14 @@ typedef struct _CSC_IContainer
     CSC_IContainerVirtualTable* pIContainerVirtualTable;
 } CSC_IContainer;
 
+/* Returns the IContainer virtual table pointer held by the IContainer interface pointer. */
+/* If the supplied IContainer pointer is a null pointer, the method will simply return a null pointer to indicate failure. */
+CSC_IContainerVirtualTable* CSC_IContainerGetVTable(_In_ CONST CSC_IContainer* CONST pThis);
+
 /* Calls the underlying initialization routine to create the container containing a pure data type with the specified size. */
-/* The method is invoked directly through the virtual table by the invoking(outer) container, hence the base address of the memory is passed to be able to construct the object, as the IContainer member is not yet initialized. */
+/* The method is invoked directly through the virtual table by the invoking (outer) container, hence the base address of the memory is passed to be able to construct the object, as the IContainer member is not yet initialized. */
 /* It is used on element insertion prior to copying the inserted value, which is mandatory for insertion on nested containers. */
-/* Nested containers are initialized with the allocator of the invoking(outer) container. */
+/* Nested containers are initialized with the allocator of the invoking (outer) container. */
 /* CSC_STATUS CSCMETHOD CSC_IContainerInitialize(_Inout_ CONST CSC_PVOID pMemoryBaseAddress, _In_ CONST CSC_SIZE_T elementSize, _In_ CSC_IAllocator* CONST pIAllocator); */
 
 /* Calls the underlying method to completely empty a container. */
@@ -108,7 +112,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerMove(_Inout_ CSC_IContainer* CONST pThis, _In
 
 /* Calls the underlying method to perform an insertion of one or more elements. */
 /* In the case of multiple elements, the elements need to be stored in an array / contiguous memory. */
-/* Providing a nullptr for the pElements parameter is only allowed if the elements to be inserted are not containers themselves. */
+/* Providing a null pointer for the pElements parameter is only allowed if the elements to be inserted are not containers themselves. */
 CSC_STATUS CSCMETHOD CSC_IContainerInsertRange(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements);
 /* Calls the underlying method to remove one or more contiguous elements from the container. */
 CSC_STATUS CSCMETHOD CSC_IContainerRemoveRange(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements);
@@ -135,7 +139,7 @@ CSC_SIZE_T CSCMETHOD CSC_IContainerGetMaxElements(_In_ CONST CSC_IContainer* CON
 /* Calls the underlying method to retrieve the allocator that the container uses for memory management. */
 CSC_IAllocator* CSCMETHOD CSC_IContainerGetIAllocator(_In_ CONST CSC_IContainer* CONST pThis);
 /* Calls the underlying method to retrieve the nested container's virtual table, if one exists. */
-/* Will return a nullptr if the virtual table does not exist or if an error occurred while calling the method. */
+/* Will return a null pointer if the virtual table does not exist or if an error occurred while calling the method. */
 CSC_IContainerVirtualTable* CSCMETHOD CSC_IContainerGetNestedContainerVTable(_In_ CONST struct _CSC_IContainer* CONST pThis);
 
 #ifdef __cplusplus

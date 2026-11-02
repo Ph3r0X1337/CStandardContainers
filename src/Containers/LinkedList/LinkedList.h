@@ -97,6 +97,8 @@ CSC_IIterable* CSCMETHOD CSC_LinkedListGetIIterable(_In_ CONST CSC_LinkedList* C
 CSC_IAllocator* CSCMETHOD CSC_LinkedListGetIAllocator(_In_ CONST CSC_LinkedList* CONST pThis);
 CSC_IContainerVirtualTable* CSCMETHOD CSC_LinkedListGetNestedContainerVTable(_In_ CONST CSC_LinkedList* CONST pThis);
 
+CSC_IContainerVirtualTable* CSCAPI CSC_LinkedListGetIContainerVTable();
+
 #ifdef __cplusplus
 };
 #endif

@@ -48,6 +48,10 @@ typedef struct _CSC_IIterator
     CSC_IIteratorVirtualTable* pIIteratorVirtualTable;
 } CSC_IIterator;
 
+/* Returns the IIterator virtual table pointer held by the IIterator interface pointer. */
+/* If the supplied IIterator pointer is a null pointer, the method will simply return a null pointer to indicate failure. */
+CSC_IIteratorVirtualTable* CSC_IIteratorGetVTable(_In_ CONST CSC_IIterator* CONST pThis);
+
 /* Calls the underlying method to invalidate the iteration, if it is currently valid. */
 /* Should return CSC_STATUS_SUCCESS on success, otherwise an error code is returned. */
 CSC_STATUS CSCMETHOD CSC_IIteratorInvalidateIteration(_Inout_ CSC_IIterator* CONST pThis);

@@ -1,5 +1,10 @@
 #include "IContainer.h"
 
+CSC_IContainerVirtualTable* CSC_IContainerGetVTable(_In_ CONST CSC_IContainer* CONST pThis)
+{
+    return (pThis) ? pThis->pIContainerVirtualTable : (CSC_IContainerVirtualTable*)NULL;
+}
+
 CSC_STATUS CSCMETHOD CSC_IContainerErase(_Inout_ CSC_IContainer* CONST pThis)
 {
     if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pErase)

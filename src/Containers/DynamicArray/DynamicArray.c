@@ -1405,7 +1405,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayPopImpl(_Inout_ CSC_DynamicArray* CO
 
 CSC_PVOID CSCMETHOD CSC_DynamicArrayAccessElement(_In_ CONST CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T index)
 {
-    if (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->reservedSpace || index >= pThis->elementCount || !pThis->pData)
+    if (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS || !pThis->reservedSpace || index >= pThis->elementCount)
     {
         return NULL;
     }
@@ -1602,6 +1602,11 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayCopy(_Inout_ CSC_DynamicArray* CONST pThis,
     }
     else
     {
+        if (pThis == pSrc)
+        {
+            return CSC_STATUS_SUCCESS;
+        }
+
         if (pSrc->elementCount)
         {
             return CSC_DynamicArrayCopyArray(pThis, pSrc->elementSize, pSrc->elementCount, pSrc->pData, pSrc->pNestedContainerVTable);
@@ -1627,7 +1632,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayMove(_Inout_ CSC_DynamicArray* CONST pThis,
 {
     CSC_STATUS status;
 
-    if (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS || CSC_DynamicArrayIsValid(pSrc) != CSC_STATUS_SUCCESS)
+    if (CSC_DynamicArrayIsValid(pSrc) != CSC_STATUS_SUCCESS)
     {
         return CSC_STATUS_INVALID_PARAMETER;
     }
@@ -1635,6 +1640,11 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayMove(_Inout_ CSC_DynamicArray* CONST pThis,
     if (pThis == pSrc)
     {
         return CSC_STATUS_SUCCESS;
+    }
+
+    if (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS)
+    {
+        return CSC_STATUS_INVALID_PARAMETER;
     }
 
     if (pThis->pIAllocator == pSrc->pIAllocator)
@@ -1691,7 +1701,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayMove(_Inout_ CSC_DynamicArray* CONST pThis,
     return CSC_STATUS_SUCCESS;
 }
 
-CSC_STATUS CSCMETHOD CSC_DynamicArrayCopyArray(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_PCVOID pElements, _In_opt_ CONST CSC_IContainerVirtualTable* CONST pNestedContainerVTable)
+CSC_STATUS CSCMETHOD CSC_DynamicArrayCopyArray(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements, _In_opt_ CONST CSC_IContainerVirtualTable* CONST pNestedContainerVTable)
 {
     CSC_PVOID pBuffer;
     CSC_SIZE_T oldReserve;
@@ -1703,7 +1713,27 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayCopyArray(_Inout_ CSC_DynamicArray* CONST p
         return status;
     }
 
-    if (!elementSize || !numOfElements || !pElements || elementSize > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE || numOfElements > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE / elementSize)
+    if (!elementSize || elementSize > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE)
+    {
+        return CSC_STATUS_INVALID_PARAMETER;
+    }
+
+    if (!numOfElements)
+    {
+        status = CSC_DynamicArrayErase(pThis);
+
+        if (status != CSC_STATUS_SUCCESS)
+        {
+            return status;
+        }
+
+        pThis->elementSize = elementSize;
+        pThis->elementCount = (CSC_SIZE_T)0;
+        pThis->pNestedContainerVTable = pNestedContainerVTable;
+
+        return CSC_STATUS_SUCCESS;
+    }
+    else if ((pNestedContainerVTable && !pElements) || numOfElements > CSC_DYNAMIC_ARRAY_MAXIMUM_SPACE / elementSize)
     {
         return CSC_STATUS_INVALID_PARAMETER;
     }
@@ -1716,11 +1746,37 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayCopyArray(_Inout_ CSC_DynamicArray* CONST p
         pThis->elementCount = numOfElements;
         pThis->pNestedContainerVTable = (CONST CSC_IContainerVirtualTable*)NULL;
 
-        CSC_MemoryUtilsCopyMemory(pThis->pData, pElements, elementSize * numOfElements);
+        if (pElements)
+        {
+            CSC_MemoryUtilsCopyMemory(pThis->pData, pElements, elementSize * numOfElements);
+        }
+        else
+        {
+            CSC_MemoryUtilsSetZeroMemory(pThis->pData, elementSize * numOfElements);
+        }
     }
     else
     {
-        status = CSC_DynamicArrayInitializeWithArrayImpl(&arrayBuffer, elementSize, numOfElements, pElements, pThis->pIAllocator, pNestedContainerVTable, (CSC_BOOLEAN)FALSE);
+        if (!pNestedContainerVTable && !pElements)
+        {
+            status = CSC_DynamicArrayInitialize(&arrayBuffer, elementSize, pThis->pIAllocator, (CONST CSC_IContainerVirtualTable* CONST)NULL);
+
+            if (status != CSC_STATUS_SUCCESS)
+            {
+                return status;
+            }
+
+            status = CSC_DynamicArrayResizeImpl(&arrayBuffer, numOfElements, (CONST CSC_PCVOID)NULL, (CSC_BOOLEAN)FALSE, (CSC_BOOLEAN)TRUE);
+
+            if (status != CSC_STATUS_SUCCESS)
+            {
+                CSC_DynamicArrayDestroy(&arrayBuffer);
+            }
+        }
+        else
+        {
+            status = CSC_DynamicArrayInitializeWithArrayImpl(&arrayBuffer, elementSize, numOfElements, pElements, pThis->pIAllocator, pNestedContainerVTable, (CSC_BOOLEAN)FALSE);
+        }
 
         if (status != CSC_STATUS_SUCCESS)
         {
@@ -2646,6 +2702,11 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayReverse(_Inout_ CSC_DynamicArray* CONST pTh
         return status;
     }
 
+    if (pThis->elementCount <= (CSC_SIZE_T)1)
+    {
+        return CSC_STATUS_SUCCESS;
+    }
+
     status = CSC_DynamicArrayInitialize(&arrayBuffer, pThis->elementSize, pThis->pIAllocator, pThis->pNestedContainerVTable);
 
     if (status != CSC_STATUS_SUCCESS)
@@ -2711,7 +2772,14 @@ CSC_PVOID CSCMETHOD CSC_DynamicArrayBack(_In_ CONST CSC_DynamicArray* CONST pThi
 
 CSC_PVOID CSCMETHOD CSC_DynamicArrayData(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-    return CSC_DynamicArrayFront(pThis);
+    if (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS)
+    {
+        return NULL;
+    }
+    else
+    {
+        return pThis->pData;
+    }
 }
 
 
@@ -3314,4 +3382,10 @@ static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIIterableGetElementSize(_In_ CONST C
     {
         return CSC_DynamicArrayGetElementSize(pDynamicArray);
     }
+}
+
+
+CSC_IContainerVirtualTable* CSCAPI CSC_DynamicArrayGetIContainerVTable()
+{
+    return &g_dynamicArrayVirtualTable.containerInterfaceVTable;
 }

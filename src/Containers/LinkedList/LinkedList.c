@@ -349,7 +349,17 @@ CSC_STATUS CSCMETHOD CSC_LinkedListCopy(_Inout_ CSC_LinkedList* CONST pThis, _In
     CSC_LLNode* pNodeBuffer;
     CSC_LinkedList llBuffer;
 
-    if (CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS || CSC_LinkedListIsValid(pSrc) != CSC_STATUS_SUCCESS)
+    if (CSC_LinkedListIsValid(pSrc) != CSC_STATUS_SUCCESS)
+    {
+        return CSC_STATUS_INVALID_PARAMETER;
+    }
+
+    if (pThis == pSrc)
+    {
+        return CSC_STATUS_SUCCESS;
+    }
+
+    if (CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS)
     {
         return CSC_STATUS_INVALID_PARAMETER;
     }
@@ -425,7 +435,7 @@ CSC_STATUS CSCMETHOD CSC_LinkedListMove(_Inout_ CSC_LinkedList* CONST pThis, _In
 {
     CSC_STATUS status;
 
-    if (CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS || CSC_LinkedListIsValid(pSrc) != CSC_STATUS_SUCCESS)
+    if (CSC_LinkedListIsValid(pSrc) != CSC_STATUS_SUCCESS)
     {
         return CSC_STATUS_INVALID_PARAMETER;
     }
@@ -433,6 +443,11 @@ CSC_STATUS CSCMETHOD CSC_LinkedListMove(_Inout_ CSC_LinkedList* CONST pThis, _In
     if (pThis == pSrc)
     {
         return CSC_STATUS_SUCCESS;
+    }
+
+    if (CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS)
+    {
+        return CSC_STATUS_INVALID_PARAMETER;
     }
 
     if (pThis->pIAllocator == pSrc->pIAllocator)
@@ -2057,9 +2072,9 @@ CSC_STATUS CSCMETHOD CSC_LinkedListReverse(_Inout_ CSC_LinkedList* CONST pThis)
         return status;
     }
 
-    if (!pThis->pListHead)
+    if (pThis->elementCount <= (CSC_SIZE_T)1)
     {
-        return CSC_STATUS_INVALID_PARAMETER;
+        return CSC_STATUS_SUCCESS;
     }
 
     pNode = pThis->pListHead;
@@ -2742,4 +2757,10 @@ static CSC_SIZE_T CSCMETHOD CSC_LinkedListIIterableGetElementSize(_In_ CONST CSC
     {
         return CSC_LinkedListGetElementSize(pLinkedList);
     }
+}
+
+
+CSC_IContainerVirtualTable* CSCAPI CSC_LinkedListGetIContainerVTable()
+{
+    return &g_linkedListVirtualTable.containerInterfaceVTable;
 }

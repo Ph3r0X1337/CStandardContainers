@@ -43,6 +43,10 @@ typedef struct _CSC_IBaseInterface
     CSC_IBaseInterfaceVirtualTable* pIBaseInterfaceVirtualTable;
 } CSC_IBaseInterface;
 
+/* Returns the IBaseInterface virtual table pointer held by the IBaseInterface pointer. */
+/* If the supplied IBaseInterface pointer is a null pointer, the method will simply return a null pointer to indicate failure. */
+CSC_IBaseInterfaceVirtualTable* CSC_IBaseInterfaceGetVTable(_In_ CONST CSC_IBaseInterface* CONST pThis);
+
 /* Function that can be used to query an interface of given type from an object. */
 /* Returns a nullptr if the object does not contain the interface or if the underlying method couldn't be called due to a defective object being supplied. */
 /* On success the function will return a pointer to an interface in form of a CSC_PCVOID. */

@@ -53,6 +53,10 @@ typedef struct _CSC_IIterable
     CSC_IIterableVirtualTable* pIIterableVirtualTable;
 } CSC_IIterable;
 
+/* Returns the IIterable virtual table pointer held by the IIterable interface pointer. */
+/* If the supplied IIterable pointer is a null pointer, the method will simply return a null pointer to indicate failure. */
+CSC_IIterableVirtualTable* CSC_IIterableGetVTable(_In_ CONST CSC_IIterable* CONST pThis);
+
 /* Calls the underlying method on the IIterable to register an observing IIterator object, which is typically the object that invokes the method. */
 /* Should return CSC_STATUS_SUCCESS on success, otherwise an error code is returned. */
 CSC_STATUS CSCMETHOD CSC_IIterableRegisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator);

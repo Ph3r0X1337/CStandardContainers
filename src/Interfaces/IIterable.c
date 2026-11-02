@@ -1,5 +1,10 @@
 #include "IIterable.h"
 
+CSC_IIterableVirtualTable* CSC_IIterableGetVTable(_In_ CONST CSC_IIterable* CONST pThis)
+{
+    return (pThis) ? pThis->pIIterableVirtualTable : (CSC_IIterableVirtualTable*)NULL;
+}
+
 CSC_STATUS CSCMETHOD CSC_IIterableRegisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator)
 {
     if (!pIIterator || !pThis || !pThis->pIIterableVirtualTable || !pThis->pIIterableVirtualTable->pRegisterIterator)
