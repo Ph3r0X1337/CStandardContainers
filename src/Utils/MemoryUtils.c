@@ -56,12 +56,12 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemoryBasic(_In_ CONST CSC_PCVOID pFirst
 {
     CSC_SIZE_T iterator;
 
-    if (!pFirst || !pSecond || !size)
+    if (!pFirst || !pSecond)
     {
         return CSC_STATUS_INVALID_PARAMETER;
     }
 
-    if (pFirst == pSecond)
+    if (pFirst == pSecond || !size)
     {
         return CSC_STATUS_SUCCESS;
     }
@@ -1194,12 +1194,12 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSetArrayValue(_Out_ CONST CSC_PVOID pDst, _In_ 
 
 CSC_STATUS CSCAPI CSC_MemoryUtilsCompareMemory(_In_ CONST CSC_PCVOID pFirst, _In_ CONST CSC_PCVOID pSecond, _In_ CONST CSC_SIZE_T size)
 {
-    if (!pFirst || !pSecond || !size)
+    if (!pFirst || !pSecond)
     {
         return CSC_STATUS_INVALID_PARAMETER;
     }
 
-    if (pFirst == pSecond)
+    if (pFirst == pSecond || !size)
     {
         return CSC_STATUS_SUCCESS;
     }
