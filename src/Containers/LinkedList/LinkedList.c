@@ -2328,22 +2328,22 @@ CSC_SIZE_T CSCMETHOD CSC_LinkedListGetElementSize(_In_ CONST CSC_LinkedList* CON
 
 CSC_IBaseInterface* CSCMETHOD CSC_LinkedListGetIBaseInterface(_In_ CONST CSC_LinkedList* CONST pThis)
 {
-    return (CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IBaseInterface*)NULL : &pThis->baseInterface;
+    return (CSC_IBaseInterface*)((CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : &pThis->baseInterface);
 }
 
 CSC_IContainer* CSCMETHOD CSC_LinkedListGetIContainer(_In_ CONST CSC_LinkedList* CONST pThis)
 {
-    return (CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IContainer*)NULL : &pThis->containerInterface;
+    return (CSC_IContainer*)((CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : &pThis->containerInterface);
 }
 
 CSC_IIterable* CSCMETHOD CSC_LinkedListGetIIterable(_In_ CONST CSC_LinkedList* CONST pThis)
 {
-    return (CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IIterable*)NULL : &pThis->iterableInterface;
+    return (CSC_IIterable*)((CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : &pThis->iterableInterface);
 }
 
 CSC_IAllocator* CSCMETHOD CSC_LinkedListGetIAllocator(_In_ CONST CSC_LinkedList* CONST pThis)
 {
-    return (CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IAllocator*)NULL : (CSC_IAllocator*)pThis->pIAllocator;
+    return (CSC_IAllocator*)((CSC_LinkedListIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : pThis->pIAllocator);
 }
 
 CONST CSC_IContainerVirtualTable* CSCMETHOD CSC_LinkedListGetNestedContainerVTable(_In_ CONST CSC_LinkedList* CONST pThis)
