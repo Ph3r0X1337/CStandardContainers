@@ -1,7 +1,7 @@
 #include "BasicIterator.h"
 #include <stddef.h>
 
-typedef struct _CSC_BasicIteratorVirtualTable
+typedef struct S_CSC_BasicIteratorVirtualTable
 {
     CSC_IBaseInterfaceVirtualTable baseInterfaceVTable;
     CSC_IIteratorVirtualTable iteratorInterfaceVTable;
@@ -36,8 +36,8 @@ static CSC_STATUS CSCMETHOD CSC_BasicIteratorZeroMemory(_Out_ CSC_BasicIterator*
         return CSC_STATUS_INVALID_PARAMETER;
     }
 
-    pThis->baseInterface.pIBaseInterfaceVirtualTable = (CSC_IBaseInterfaceVirtualTable*)NULL;
-    pThis->iteratorInterface.pIIteratorVirtualTable = (CSC_IIteratorVirtualTable*)NULL;
+    pThis->baseInterface.pIBaseInterfaceVirtualTable = (CONST CSC_IBaseInterfaceVirtualTable*)NULL;
+    pThis->iteratorInterface.pIIteratorVirtualTable = (CONST CSC_IIteratorVirtualTable*)NULL;
 
     pThis->iterationValid = (CSC_BOOLEAN)FALSE;
 
@@ -68,8 +68,8 @@ CSC_STATUS CSCMETHOD CSC_BasicIteratorInitialize(_When_(return == CSC_STATUS_SUC
         return status;
     }
 
-    pThis->baseInterface.pIBaseInterfaceVirtualTable = (CSC_IBaseInterfaceVirtualTable*)&g_basicIteratorVirtualTable.baseInterfaceVTable;
-    pThis->iteratorInterface.pIIteratorVirtualTable = (CSC_IIteratorVirtualTable*)&g_basicIteratorVirtualTable.iteratorInterfaceVTable;
+    pThis->baseInterface.pIBaseInterfaceVirtualTable = &g_basicIteratorVirtualTable.baseInterfaceVTable;
+    pThis->iteratorInterface.pIIteratorVirtualTable = &g_basicIteratorVirtualTable.iteratorInterfaceVTable;
 
     pThis->currentIndex = CSC_ITERATOR_INVALID_INDEX;
     pThis->elementCount = CSC_ITERATOR_INVALID_LENGTH;
@@ -376,7 +376,7 @@ CSC_PVOID CSCMETHOD CSC_BasicIteratorMoveToIndex(_Inout_ CSC_BasicIterator* CONS
 
 CSC_STATUS CSCMETHOD CSC_BasicIteratorInvalidateIteration(_Inout_ CSC_BasicIterator* CONST pThis)
 {
-    if (!pThis || pThis->baseInterface.pIBaseInterfaceVirtualTable != (CSC_IBaseInterfaceVirtualTable*)&g_basicIteratorVirtualTable.baseInterfaceVTable || pThis->iteratorInterface.pIIteratorVirtualTable != (CSC_IIteratorVirtualTable*)&g_basicIteratorVirtualTable.iteratorInterfaceVTable)
+    if (!pThis || pThis->baseInterface.pIBaseInterfaceVirtualTable != &g_basicIteratorVirtualTable.baseInterfaceVTable || pThis->iteratorInterface.pIIteratorVirtualTable != &g_basicIteratorVirtualTable.iteratorInterfaceVTable)
     {
         return CSC_STATUS_INVALID_PARAMETER;
     }
@@ -430,7 +430,7 @@ CSC_IIterator* CSCMETHOD CSC_BasicIteratorGetIIterator(_In_ CONST CSC_BasicItera
 
 CSC_STATUS CSCMETHOD CSC_BasicIteratorIsValid(_In_ CONST CSC_BasicIterator* CONST pThis)
 {
-    return (!pThis || pThis->baseInterface.pIBaseInterfaceVirtualTable != (CSC_IBaseInterfaceVirtualTable*)&g_basicIteratorVirtualTable.baseInterfaceVTable || pThis->iteratorInterface.pIIteratorVirtualTable != (CSC_IIteratorVirtualTable*)&g_basicIteratorVirtualTable.iteratorInterfaceVTable || pThis->iterationValid && (!pThis->pIIterable || pThis->currentIndex == CSC_ITERATOR_INVALID_INDEX || pThis->elementCount == CSC_ITERATOR_INVALID_LENGTH || !pThis->pCurrentElement || !pThis->elementSize)) ? CSC_STATUS_INVALID_PARAMETER : CSC_STATUS_SUCCESS;
+    return (!pThis || pThis->baseInterface.pIBaseInterfaceVirtualTable != &g_basicIteratorVirtualTable.baseInterfaceVTable || pThis->iteratorInterface.pIIteratorVirtualTable != &g_basicIteratorVirtualTable.iteratorInterfaceVTable || pThis->iterationValid && (!pThis->pIIterable || pThis->currentIndex == CSC_ITERATOR_INVALID_INDEX || pThis->elementCount == CSC_ITERATOR_INVALID_LENGTH || !pThis->pCurrentElement || !pThis->elementSize)) ? CSC_STATUS_INVALID_PARAMETER : CSC_STATUS_SUCCESS;
 }
 
 CSC_BOOLEAN CSCMETHOD CSC_BasicIteratorIsRegistered(_In_ CONST CSC_BasicIterator* CONST pThis)

@@ -1,8 +1,8 @@
 #include "IBaseInterface.h"
 
-CSC_IBaseInterfaceVirtualTable* CSC_IBaseInterfaceGetVTable(_In_ CONST CSC_IBaseInterface* CONST pThis)
+CONST CSC_IBaseInterfaceVirtualTable* CSC_IBaseInterfaceGetVTable(_In_ CONST CSC_IBaseInterface* CONST pThis)
 {
-    return (pThis) ? pThis->pIBaseInterfaceVirtualTable : (CSC_IBaseInterfaceVirtualTable*)NULL;
+    return (pThis) ? pThis->pIBaseInterfaceVirtualTable : (CONST CSC_IBaseInterfaceVirtualTable*)NULL;
 }
 
 CSC_PCVOID CSCMETHOD CSC_IBaseInterfaceGetInterface(_In_ CONST CSC_IBaseInterface* CONST pThis, _In_ CONST EBaseInterfaceType interfaceType)

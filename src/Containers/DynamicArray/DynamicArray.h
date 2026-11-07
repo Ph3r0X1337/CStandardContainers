@@ -7,12 +7,13 @@ extern "C" {
 
 /*
 Description:
+
 The DynamicArray is a type-agnostic container, which stores its elements sequentially in memory.
 Functionality-wise, the DynamicArray is similar to the std::vector implementation of the C++ standard library.
 This container supports container nesting, hence the elements can also be instances of the DynamicArray type or even other container types.
 
 Through the plethora of methods the user can dynamically modify the contents of the DynamicArray according to his needs:
-- Using Push / Pop operations to implement stack-like behaviour (O(1))
+- Using Push / Pop operations to implement stack-like behaviour (amortized O(1), which means mostly O(1) but O(n) when an operation leads to change in capacity)
 - Using Push / PopFront or Insert / Pop operations to implement a queue-like behaviour (slightly slower, O(n))
 - Custom logic based on other operations
 
@@ -33,7 +34,7 @@ in which case the memory of the inserted elements will simply be zeroed out.
 Once done using an instance of the DynamicArray type, the CSC_DynamicArrayDestroy method should be used to invoke destruction of the object.
 Keep in mind that invoking this method will destroy the DynamicArray object, hence you must call one of the DynamicArrayInitialize* methods to use it again.
 If the DynamicArray instance should be switched to storing a different type of elements, it is possible to utilize the CSC_DynamicArrayMove,
-CSC_DynamicArrayCopy or CSC_DynamicArrayCopyArray to change the underlying element type and re-initialize the container using those methods if needed.
+CSC_DynamicArrayCopy or CSC_DynamicArrayCopyArray method to change the underlying element type and the contents of the container if needed.
 
 The DynamicArray type itself implements the IBaseInterface, the IContainer interface and the IIterable interface.
 The IBaseInterface must be implemented by the type as this is the foundation of the runtime-polymorphism built by the CSC library.
@@ -73,7 +74,7 @@ Hence always make sure to keep track of the operations that you are performing a
 #include "../../Interfaces/IIterator.h"
 
 /* Definition of DynamicArray type. */
-typedef struct _CSC_DynamicArray 
+typedef struct S_CSC_DynamicArray 
 {
     CSC_IBaseInterface baseInterface;
     CSC_IContainer containerInterface;
@@ -106,14 +107,14 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayInitializeWithSize(_When_(return == CSC_STA
 CSC_STATUS CSCMETHOD CSC_DynamicArrayInitializeWithCopy(_When_(return == CSC_STATUS_SUCCESS, _Out_) CSC_DynamicArray* CONST pThis, _In_ CONST CSC_DynamicArray* CONST pSrc);
 /* Initialization method, which instantiates a DynamicArray instance as a container with numOfElements amount of elements. */
 /* This method works similar to the size based initialization, with the difference that instead of passing a default value, you can pass an array of values to initialize the elements. */
-/* Again it is possible to pass a null pointer for the pElements parameter for POD types, but for nested IContainer types supplying an array of numOfElements of valid objects is mandatory. */
+/* Again it is possible to pass a null pointer for the pElements parameter for POD types, but for nested IContainer types supplying an array of numOfElements of initialized, valid objects is mandatory. */
 /* Just like in the other initialization methods it is mandatory to supply the nested IContainer virtual table pointer for non-POD types. */
 CSC_STATUS CSCMETHOD CSC_DynamicArrayInitializeWithArray(_When_(return == CSC_STATUS_SUCCESS, _Out_) CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_PCVOID pElements, _In_ CONST CSC_IAllocator* CONST pIAllocator, _In_opt_ CONST CSC_IContainerVirtualTable* CONST pNestedContainerVTable);
 
 /* Method used to resize the DynamicArray instance, which can either truncate or expand the amount of elements stored by the DynamicArray instance, or change the element capacity. */
-/* For POD types, the default value is optional, passing a null pointer will result in the new elements' memory being zeroed out. */
+/* For POD types, the default element is optional, passing a null pointer will result in the new elements' memory being zeroed out. */
 /* For non-POD types is mandatory, if the resize operation will expand the element count of the DynamicArray instance. */
-/* However, as a rule of thumb you should always provide a valid default value for non-POD types. */
+/* However, as a rule of thumb you should always provide a valid default element for non-POD types. */
 /* The resize operation will either add new default elements to the "back" of the underlying array, or truncate elements from the back. */
 /* Keep in mind that for POD types, shrinking the container will not result in zeroing the memory of truncated elements. */
 /* For non-POD types, memory zeroing relies on the IContainer object destructor. */
@@ -142,28 +143,33 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayErase(_Inout_ CSC_DynamicArray* CONST pThis
 /* The type metadata is preserved, hence the object stays valid. */
 CSC_STATUS CSCMETHOD CSC_DynamicArrayClear(_Inout_ CSC_DynamicArray* CONST pThis);
 
-/* Method that pushes a value to the back of the array. */
+/* Method that pushes a single element to the back of the array. */
 /* The method allows to implement behaviours such as filling up the array through iteration or implementing a stack- or queue-like behaviour. */
 /* Exceeding the current capacity will result in automatic reallocation, just like any method causing element insertion. */
-/* For POD types, passing the value is optional, when passing a null pointer the memory of the new element will simply be zeroed out. */
+/* For POD types, passing an element is optional, when passing a null pointer the memory of the new element will simply be zeroed out. */
 /* For non-POD types using the IContainer interface passing an initialized, valid element is mandatory. */
 /* If pushing leads the maximum array size being exceeded, the method will fail. */
-CSC_STATUS CSCMETHOD CSC_DynamicArrayPushValue(_Inout_ CSC_DynamicArray* CONST pThis, _In_opt_ CONST CSC_PCVOID pValue);
-/* Method that pops a value from the back of the array. */
+CSC_STATUS CSCMETHOD CSC_DynamicArrayPushElement(_Inout_ CSC_DynamicArray* CONST pThis, _In_opt_ CONST CSC_PCVOID pValue);
+/* Works similar as *PushElement, with the difference, that the element is pushed to the front of the array. */
+/* This difference is coupled to a performance cost, as all elements need to be shifted to the back by one element. */
+/* The result is a time complexity of O(n) compared to *PushElement's time complexity of amortized O(1). */
+/* Exactly as *PushElement invocation of this method can trigger automatic reallocation to grow the element capacity of the container. */
+CSC_STATUS CSCMETHOD CSC_DynamicArrayPushFront(_Inout_ CSC_DynamicArray* CONST pThis, _In_opt_ CONST CSC_PCVOID pValue);
+/* Method that pops an element from the back of the array. */
 /* The method allows to implement behaviours such as processing an array of work items through iteration or implementing a stack- or queue-like behaviour. */
 /* Falling below a threshold of the element count will result in automatic reallocation, to shrink the memory footprint. */
 /* The shrinking logic is tied to a built-in hysteresis logic, hence there are no boundaries where frequent push and pop operations will cause reallocations. */
-/* The value parameter to receive the value being popped from the back is entirely optional for both POD and non-POD types. */
+/* The value parameter to receive the element being popped from the back is entirely optional for both POD and non-POD types. */
 /* For non-POD types implementing IContainer it is important that you must supply a pointer to an uninitialized object, as the method will initialize the object. */
 /* The attempt to pop from an empty or invalid DynamicArray instance will lead to failure. */
-CSC_STATUS CSCMETHOD CSC_DynamicArrayPopValue(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue);
-/* The same behaviour applies to the *LazyPopValue method, with the difference that this operation will not cause any reallocations. */
+CSC_STATUS CSCMETHOD CSC_DynamicArrayPopElement(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue);
+/* The same behaviour applies to the *LazyPopElement method, with the difference that this operation will not cause any reallocations. */
 /* As the pop operation doesn't affect the capacity, this method can be used as a big performance optimization, yet again at the expense of the memory footprint. */
-CSC_STATUS CSCMETHOD CSC_DynamicArrayLazyPopValue(_Inout_ CSC_DynamicArray* CONST pThis,_When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue);
-/* Works similar as *PopValue, with the difference, that the value is popped from the front of the array. */
+CSC_STATUS CSCMETHOD CSC_DynamicArrayLazyPopElement(_Inout_ CSC_DynamicArray* CONST pThis,_When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue);
+/* Works similar as *PopElement, with the difference, that the element is popped from the front of the array. */
 /* This difference is coupled to a performance cost, as all elements need to be shifted to the front by one element. */
-/* The result is a time complexity of O(n) compared to *PopValue's time complexity of O(1). */
-/* Exactly as *PopValue invocation of this method can trigger automatic reallocation to shrink the element capacity of the container. */
+/* The result is a time complexity of O(n) compared to *PopElement's time complexity of amortized O(1). */
+/* Exactly as *PopElement invocation of this method can trigger automatic reallocation to shrink the element capacity of the container. */
 CSC_STATUS CSCMETHOD CSC_DynamicArrayPopFront(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue);
 /* The same behaviour as *PopFront applies here, again with the difference that invocation of this method will not cause any reallocations. */
 /* Even though that leads to the capacity not being affected, the time complexity for popping from the front of the array still stays O(n). */
@@ -184,22 +190,22 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayFill(_Inout_ CSC_DynamicArray* CONST pThis,
 /* For non-POD types, it is mandatory to provide a pointer to an initialized, valid object. */
 CSC_STATUS CSCMETHOD CSC_DynamicArrayFillRange(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T firstIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pValue);
 
-/* Method used to create a copy of another DynamicArray instance, keeps the IAllocator but copies everything else, including the other instances type metadata. */
+/* Method used to create a copy of another DynamicArray instance, keeps the IAllocator but copies everything else from the source object, including the type metadata. */
 CSC_STATUS CSCMETHOD CSC_DynamicArrayCopy(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_DynamicArray* CONST pSrc);
-/* Method used to move the data from another DynamicArray instance to the current instance, keeps the IAllocator but moves everything else, including the other instances type metadata. */
+/* Method used to move the data from another DynamicArray instance to the current instance, keeps the IAllocator but moves everything else from the source object, including the type metadata. */
 /* The allocated data on the other instance gets erased (see CSC_DynamicArrayErase), everything else such as the IAllocator and the type metadata will be preserved. */
 CSC_STATUS CSCMETHOD CSC_DynamicArrayMove(_Inout_ CSC_DynamicArray* CONST pThis, _Inout_ CSC_DynamicArray* CONST pSrc);
 /* Method used to copy an array of elements in memory into the DynamicArray instance, this method also updates the type metadata. */
 /* For POD types, passing the pElements parameter is optional, when passing a null pointer the memory of the new elements will simply be zeroed out. */
 /* For non-POD types using the IContainer interface passing an array of initialized, valid elements is mandatory, with a single exception. */
 /* Passing a null pointer for the pElements parameter for non-POD types is only supported, when the numOfElements parameter is zero. */
-/* In this case the DynamicArray instances allocated memory is freed and the type metadata gets updated. */
+/* In this case the DynamicArray instances elements get destroyed, the allocated memory is freed and the type metadata gets updated. */
 /* This essentially transforms the DynamicArray instance into an empty container with the new type metadata. */
 CSC_STATUS CSCMETHOD CSC_DynamicArrayCopyArray(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements, _In_opt_ CONST CSC_IContainerVirtualTable* CONST pNestedContainerVTable);
 
 /* Method used to insert a single element into the DynamicArray instance at the given index. */
 /* Supplying an index out of bounds results in a failure, however an index equal to the element count is also valid, which leads to insertion at the back of the array. */
-/* For POD types, passing the value is optional, when passing a null pointer the memory of the new element will simply be zeroed out. */
+/* For POD types, passing an element is optional, when passing a null pointer the memory of the new element will simply be zeroed out. */
 /* For non-POD types using the IContainer interface passing an initialized, valid element is mandatory. */
 CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertElement(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_opt_ CONST CSC_PCVOID pValue);
 /* Method used to insert an array of elements from memory into the DynamicArray instance at the given index. */
@@ -207,9 +213,13 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertElement(_Inout_ CSC_DynamicArray* CON
 /* For POD types, passing the pElements parameter is optional, when passing a null pointer the memory of the new elements will simply be zeroed out. */
 /* For non-POD types using the IContainer interface passing an array of initialized, valid elements is mandatory. */
 CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRange(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements);
-/* Method used to insert the elements of another DynamicArray instance into the current DynamicArray instance at the given index. */
+/* Method used to copy and insert the elements of another DynamicArray instance into the current DynamicArray instance at the given index. */
 /* Supplying an index out of bounds results in a failure, however an index equal to the element count is also valid, which leads to insertion at the back of the array. */
-CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertArray(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_DynamicArray* CONST pSrc);
+CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertCopy(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_DynamicArray* CONST pSrc);
+/* Method used to move and insert the elements of another DynamicArray instance into the current DynamicArray instance at the given index. */
+/* The allocated data on the other instance gets erased (see CSC_DynamicArrayErase), everything else such as the IAllocator and the type metadata will be preserved. */
+/* Supplying an index out of bounds results in a failure, however an index equal to the element count is also valid, which leads to insertion at the back of the array. */
+CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertMove(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _Inout_ CSC_DynamicArray* CONST pSrc);
 /* Method used to insert a copy of another instances elements at the back of the array of the current DynamicArray instance. */
 CSC_STATUS CSCMETHOD CSC_DynamicArrayAppendCopy(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_DynamicArray* CONST pSrc);
 /* Method used to move the elements of another instance to the current DynamicArray instance, inserting them at the back of the current instances array. */
@@ -291,13 +301,13 @@ CSC_IAllocator* CSCMETHOD CSC_DynamicArrayGetIAllocator(_In_ CONST CSC_DynamicAr
 /* Method used to query the pointer to the nested IContainer virtual table, which is part of the metadata to represent the underlying type. */
 /* Reminder: The type metadata consists of the element size and the pointer to the nested IContainer virtual table, which together build the type information. */
 /* Supplying an invalid instance will result in the return of a null pointer. */
-CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayGetNestedContainerVTable(_In_ CONST CSC_DynamicArray* CONST pThis);
+CONST CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayGetNestedContainerVTable(_In_ CONST CSC_DynamicArray* CONST pThis);
 
 /* Function used to obtain a pointer to the IContainer virtual table of the DynamicArray type. */
 /* As this a function and not a method, a DynamicArray instance is not required to query the pointer to the virtual table. */
 /* Querying the pointer is necessary when using the DynamicArray type as a nested container in another container. */
 /* Alternatively, a pointer to the IContainer interface of an existing DynamicArray instance can also be used to obtain the pointer, through the IContainer interface. */
-CSC_IContainerVirtualTable* CSCAPI CSC_DynamicArrayGetIContainerVTable();
+CONST CSC_IContainerVirtualTable* CSCAPI CSC_DynamicArrayGetIContainerVTable();
 
 #ifdef __cplusplus
 };

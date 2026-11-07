@@ -7,14 +7,18 @@ extern "C" {
 
 /*
 Description:
+
 The StringUtils provide a small selection of helper functions to work with ANSI or UTF-16 strings.
 None of these helper functions perform any changes on the given data, they only provide information.
+
 The utilities provide options to query string length or for UTF-16 the length of a string in code units aswell.
 Furthermore they include comparison functions to perform a mostly memory based compare of two given strings.
+
 Specifically for UTF-16 strings there are also helper functions that help with identifying individual code units as a particular UTF-16 code point type.
 While ANSI strings simply consist of characters, UTF-16 strings consist of UTF-16 code units, which take up 16 bits (hence UTF-16).
 Code units are also referred to as "characters" in the CSC library, while the string length is determined by the amount of UTF-16 code points, which can take up either one or two UTF-16 code units.
 Every code point is essentially the equivalent of a "unicode character" in the terms of UTF-16.
+
 Keep in mind that this library isn't aware of the endianness, hence any data that doesn't use the same endianness as the native endianness compiled for,
 must be converted to the native endianness before utilizing the functions provided by this library.
 */
@@ -39,7 +43,7 @@ must be converted to the native endianness before utilizing the functions provid
 #endif
 
 /* Defines the different UTF-16 code point types. */
-typedef enum _CSC_CodePointType
+typedef enum E_CSC_CodePointType
 {
     csc_cpt_invalid = 0,
     csc_cpt_bmp,

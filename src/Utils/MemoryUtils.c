@@ -122,7 +122,7 @@ CSC_STATUS CSCAPI CSC_MemoryUtilsSetArrayValueBasic(_Out_ CONST CSC_PVOID pDst, 
 
 #if CSC_MEMORY_UTILS_USE_SIZE_BASED_OPTIMIZATION == TRUE && CSC_DATA_BUS_WIDTH > CSC_DATA_BUS_WIDTH_8BIT
 
-typedef enum _CSC_SizeType
+typedef enum E_CSC_SizeType
 {
     csc_st_byte = 0,
 #if CSC_DATA_BUS_WIDTH > CSC_DATA_BUS_WIDTH_8BIT

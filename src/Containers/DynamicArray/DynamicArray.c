@@ -17,7 +17,7 @@
 #define CSC_DYNAMIC_ARRAY_CALCULATION_ERROR (CSC_SIZE_T)-1
 #endif
 
-typedef struct _CSC_DynamicArrayVirtualTable
+typedef struct S_CSC_DynamicArrayVirtualTable
 {
     CSC_IBaseInterfaceVirtualTable baseInterfaceVTable;
     CSC_IContainerVirtualTable containerInterfaceVTable;
@@ -29,8 +29,8 @@ static CSC_PCVOID CSCMETHOD CSC_DynamicArrayIBaseInterfaceGetInterface(_In_ CONS
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerInitialize(_When_(return == CSC_STATUS_SUCCESS, _Out_) CONST CSC_PVOID pMemoryBaseAddress, _In_ CONST CSC_SIZE_T elementSize, _In_ CONST CSC_IAllocator* CONST pIAllocator);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerErase(_Inout_ CSC_IContainer* CONST pThis);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerDestroy(_Inout_ CSC_IContainer* CONST pThis);
-static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST struct _CSC_IContainer* CONST pOther);
-static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerMove(_Inout_ CSC_IContainer* CONST pThis, _Inout_ struct _CSC_IContainer* CONST pOther);
+static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_IContainer* CONST pOther);
+static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerMove(_Inout_ CSC_IContainer* CONST pThis, _Inout_ CSC_IContainer* CONST pOther);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerInsertRange(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_opt_ CONST CSC_PCVOID pElements);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerRemoveRange(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerSwapValues(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_SIZE_T firstIndex, _In_ CONST CSC_SIZE_T secondIndex);
@@ -42,7 +42,7 @@ static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIContainerGetSize(_In_ CONST CSC_ICo
 static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIContainerGetElementSize(_In_ CONST CSC_IContainer* CONST pThis);
 static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIContainerGetMaxElements(_In_ CONST CSC_IContainer* CONST pThis);
 static CSC_IAllocator* CSCMETHOD CSC_DynamicArrayIContainerGetIAllocator(_In_ CONST CSC_IContainer* CONST pThis);
-static CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayIContainerGetNestedContainerVTable(_In_ CONST struct _CSC_IContainer* CONST pThis);
+static CONST CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayIContainerGetNestedContainerVTable(_In_ CONST CSC_IContainer* CONST pThis);
 
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIIterableRegisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator);
 static CSC_STATUS CSCMETHOD CSC_DynamicArrayIIterableUnregisterIterator(_Inout_ CSC_IIterable* CONST pThis, _In_ CONST CSC_IIterator* CONST pIIterator);
@@ -282,9 +282,9 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayInitialize(_When_(return == CSC_STATUS_SUCC
         return CSC_STATUS_INVALID_PARAMETER;
     }
 
-    pThis->baseInterface.pIBaseInterfaceVirtualTable = (CSC_IBaseInterfaceVirtualTable*)&g_dynamicArrayVirtualTable.baseInterfaceVTable;
-    pThis->containerInterface.pIContainerVirtualTable = (CSC_IContainerVirtualTable*)&g_dynamicArrayVirtualTable.containerInterfaceVTable;
-    pThis->iterableInterface.pIIterableVirtualTable = (CSC_IIterableVirtualTable*)&g_dynamicArrayVirtualTable.iterableInterfaceVTable;
+    pThis->baseInterface.pIBaseInterfaceVirtualTable = &g_dynamicArrayVirtualTable.baseInterfaceVTable;
+    pThis->containerInterface.pIContainerVirtualTable = &g_dynamicArrayVirtualTable.containerInterfaceVTable;
+    pThis->iterableInterface.pIIterableVirtualTable = &g_dynamicArrayVirtualTable.iterableInterfaceVTable;
 
     pThis->elementSize = elementSize;
     pThis->elementCount = (CSC_SIZE_T)0;
@@ -1218,9 +1218,9 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayZeroMemory(_Out_ CSC_DynamicArray* C
         return CSC_STATUS_INVALID_PARAMETER;
     }
 
-    pThis->baseInterface.pIBaseInterfaceVirtualTable = (CSC_IBaseInterfaceVirtualTable*)NULL;
-    pThis->containerInterface.pIContainerVirtualTable = (CSC_IContainerVirtualTable*)NULL;
-    pThis->iterableInterface.pIIterableVirtualTable = (CSC_IIterableVirtualTable*)NULL;
+    pThis->baseInterface.pIBaseInterfaceVirtualTable = (CONST CSC_IBaseInterfaceVirtualTable*)NULL;
+    pThis->containerInterface.pIContainerVirtualTable = (CONST CSC_IContainerVirtualTable*)NULL;
+    pThis->iterableInterface.pIIterableVirtualTable = (CONST CSC_IIterableVirtualTable*)NULL;
 
     pThis->elementSize = (CSC_SIZE_T)0;
     pThis->elementCount = (CSC_SIZE_T)0;
@@ -1236,17 +1236,22 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayZeroMemory(_Out_ CSC_DynamicArray* C
 }
 
 
-CSC_STATUS CSCMETHOD CSC_DynamicArrayPushValue(_Inout_ CSC_DynamicArray* CONST pThis, _In_opt_ CONST CSC_PCVOID pValue)
+CSC_STATUS CSCMETHOD CSC_DynamicArrayPushElement(_Inout_ CSC_DynamicArray* CONST pThis, _In_opt_ CONST CSC_PCVOID pValue)
 {
     return CSC_DynamicArrayInsertRange(pThis, pThis->elementCount, (CSC_SIZE_T)1, pValue);
 }
 
-CSC_STATUS CSCMETHOD CSC_DynamicArrayPopValue(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue)
+CSC_STATUS CSCMETHOD CSC_DynamicArrayPushFront(_Inout_ CSC_DynamicArray* CONST pThis, _In_opt_ CONST CSC_PCVOID pValue)
+{
+    return CSC_DynamicArrayInsertRange(pThis, (CSC_SIZE_T)0, (CSC_SIZE_T)1, pValue);
+}
+
+CSC_STATUS CSCMETHOD CSC_DynamicArrayPopElement(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue)
 {
     return CSC_DynamicArrayPopImpl(pThis, pValue, (CSC_BOOLEAN)TRUE, (CSC_BOOLEAN)FALSE);
 }
 
-CSC_STATUS CSCMETHOD CSC_DynamicArrayLazyPopValue(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue)
+CSC_STATUS CSCMETHOD CSC_DynamicArrayLazyPopElement(_Inout_ CSC_DynamicArray* CONST pThis, _When_(return == CSC_STATUS_SUCCESS, _Out_opt_) CONST CSC_PVOID pValue)
 {
     return CSC_DynamicArrayPopImpl(pThis, pValue, (CSC_BOOLEAN)FALSE, (CSC_BOOLEAN)FALSE);
 }
@@ -1857,7 +1862,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertRange(_Inout_ CSC_DynamicArray* CONST
     return CSC_STATUS_SUCCESS;
 }
 
-CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertArray(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_DynamicArray* CONST pSrc)
+CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertCopy(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_DynamicArray* CONST pSrc)
 {
     CONST CSC_STATUS status = CSC_DynamicArrayIsValid(pSrc);
 
@@ -1871,6 +1876,25 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertArray(_Inout_ CSC_DynamicArray* CONST
     }
 }
 
+CSC_STATUS CSCMETHOD CSC_DynamicArrayInsertMove(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _Inout_ CSC_DynamicArray* CONST pSrc)
+{
+    CONST CSC_STATUS status = CSC_DynamicArrayInsertCopy(pThis, insertIndex, pSrc);
+
+    if (status != CSC_STATUS_SUCCESS)
+    {
+        return status;
+    }
+
+    if (pThis == pSrc)
+    {
+        return CSC_STATUS_SUCCESS;
+    }
+
+    CSC_DynamicArrayErase(pSrc);
+
+    return CSC_STATUS_SUCCESS;
+}
+
 CSC_STATUS CSCMETHOD CSC_DynamicArrayAppendCopy(_Inout_ CSC_DynamicArray* CONST pThis, _In_ CONST CSC_DynamicArray* CONST pSrc)
 {
     CONST CSC_STATUS status = CSC_DynamicArrayIsValid(pThis);
@@ -1881,7 +1905,7 @@ CSC_STATUS CSCMETHOD CSC_DynamicArrayAppendCopy(_Inout_ CSC_DynamicArray* CONST 
     }
     else
     {
-        return CSC_DynamicArrayInsertArray(pThis, pThis->elementCount, pSrc);
+        return CSC_DynamicArrayInsertCopy(pThis, pThis->elementCount, pSrc);
     }
 }
 
@@ -2823,27 +2847,27 @@ CSC_SIZE_T CSCMETHOD CSC_DynamicArrayGetElementSize(_In_ CONST CSC_DynamicArray*
 
 CSC_IBaseInterface* CSCMETHOD CSC_DynamicArrayGetIBaseInterface(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-    return (CSC_IBaseInterface*)((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : &pThis->baseInterface);
+    return (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IBaseInterface*)NULL : &pThis->baseInterface;
 }
 
 CSC_IContainer* CSCMETHOD CSC_DynamicArrayGetIContainer(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-    return (CSC_IContainer*)((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : &pThis->containerInterface);
+    return (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IContainer*)NULL : &pThis->containerInterface;
 }
 
 CSC_IIterable* CSCMETHOD CSC_DynamicArrayGetIIterable(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-    return (CSC_IIterable*)((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : &pThis->iterableInterface);
+    return (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IIterable*)NULL : &pThis->iterableInterface;
 }
 
 CSC_IAllocator* CSCMETHOD CSC_DynamicArrayGetIAllocator(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-    return (CSC_IAllocator*)((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : pThis->pIAllocator);
+    return (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CSC_IAllocator*)NULL : (CSC_IAllocator*)pThis->pIAllocator;
 }
 
-CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayGetNestedContainerVTable(_In_ CONST CSC_DynamicArray* CONST pThis)
+CONST CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayGetNestedContainerVTable(_In_ CONST CSC_DynamicArray* CONST pThis)
 {
-    return (CSC_IContainerVirtualTable*)((CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? NULL : pThis->pNestedContainerVTable);
+    return (CSC_DynamicArrayIsValid(pThis) != CSC_STATUS_SUCCESS) ? (CONST CSC_IContainerVirtualTable*)NULL : pThis->pNestedContainerVTable;
 }
 
 
@@ -2930,7 +2954,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerDestroy(_Inout_ CSC_IConta
     }
 }
 
-static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST struct _CSC_IContainer* CONST pOther)
+static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_IContainer* CONST pOther)
 {
     CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
     CONST CSC_DynamicArray* CONST pOtherDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pOther);
@@ -2945,7 +2969,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerCopy(_Inout_ CSC_IContaine
     }
 }
 
-static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerMove(_Inout_ CSC_IContainer* CONST pThis, _Inout_ struct _CSC_IContainer* CONST pOther)
+static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerMove(_Inout_ CSC_IContainer* CONST pThis, _Inout_ CSC_IContainer* CONST pOther)
 {
     CSC_DynamicArray* CONST pDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
     CSC_DynamicArray* CONST pOtherDynamicArray = (CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pOther);
@@ -3164,7 +3188,7 @@ static CSC_STATUS CSCMETHOD CSC_DynamicArrayIContainerIsElementContainer(_In_ CO
     }
     else
     {
-        return (CSC_DynamicArrayGetNestedContainerVTable(pDynamicArray) != (CSC_IContainerVirtualTable*)NULL) ? CSC_STATUS_SUCCESS : CSC_STATUS_GENERAL_FAILURE;
+        return (CSC_DynamicArrayGetNestedContainerVTable(pDynamicArray)) ? CSC_STATUS_SUCCESS : CSC_STATUS_GENERAL_FAILURE;
     }
 }
 
@@ -3224,13 +3248,13 @@ static CSC_IAllocator* CSCMETHOD CSC_DynamicArrayIContainerGetIAllocator(_In_ CO
     }
 }
 
-static CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayIContainerGetNestedContainerVTable(_In_ CONST struct _CSC_IContainer* CONST pThis)
+static CONST CSC_IContainerVirtualTable* CSCMETHOD CSC_DynamicArrayIContainerGetNestedContainerVTable(_In_ CONST CSC_IContainer* CONST pThis)
 {
     CONST CSC_DynamicArray* CONST pDynamicArray = (CONST CSC_DynamicArray* CONST)CSC_DynamicArrayIContainerGetObjectPointer(pThis);
 
     if (!pDynamicArray)
     {
-        return (CSC_IContainerVirtualTable*)NULL;
+        return (CONST CSC_IContainerVirtualTable*)NULL;
     }
     else
     {
@@ -3385,7 +3409,7 @@ static CSC_SIZE_T CSCMETHOD CSC_DynamicArrayIIterableGetElementSize(_In_ CONST C
 }
 
 
-CSC_IContainerVirtualTable* CSCAPI CSC_DynamicArrayGetIContainerVTable()
+CONST CSC_IContainerVirtualTable* CSCAPI CSC_DynamicArrayGetIContainerVTable()
 {
     return &g_dynamicArrayVirtualTable.containerInterfaceVTable;
 }

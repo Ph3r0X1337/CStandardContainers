@@ -7,8 +7,10 @@ extern "C" {
 
 /*
 Description:
+
 The IIterator interface must be implemented by all iterator objects that wish to iterate over the iterables of the CSC library.
 The iterable uses the IIterator interface as a observer pattern, to notify the subscribed iterator objects on any updates that occurr during changes in the iterable.
+
 While the IIterator interface methods could be directly called on the iterator by an arbitrary caller, this use is discouraged unless there is a justified need for it.
 Instead it is encouraged to invoke the methods of the object implementing the IIterator interface to make changes to the iterator.
 */
@@ -22,18 +24,18 @@ Instead it is encouraged to invoke the methods of the object implementing the II
 #define CSC_ITERATOR_INVALID_INDEX CSC_ITERATOR_INVALID_LENGTH
 
 /* Predecleration of the CSC_IIterator type to be able to create the function pointer types for the methods that the interface implements. */
-struct _CSC_IIterator;
+struct S_CSC_IIterator;
 
 /* Type definitions of the function pointer types of the IIterator interfaces methods, which need to be implemented by types that utilize the interface. */
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_INVALIDATE_ITERATION)(_Inout_ struct _CSC_IIterator* CONST pThis);
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_UPDATE_ITERATION)(_Inout_ struct _CSC_IIterator* CONST pThis);
+typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_INVALIDATE_ITERATION)(_Inout_ struct S_CSC_IIterator* CONST pThis);
+typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_UPDATE_ITERATION)(_Inout_ struct S_CSC_IIterator* CONST pThis);
 
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_ON_INSERTION)(_Inout_ struct _CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize);
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_ON_REMOVAL)(_Inout_ struct _CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize);
-typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_ON_DESTRUCTION)(_Inout_ struct _CSC_IIterator* CONST pThis);
+typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_ON_INSERTION)(_Inout_ struct S_CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T insertIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize);
+typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_ON_REMOVAL)(_Inout_ struct S_CSC_IIterator* CONST pThis, _In_ CONST CSC_SIZE_T removeIndex, _In_ CONST CSC_SIZE_T numOfElements, _In_ CONST CSC_SIZE_T newSize);
+typedef CSC_STATUS(CSCMETHOD* CSC_P_I_ITERATOR_ON_DESTRUCTION)(_Inout_ struct S_CSC_IIterator* CONST pThis);
 
 /* Definition of the virtual table layout of the IIterator type. */
-typedef struct _CSC_IIteratorVirtualTable
+typedef struct S_CSC_IIteratorVirtualTable
 {
     CSC_P_I_ITERATOR_INVALIDATE_ITERATION pInvalidateIteration;
     CSC_P_I_ITERATOR_UPDATE_ITERATION pUpdateIteration;
@@ -43,14 +45,14 @@ typedef struct _CSC_IIteratorVirtualTable
 } CSC_IIteratorVirtualTable;
 
 /* Definition of the IIterator type, contains a pointer to the virtual table of the object that implements the interfaces methods. */
-typedef struct _CSC_IIterator
+typedef struct S_CSC_IIterator
 {
-    CSC_IIteratorVirtualTable* pIIteratorVirtualTable;
+    CONST CSC_IIteratorVirtualTable* pIIteratorVirtualTable;
 } CSC_IIterator;
 
 /* Returns the IIterator virtual table pointer held by the IIterator interface pointer. */
 /* If the supplied IIterator pointer is a null pointer, the method will simply return a null pointer to indicate failure. */
-CSC_IIteratorVirtualTable* CSC_IIteratorGetVTable(_In_ CONST CSC_IIterator* CONST pThis);
+CONST CSC_IIteratorVirtualTable* CSC_IIteratorGetVTable(_In_ CONST CSC_IIterator* CONST pThis);
 
 /* Calls the underlying method to invalidate the iteration, if it is currently valid. */
 /* Should return CSC_STATUS_SUCCESS on success, otherwise an error code is returned. */

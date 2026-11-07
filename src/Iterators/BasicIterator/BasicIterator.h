@@ -7,16 +7,23 @@ extern "C" {
 
 /*
 Description:
+
 The basic iterator implements the IIterator interface and can be bound to any object implementing the IIterable interface.
+
 To bind the basic iterator to an iterable object, it must first be initialized.
 Furthermore, the pointer to the IIterable interface of the object must be queried before binding.
+
 Once initialized, passing the queried IIterable interface pointer to the CSC_BasicIteratorRegisterIterable method binds the iterator to the iterable.
 Binding to another iterable will automatically unbind the old iterable and invalidate the previous iteration metadata.
+
 Using the CSC_BasicIteratorUnregisterIterable method the same can be achieved without binding to a new object.
+
 Once the basic iterator is bound to an iterable, it will be notified by the iterable, if the iterable is modified during an active iteration.
 The iterable will either update the iteration to its best effort, or invalidate it if updating the iteration is impossible.
 This behaviour depends on the implementation of the iterable, hence check out its documentation to make sure you iterate safely.
+
 Using the other methods of the basic iterator, the user can query metadata of the iterable and the iterator or perform iteration.
+
 Once done using an instance of the basic iterator, the CSC_BasicIteratorDestroy method should be used to perform proper cleanup.
 Keep in mind that this will destroy the iterator object itself, making it unusable until the instance is initialized again.
 In such a case the use of the CSC_BasicIteratorUnregisterIterable method should be preferred.
@@ -32,7 +39,7 @@ In such a case the use of the CSC_BasicIteratorUnregisterIterable method should 
 #include "../../Interfaces/IIterable.h"
 
 /* Definition of BasicIterator type. */
-typedef struct _CSC_BasicIterator
+typedef struct S_CSC_BasicIterator
 {
     CSC_IBaseInterface baseInterface;
     CSC_IIterator iteratorInterface;

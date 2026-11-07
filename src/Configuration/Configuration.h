@@ -7,6 +7,7 @@ extern "C" {
 
 /*
 Description:
+
 The Configuration.h file contains the main configuration used by the library to adjust to the underlying system / architecture. 
 It contains a default configuration which can be copied and adjusted to implement a custom configuration. 
 The CSC library requires an address width for code and data pointers of at least 16 bits, 

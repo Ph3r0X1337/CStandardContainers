@@ -1,8 +1,8 @@
 #include "IAllocator.h"
 
-CSC_IAllocatorVirtualTable* CSC_IAllocatorGetVTable(_In_ CONST CSC_IAllocator* CONST pThis)
+CONST CSC_IAllocatorVirtualTable* CSC_IAllocatorGetVTable(_In_ CONST CSC_IAllocator* CONST pThis)
 {
-    return (pThis) ? pThis->pIAllocatorVirtualTable : (CSC_IAllocatorVirtualTable*)NULL;
+    return (pThis) ? pThis->pIAllocatorVirtualTable : (CONST CSC_IAllocatorVirtualTable*)NULL;
 }
 
 CSC_STATUS CSCMETHOD CSC_IAllocatorInit(_Inout_ CSC_IAllocator* CONST pThis)

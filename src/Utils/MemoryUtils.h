@@ -7,9 +7,13 @@ extern "C" {
 
 /*
 Description:
+
 The MemoryUtils provide a rich variaty of helper functions to perform operations like copying, moving, setting and comparing data in memory.
+
 Most of the functions behave differently based on the configuration, which can decide whether they take advantage of size based optimization which also allows utilizing recursion.
+
 However at the current state of the library size based optimization implies that misaligned access for such types is supported by the architecture, which affects all copy operations.
+
 For special needs the MemoryUtils additionally expose the *Basic functions, which can be used to explicitly use unoptimized code performing byte-by-byte operations, 
 even when size based optimization is enabled.
 */

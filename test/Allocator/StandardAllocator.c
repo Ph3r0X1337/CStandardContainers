@@ -2,13 +2,13 @@
 #include <memory.h>
 #include <stdlib.h>
 
-typedef struct _CSC_StandardAllocatorVirtualTable
+typedef struct S_CSC_StandardAllocatorVirtualTable
 {
     CSC_IBaseInterfaceVirtualTable baseInterfaceVTable;
     CSC_IAllocatorVirtualTable allocatorInterfaceVTable;
 } CSC_StandardAllocatorVirtualTable;
 
-typedef struct _CSC_StandardAllocator
+typedef struct S_CSC_StandardAllocator
 {
     CSC_IBaseInterface baseInterface;
     CSC_IAllocator allocatorInterface;
@@ -40,8 +40,8 @@ static CONST CSC_StandardAllocatorVirtualTable g_standardAllocatorVirtualTable =
 
 static CSC_StandardAllocator g_standardAllocator =
 {
-    { (CSC_IBaseInterfaceVirtualTable*)&g_standardAllocatorVirtualTable.baseInterfaceVTable },
-    { (CSC_IAllocatorVirtualTable*)&g_standardAllocatorVirtualTable.allocatorInterfaceVTable }
+    { &g_standardAllocatorVirtualTable.baseInterfaceVTable },
+    { &g_standardAllocatorVirtualTable.allocatorInterfaceVTable }
 };
 
 CSC_IAllocator* CSCAPI CSC_StandardAllocatorGetAllocator()

@@ -66,7 +66,7 @@ int main() {
     vecBuffer.y = 0;
     vecBuffer.z = (int)(vecSize - iterator);
 
-    if (CSC_DynamicArrayPushValue(&da, &vecBuffer) != CSC_STATUS_SUCCESS)
+    if (CSC_DynamicArrayPushElement(&da, &vecBuffer) != CSC_STATUS_SUCCESS)
       std::println("Failed to push value at {}", iterator);
   }
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}",
@@ -112,7 +112,7 @@ int main() {
   std::println("Deletion of vector elements:\n");
 
   for (iterator = (SIZE_T)0; iterator < vecSize; ++iterator) {
-    if (CSC_DynamicArrayPopValue(&da, &vecBuffer) != CSC_STATUS_SUCCESS)
+    if (CSC_DynamicArrayPopElement(&da, &vecBuffer) != CSC_STATUS_SUCCESS)
       std::println("Failed to pop a value at {}", iterator);
   }
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}",

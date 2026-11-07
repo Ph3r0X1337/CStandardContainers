@@ -1,8 +1,8 @@
 #include "IContainer.h"
 
-CSC_IContainerVirtualTable* CSC_IContainerGetVTable(_In_ CONST CSC_IContainer* CONST pThis)
+CONST CSC_IContainerVirtualTable* CSC_IContainerGetVTable(_In_ CONST CSC_IContainer* CONST pThis)
 {
-    return (pThis) ? pThis->pIContainerVirtualTable : (CSC_IContainerVirtualTable*)NULL;
+    return (pThis) ? pThis->pIContainerVirtualTable : (CONST CSC_IContainerVirtualTable*)NULL;
 }
 
 CSC_STATUS CSCMETHOD CSC_IContainerErase(_Inout_ CSC_IContainer* CONST pThis)
@@ -30,7 +30,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerDestroy(_Inout_ CSC_IContainer* CONST pThis)
 }
 
 
-CSC_STATUS CSCMETHOD CSC_IContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST struct _CSC_IContainer* CONST pOther)
+CSC_STATUS CSCMETHOD CSC_IContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In_ CONST CSC_IContainer* CONST pOther)
 {
     if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pCopy || !pOther || pOther->pIContainerVirtualTable != pThis->pIContainerVirtualTable)
     {
@@ -42,7 +42,7 @@ CSC_STATUS CSCMETHOD CSC_IContainerCopy(_Inout_ CSC_IContainer* CONST pThis, _In
     }
 }
 
-CSC_STATUS CSCMETHOD CSC_IContainerMove(_Inout_ CSC_IContainer* CONST pThis, _Inout_ struct _CSC_IContainer* CONST pOther)
+CSC_STATUS CSCMETHOD CSC_IContainerMove(_Inout_ CSC_IContainer* CONST pThis, _Inout_ CSC_IContainer* CONST pOther)
 {
     if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pMove || !pOther || pOther->pIContainerVirtualTable != pThis->pIContainerVirtualTable)
     {
@@ -190,11 +190,11 @@ CSC_IAllocator* CSCMETHOD CSC_IContainerGetIAllocator(_In_ CONST CSC_IContainer*
     }
 }
 
-CSC_IContainerVirtualTable* CSCMETHOD CSC_IContainerGetNestedContainerVTable(_In_ CONST struct _CSC_IContainer* CONST pThis)
+CONST CSC_IContainerVirtualTable* CSCMETHOD CSC_IContainerGetNestedContainerVTable(_In_ CONST CSC_IContainer* CONST pThis)
 {
     if (!pThis || !pThis->pIContainerVirtualTable || !pThis->pIContainerVirtualTable->pGetNestedContainerVTable)
     {
-        return (CSC_IContainerVirtualTable*)NULL;
+        return (CONST CSC_IContainerVirtualTable*)NULL;
     }
     else
     {
