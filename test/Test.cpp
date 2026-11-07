@@ -1,8 +1,8 @@
+#include <print>
+
 #include <CStandardContainers.h>
 
 #include "Allocator/StandardAllocator.h"
-
-#include <print>
 
 struct IVec3 {
   int x;
@@ -78,7 +78,7 @@ int main() {
 
   std::println("Insertion of vector elements:\n");
 
-  CSC_DynamicArrayInsertRange(&da, 5, 10, &vecBuffer); /* BUG: vecbuffer is only 1 element, out of bounds access -> Rather pass NULL for POD type like IVec3 */
+  CSC_DynamicArrayInsertRange(&da, 5, 10, nullptr);
 
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}\n",
                (int)CSC_DynamicArrayGetSize(&da),
