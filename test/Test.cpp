@@ -1,8 +1,8 @@
+#include <print>
+
 #include <CStandardContainers.h>
 
 #include "Allocator/StandardAllocator.h"
-
-#include <print>
 
 struct IVec3 {
   int x;
@@ -55,7 +55,7 @@ int main() {
 
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}\n",
                (int)CSC_DynamicArrayGetSize(&da),
-               (int)CSC_DynamicArrayGetCapacity(&da),
+               (int)/*CSC_DynamicArrayGetCapacity(&da)*/ da.reservedSpace,
                (int)(CSC_DynamicArrayGetSize(&da) *
                      CSC_DynamicArrayGetElementSize(&da)));
 
@@ -66,7 +66,7 @@ int main() {
     vecBuffer.y = 0;
     vecBuffer.z = (int)(vecSize - iterator);
 
-    if (CSC_DynamicArrayPushValue(&da, &vecBuffer) != CSC_STATUS_SUCCESS)
+    if (CSC_DynamicArrayPushElement(&da, &vecBuffer) != CSC_STATUS_SUCCESS)
       std::println("Failed to push value at {}", iterator);
   }
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}",
@@ -78,7 +78,7 @@ int main() {
 
   std::println("Insertion of vector elements:\n");
 
-  CSC_DynamicArrayInsertRange(&da, 5, 10, &vecBuffer);
+  CSC_DynamicArrayInsertRange(&da, 5, 10, nullptr);
 
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}\n",
                (int)CSC_DynamicArrayGetSize(&da),
@@ -112,7 +112,7 @@ int main() {
   std::println("Deletion of vector elements:\n");
 
   for (iterator = (SIZE_T)0; iterator < vecSize; ++iterator) {
-    if (CSC_DynamicArrayPopValue(&da, &vecBuffer) != CSC_STATUS_SUCCESS)
+    if (CSC_DynamicArrayPopElement(&da, &vecBuffer) != CSC_STATUS_SUCCESS)
       std::println("Failed to pop a value at {}", iterator);
   }
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}",
@@ -132,7 +132,7 @@ int main() {
                      CSC_DynamicArrayGetElementSize(&da)));
   printVec(&da);
 
-  vecBuffer = (IVec3){1337, 1337, 1337};
+  vecBuffer = IVec3{1337, 1337, 1337};
 
   pVecInArr = (IVec3 *)CSC_DynamicArrayAccessElement(&da, 19);
 
@@ -160,7 +160,7 @@ int main() {
 
   std::println("Inserting element at the front:\n");
 
-  vecBuffer = (IVec3){6502, 6502, 6502};
+  vecBuffer = IVec3{6502, 6502, 6502};
 
   if (CSC_DynamicArrayInsertElement(&da, 0, &vecBuffer) != CSC_STATUS_SUCCESS) {
     std::println("Failed to insert an element at the front of the vector!");
@@ -189,7 +189,7 @@ int main() {
   std::println("Value before popping: X: {}, Y: {}, Z: {}\n", vecBuffer.x,
                vecBuffer.y, vecBuffer.z);
 
-  vecBuffer = (IVec3){6502, 6502, 6502};
+  vecBuffer = IVec3{6502, 6502, 6502};
 
   if (CSC_DynamicArrayPopFront(&da, &vecBuffer) != CSC_STATUS_SUCCESS) {
     std::println("Failed to pop an element at the front of the vector!");
@@ -217,7 +217,7 @@ int main() {
   }
 
   for (iterator = (SIZE_T)0; iterator < (SIZE_T)200; ++iterator) {
-    vecBuffer = (IVec3){(int)iterator, (int)iterator, (int)iterator};
+    vecBuffer = IVec3{(int)iterator, (int)iterator, (int)iterator};
 
     pVecInArr = (IVec3 *)CSC_DynamicArrayAccessElement(&da, iterator);
 
@@ -229,7 +229,7 @@ int main() {
 
   std::println("Vector Size: {}   Vector Reserve: {}   Vector Bytesize: {}\n",
                (int)CSC_DynamicArrayGetSize(&da),
-               (int)CSC_DynamicArrayGetCapacity(&da),
+               (int)/*CSC_DynamicArrayGetCapacity(&da)*/ da.reservedSpace,
                (int)(CSC_DynamicArrayGetSize(&da) *
                      CSC_DynamicArrayGetElementSize(&da)));
 
